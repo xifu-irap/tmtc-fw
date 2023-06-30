@@ -31,7 +31,7 @@ use ieee.std_logic_arith.all;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-use work.Ramtest_pack.all;
+--use work.Ramtest_pack.all;
 
 entity ddr_stamp is
 		port(

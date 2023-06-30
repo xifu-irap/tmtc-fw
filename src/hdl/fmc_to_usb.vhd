@@ -477,25 +477,8 @@ reset <= ep00wire(0) or rst ;
 --	Controller DDR3
 ---------------------------------------------------- 
  
-label_ddr3_256_16 : ddr3_256_16     
-generic map (
-	
-     PAYLOAD_WIDTH                 	 =>	PAYLOAD_WIDTH,	
-     BANK_WIDTH                      =>	BANK_WIDTH,
-	 DQ_WIDTH                        =>	DQ_WIDTH,
-	 DQS_WIDTH                       =>	DQS_WIDTH,
-	 ROW_WIDTH                       =>	ROW_WIDTH,
-     CK_WIDTH                        =>	CK_WIDTH,
-	 CKE_WIDTH                       =>	CKE_WIDTH,
-     CS_WIDTH                        =>	CS_WIDTH,
-	 DM_WIDTH                        =>	DM_WIDTH,
-     nCS_PER_RANK                    =>	nCS_PER_RANK,
-	 ODT_WIDTH                       =>	ODT_WIDTH,
-	 ADDR_WIDTH                      =>	ADDR_WIDTH,
-	 nCK_PER_CLK                     =>	nCK_PER_CLK
---	 tREFI							 => tREFI
-	
-	) 
+label_ddr3_256_16 : entity work.ddr3_256_16     
+
 port map (
 --// Memory interface ports
 --		tREFI						=> 	tREFI,
@@ -562,7 +545,7 @@ end process;
 --	Controller DDR3
 ----------------------------------------------------
 
-label_drive_interface_ddr3_ctrl :	drive_interface_ddr3_ctrl 
+label_drive_interface_ddr3_ctrl :	entity work.drive_interface_ddr3_ctrl 
 port map (
 
 	clk                =>	clk,
@@ -624,7 +607,7 @@ port map (
 --	Controller DDR3
 ----------------------------------------------------
 
-label_ddr_stamp : ddr_stamp	
+label_ddr_stamp : entity work.ddr_stamp	
 port map (
 
 		
@@ -652,7 +635,7 @@ ep23wire <= Subtraction_addr_wr_addr_rd	(31 downto 0);
 -- manage ep20wire
 -- ----------------------------------------------------
 
-label_manage_ep20wire : manage_pipe_out	
+label_manage_ep20wire : entity work.manage_pipe_out	
 port map (
 		--	global
 				
@@ -943,7 +926,7 @@ end process;
 --	instrument fifo
 ---------------------------------------------------------------
 	
-instrument_fifo_in	:	fifo_w32_131068_r128_32728 
+instrument_fifo_in	:	entity work.fifo_w32_131068_r128_32728 
 port map (
 	rst		=>	reset,
 	wr_clk	=>	clk_science(0),
@@ -1009,7 +992,7 @@ reset_n <= not reset;
 --	Pipe out fifo 
 ---------------------------------------------------------------
 	
-okPipeOut_fifo	:	fifo_r32_131068_w128_32728   
+okPipeOut_fifo	:	entity work.fifo_r32_131068_w128_32728   
 port map (
 	rst		=>	reset,
 	wr_clk	=>	clk,
@@ -1033,7 +1016,7 @@ ep28wire <= "0000000000000000"&dataout_instrument_wire;
 --	Pipe out fifo  hk
 ---------------------------------------------------------------
 	
-okPipeOut_fifo_hk	:	fifo_r32_256_w32_256_hk   
+okPipeOut_fifo_hk	:	entity work.fifo_r32_256_w32_256_hk   
 port map (
 	rst		=>	reset,
 	wr_clk	=>	Clk,
@@ -1049,7 +1032,7 @@ port map (
 --	wr_data_count	=>	open--// Bus [7 : 0]
 	);  
 
-label_hk_pattern	:	hk_pattern   
+label_hk_pattern	:	entity work.hk_pattern   
 port map (
 
 		okClk	=>	okClk,			
@@ -1084,7 +1067,7 @@ end process;
 --	Pipe in
 ---------------------------------------------------------------
 	
-okPipein_fifo	:	fifo_r32_256_w32_256   
+okPipein_fifo	:	entity work.fifo_r32_256_w32_256   
 port map (
 	rst		=>	reset,
 	wr_clk	=>	okClk,
