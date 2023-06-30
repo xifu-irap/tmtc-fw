@@ -48,6 +48,7 @@
 /project/vivado00/tmtc.runs/**/*.v
 /project/vivado00/tmtc.runs/**/*.vhdl
 /project/vivado00/*.log
+/project/vivado00/tmtc.gen/*
 
 # Untracked no necessary Xilinx IP Files
 /ip/xilinx/coregen/**/*.dcp
@@ -64,9 +65,30 @@
 /ip/xilinx/coregen/**/*ila*netlist.vhdl
 /ip/xilinx/coregen/**/*vio*netlist.vhdl
 
-
-
 # Track essential Xilinx IP files
-!/ip/xilinx/coregen/**/*.xdc
-!/ip/xilinx/coregen/**/*.xci
-!/ip/xilinx/coregen/**/*.mif
+!/ip/xilinx/coregen/*/*.xdc
+!/ip/xilinx/coregen/*/*.xci
+!/ip/xilinx/coregen/*/*.mif
+
+# Untracked for the DDR Xilinx IP files
+/ip/xilinx/coregen/**/*.xdc
+/ip/xilinx/coregen/**/*.tcl
+/ip/xilinx/coregen/**/*.in
+/ip/xilinx/coregen/**/*.out
+/ip/xilinx/coregen/**/*.vhdl
+/ip/xilinx/coregen/**/*.txt
+/ip/xilinx/coregen/**/*.prj
+/ip/xilinx/coregen/**/**/**/*.vhd
+/ip/xilinx/coregen/**/**/**/*.sv
+/ip/xilinx/coregen/**/**/**/*.sh
+/ip/xilinx/coregen/**/**/**/*.do
+/ip/xilinx/coregen/**/**/**/*.bat
+# track essential DDR Xilinx IP files
+!/ip/xilinx/coregen/*/*.prj
+
+
+# Untracked Opal Kelly IPs
+/ip/opal_kelly/**/*
+
+# Untracked some doc files
+/doc/spec/*
