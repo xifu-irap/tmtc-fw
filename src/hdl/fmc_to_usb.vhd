@@ -358,6 +358,25 @@ architecture RTL of fmc_to_usb is
 	);
 	end component ;
 
+attribute ASYNC_REG : string;
+attribute ASYNC_REG of ep23wire_one: signal is "TRUE";
+attribute ASYNC_REG of ep23wire_two: signal is "TRUE";
+
+attribute ASYNC_REG of ep22wire_one: signal is "TRUE";
+attribute ASYNC_REG of ep22wire_two: signal is "TRUE";
+
+attribute ASYNC_REG of ep24wire_one: signal is "TRUE";
+attribute ASYNC_REG of ep24wire_two: signal is "TRUE";
+
+attribute ASYNC_REG of ep25wire_one: signal is "TRUE";
+attribute ASYNC_REG of ep25wire_two: signal is "TRUE";
+
+attribute ASYNC_REG of ep27wire_one: signal is "TRUE";
+attribute ASYNC_REG of ep27wire_two: signal is "TRUE";
+
+attribute ASYNC_REG of ep28wire_one: signal is "TRUE";
+attribute ASYNC_REG of ep28wire_two: signal is "TRUE";
+
 begin
 
 GEN_IBUFDS_science_data : for i in 0 to LignNumber - 1 generate
