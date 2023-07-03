@@ -37,11 +37,21 @@
 ###############################################################################################################
 # usb @100.8 MHz
 ###############################################################################################################
-create_clock -period 9.920 -name okUH0 [get_ports {i_okUH[0]}]
+create_clock -period 9.920 -name okUH0 [get_ports {okUH[0]}]
 create_clock -name virt_okUH0 -period 9.920
  # 62.5 MHz
 create_clock -period 16 -name science_clk1 [get_ports {clk_science_p[0]}]
 create_clock -period 16 -name science_clk2 [get_ports {clk_science_p[1]}]
+
+
+###############################################################################################################
+# rename auto-derived clock
+###############################################################################################################
+set usb_clk_in_pin [get_pins label_okHost/mmcm0/CLKIN1]
+set usb_clk_out_pin  [get_pins label_okHost/mmcm0/CLKOUT0]
+
+# rename clock
+create_generated_clock -name usb_clk -source $usb_clk_in_pin $usb_clk_out_pin
 
 ###############################################################################################################
 # Unrelated asynchronuous clocks
@@ -57,8 +67,8 @@ create_generated_clock -name gen_spi_clk -multiply_by 1 -source [get_pins spi_mg
 ###############################################################################################################
 # usb: constraints register/Q on register/clk
 ###############################################################################################################
-set usb_src [get_pins inst_fpasim_top/inst_regdecode_top/inst_usb_opal_kelly/Opal_Kelly_Host/core0/core0/a0/d0/lc4da648cb12eeeb24e4d199c1195ed93_reg[4]/C]
-set usb_dest [get_pins inst_fpasim_top/inst_regdecode_top/inst_usb_opal_kelly/Opal_Kelly_Host/core0/core0/a0/d0/lc4da648cb12eeeb24e4d199c1195ed93_reg[4]/Q]
+set usb_src [get_pins label_okHost/core0/core0/a0/d0/lc4da648cb12eeeb24e4d199c1195ed93_reg[4]/C]
+set usb_dest [get_pins label_okHost/core0/core0/a0/d0/lc4da648cb12eeeb24e4d199c1195ed93_reg[4]/Q]
 create_generated_clock -name usb_clk_regQ_on_clk_pin -source $usb_src -divide_by 2 $usb_dest;
 
 ###############################################################################################################
@@ -86,7 +96,7 @@ set input_clock         virt_okUH0;      # Name of input clock
 set input_clock_period  9.92;    # Period of input clock
 set dv_bre              1.920;             # Data valid before the rising clock edge
 set dv_are              0.000;             # Data valid after the rising clock edge
-set input_ports         {i_okUH[*]};     # List of input ports
+set input_ports         {okUH[*]};     # List of input ports
 
 # Input Delay Constraint
 set_input_delay -clock $input_clock -max [expr $input_clock_period - $dv_bre] [get_ports $input_ports] -add_delay;
@@ -114,7 +124,7 @@ set input_clock         virt_okUH0;      # Name of input clock
 set input_clock_period  9.92;    # Period of input clock
 set dv_bre              1.920;             # Data valid before the rising clock edge
 set dv_are              2.000;             # Data valid after the rising clock edge
-set input_ports         {b_okUHU[*] b_okAA};     # List of input ports
+set input_ports         {okUHU[*] okAA};     # List of input ports
 
 # Input Delay Constraint
 set_input_delay -clock $input_clock -max [expr $input_clock_period - $dv_bre] [get_ports $input_ports] -add_delay;
@@ -150,7 +160,7 @@ set tsu          2.000;            # destination device setup time requirement
 set thd          0.500;            # destination device hold time requirement
 set trce_dly_max 0.000;            # maximum board trace delay
 set trce_dly_min 0.000;            # minimum board trace delay
-set output_ports {o_okHU[*] b_okUHU[*] b_okAA};   # list of output ports
+set output_ports {okHU[*] okUHU[*] okAA};   # list of output ports
 
 # Output Delay Constraints
 set_output_delay -clock $fwclk -max [expr $trce_dly_max + $tsu] [get_ports $output_ports] -add_delay;
@@ -250,8 +260,8 @@ set_input_delay -clock $input_clock -min $dv_are                              [g
 # set input_clock         usb_clk;      # Name of input clock
 set input_clock         science_clk1;      # Name of input clock
 set input_clock_period  16;    # Period of input clock
-set dv_bre              1.920;             # Data valid before the rising clock edge
-set dv_are              0.000;             # Data valid after the rising clock edge
+set dv_bre              2.50;             # Data valid before the rising clock edge
+set dv_are              2.5000;             # Data valid after the rising clock edge
 set input_ports         {i_science_ctrl_p[0] i_science_data_p[0] i_science_data_p[1] i_science_data_p[2] i_science_data_p[3]};     # List of input ports
 
 # Input Delay Constraint
@@ -279,10 +289,10 @@ set_input_delay -clock $input_clock -min $dv_are                              [g
 #
 
 # set input_clock         usb_clk;      # Name of input clock
-set input_clock         science_clk2;      # Name of input clock
+set input_clock         science_clk1;      # Name of input clock
 set input_clock_period  16;    # Period of input clock
-set dv_bre              1.920;             # Data valid before the rising clock edge
-set dv_are              0.000;             # Data valid after the rising clock edge
+set dv_bre              2.5;             # Data valid before the rising clock edge
+set dv_are              2.500;             # Data valid after the rising clock edge
 set input_ports         {i_science_ctrl_p[1] i_science_data_p[4] i_science_data_p[5] i_science_data_p[6] i_science_data_p[7]};     # List of input ports
 
 # Input Delay Constraint
@@ -292,7 +302,7 @@ set_input_delay -clock $input_clock -min $dv_are                              [g
 ##################################################################################
 # others (input ports): asynchronuous ports
 ##################################################################################
-set_false_path -to   [get_ports "leds*"]
+set_false_path -to   [get_ports "led*"]
 
 ##################################################################################
 # SPI: IO
@@ -309,6 +319,6 @@ set_property IOB true [get_ports o_sync_n]
 ##################################################################################
 # sciences
 ##################################################################################
-set_property IOB true [get_ports clk_science_p[*]]
-set_property IOB true [get_ports i_science_ctrl_p[*]]
-set_property IOB true [get_ports i_science_data_p[*]]
+# set_property IOB true [get_ports clk_science_p[*]]
+# set_property IOB true [get_ports i_science_ctrl_p[*]]
+# set_property IOB true [get_ports i_science_data_p[*]]
