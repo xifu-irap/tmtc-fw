@@ -49,9 +49,12 @@ create_clock -period 16 -name science_clk2 [get_ports {clk_science_p[1]}]
 ###############################################################################################################
 set usb_clk_in_pin [get_pins label_okHost/mmcm0/CLKIN1]
 set usb_clk_out_pin  [get_pins label_okHost/mmcm0/CLKOUT0]
+set sys_clk_in_pin [get_pins label_ddr3_256_16/u_ddr3_256_16_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKIN1]
+set sys_clk_out_pin  [get_pins label_ddr3_256_16/u_ddr3_256_16_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKFBOUT]
 
 # rename clock
 create_generated_clock -name usb_clk -source $usb_clk_in_pin $usb_clk_out_pin
+create_generated_clock -name sys_clk -source $sys_clk_in_pin $sys_clk_out_pin
 
 ###############################################################################################################
 # Unrelated asynchronuous clocks
@@ -91,7 +94,6 @@ create_generated_clock -name usb_clk_regQ_on_clk_pin -source $usb_src -divide_by
 # data     __XXXX____Rise_Data____XXXX__
 #
 
-# set input_clock         usb_clk;      # Name of input clock
 set input_clock         virt_okUH0;      # Name of input clock
 set input_clock_period  9.92;    # Period of input clock
 set dv_bre              1.920;             # Data valid before the rising clock edge
@@ -119,7 +121,6 @@ set_input_delay -clock $input_clock -min $dv_are                              [g
 # data     __XXXX____Rise_Data____XXXX__
 #
 
-# set input_clock         usb_clk;      # Name of input clock
 set input_clock         virt_okUH0;      # Name of input clock
 set input_clock_period  9.92;    # Period of input clock
 set dv_bre              1.920;             # Data valid before the rising clock edge
@@ -191,7 +192,6 @@ set_output_delay -clock $fwclk -min [expr $trce_dly_min - $thd] [get_ports $outp
 # create_generated_clock -name <gen_clock_name> -multiply_by 1 -source [get_pins <source_pin>] [get_ports <output_clock_port>]
 # gen_clock_name is the name of forwarded clock here. It should be used below for defining "fwclk".	
 
-# set fwclk        usb_clk;      # forwarded clock name (generated using create_generated_clock at output clock port)        
 set fwclk        gen_spi_clk;      # forwarded clock name (generated using create_generated_clock at output clock port)        
 set tsu          2.5;           # destination device setup time requirement
 set thd          2.5;           # destination device hold time requirement
@@ -257,7 +257,6 @@ set_input_delay -clock $input_clock -min $dv_are                              [g
 # data     __XXXX____Rise_Data____XXXX__
 #
 
-# set input_clock         usb_clk;      # Name of input clock
 set input_clock         science_clk1;      # Name of input clock
 set input_clock_period  16;    # Period of input clock
 set dv_bre              2.50;             # Data valid before the rising clock edge
@@ -288,7 +287,6 @@ set_input_delay -clock $input_clock -min $dv_are                              [g
 # data     __XXXX____Rise_Data____XXXX__
 #
 
-# set input_clock         usb_clk;      # Name of input clock
 set input_clock         science_clk1;      # Name of input clock
 set input_clock_period  16;    # Period of input clock
 set dv_bre              2.5;             # Data valid before the rising clock edge
