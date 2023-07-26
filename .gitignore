@@ -1,2 +1,13 @@
 
 
+# IP: remove unecessary files
+##########################
+/ip/xilinx/coregen/*/*
+!/ip/xilinx/coregen/*/*.xco
+
+# project: remove unecessary files
+##########################
+/project/ise/*
+!/project/ise/*.xise
+!/project/ise/*.gise
+!/project/ise/*.bit
