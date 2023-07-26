@@ -12,43 +12,14 @@
 # untracked temporary directories/files
 #########################################################
 # Untracked no necessary project files
-/project/vivado00/tmtc.runs/.jobs/**/*
-/project/vivado00/tmtc.runs/synth_1/**/*
-/project/vivado00/tmtc.ip_user_files/**/*
-/project/vivado00/tmtc.hw/**/*
-/project/vivado00/tmtc.cache/*
-/project/vivado00/tmtc.sim/*
-/project/vivado00/tmtc.srcs/*
-/project/vivado00/tmtc.runs/**/*.pb
-/project/vivado00/tmtc.runs/**/*.txt
-/project/vivado00/tmtc.runs/**/*.js
-/project/vivado00/tmtc.runs/**/*.sh
-/project/vivado00/tmtc.runs/**/*.wdf
-/project/vivado00/tmtc.runs/**/*.bat
-/project/vivado00/tmtc.runs/**/*.log
-/project/vivado00/tmtc.runs/**/*.jou
-/project/vivado00/tmtc.runs/**/*.dcp
-/project/vivado00/tmtc.runs/**/*.rpt
-/project/vivado00/tmtc.runs/**/*.rpw
-/project/vivado00/tmtc.runs/**/*.xml
-/project/vivado00/tmtc.runs/**/*.rst
-/project/vivado00/tmtc.runs/**/*.tcl
-/project/vivado00/tmtc.runs/**/*.vdi
-/project/vivado00/tmtc.runs/**/*.rpx
-/project/vivado00/tmtc.runs/**/*.dmp
-/project/vivado00/tmtc.runs/**/*.xdc
-/project/vivado00/tmtc.runs/**/*.vds
-/project/vivado00/tmtc.runs/**/__synthesis_is_complete__
-/project/vivado00/tmtc.runs/**/*.mmi
-/project/vivado00/tmtc.runs/**/*.bit
-/project/vivado00/tmtc.runs/**/*.ltx
-/project/vivado00/tmtc.runs/**/*.lpr
-/project/vivado00/tmtc.runs/**/*.wpc
-/project/vivado00/tmtc.runs/**/.Xil/*
-/project/vivado00/tmtc.runs/**/*.v
-/project/vivado00/tmtc.runs/**/*.vhdl
+/project/vivado00/tmtc.ip_user_files
+/project/vivado00/tmtc.hw
+/project/vivado00/tmtc.cache
+/project/vivado00/tmtc.sim
+/project/vivado00/tmtc.srcs
+/project/vivado00/tmtc.runs
 /project/vivado00/*.log
-/project/vivado00/tmtc.gen/*
+/project/vivado00/tmtc.gen
 
 # Untracked no necessary Xilinx IP Files
 /ip/xilinx/coregen/**/*.dcp
@@ -92,3 +63,9 @@
 
 # Untracked some doc files
 /doc/spec/*
+
+# Untracked some constraints files
+/constraints/constrs_1/*.ucf
+
+# untracted Sigasi files
+.settings
