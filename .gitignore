@@ -1,4 +1,12 @@
+# remove vscode - sigasi files
+##########################
+/.settings/*
+.project
+.library_mapping.xml
 
+# untrack doc files
+##########################
+/doc
 
 # IP: remove unecessary files
 ##########################
