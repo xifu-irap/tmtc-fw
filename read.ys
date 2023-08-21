@@ -1,4 +1,12 @@
 
+#############################################################################
+# Add iSE library
+#   Those files can be found in the installation directory of ISE Design Suite 14.7
+#   c:\XXX\Xilinx\14.7\ISE_DS\ISE\vhdl\src\unisims
+#############################################################################
+verific -work unisim -vhdl ./third-party-libraries/ip/ise/14.7/ISE_DS/ISE/vhdl/src/unisims/unisim_VCOMP.vhd
+verific -work unisim -vhdl ./third-party-libraries/ip/ise/14.7/ISE_DS/ISE/vhdl/src/unisims/unisim_VPKG.vhd
+
 ##############################################################################
 # The list of source files can be saw by using the "manual compile" order option
 # of ISE Design Suite 14.7
