@@ -19,10 +19,10 @@ verific -vhdl -lib ./ip/opal_kelly/Front_panel_XEM7350-K160T/okLibrary.vhd
 # Xilinx IP
 #    Top level module
 verific -sv -lib ./src/hdl/MIG/ddr3_256_16.v
-verific -vhdl -lib ./ip/ise/xilinx/fifo_r32_256_w32_256/fifo_r32_256_w32_256_stub.vhdl
-verific -vhdl -lib ./ip/ise/xilinx/fifo_r32_256_w32_256_hk/fifo_r32_256_w32_256_hk_stub.vhdl
-verific -vhdl -lib ./ip/ise/xilinx/fifo_r32_131068_w128_32728/fifo_r32_131068_w128_32728_stub.vhdl
-verific -vhdl -lib ./ip/ise/xilinx/fifo_w32_131068_r128_32728/fifo_w32_131068_r128_32728_stub.vhdl
+verific -vhdl -lib ./third-party-libraries/ip/ise/xilinx/coregen/fifo_r32_256_w32_256/fifo_r32_256_w32_256_stub.vhdl
+verific -vhdl -lib ./third-party-libraries/ip/ise/xilinx/coregen/fifo_r32_256_w32_256_hk/fifo_r32_256_w32_256_hk_stub.vhdl
+verific -vhdl -lib ./third-party-libraries/ip/ise/xilinx/coregen/fifo_r32_131068_w128_32728/fifo_r32_131068_w128_32728_stub.vhdl
+verific -vhdl -lib ./third-party-libraries/ip/ise/xilinx/coregen/fifo_w32_131068_r128_32728/fifo_w32_131068_r128_32728_stub.vhdl
 
 # VHDL
 #    Source files
