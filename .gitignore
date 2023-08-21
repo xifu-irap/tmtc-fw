@@ -9,17 +9,12 @@
 /doc
 
 #########################################################
-# untracked temporary directories/files
+# Vivado project files
 #########################################################
-# Untracked no necessary project files
-/project/vivado00/tmtc.ip_user_files
-/project/vivado00/tmtc.hw
-/project/vivado00/tmtc.cache
-/project/vivado00/tmtc.sim
-/project/vivado00/tmtc.srcs
-/project/vivado00/tmtc.runs
-/project/vivado00/*.log
-/project/vivado00/tmtc.gen
+# untracked all files
+/project/vivado00/*
+# track only the *.xpr files
+!/project/vivado00/*.xpr
 
 # Untracked no necessary Xilinx IP Files
 
@@ -28,6 +23,7 @@
 !/ip/xilinx/coregen/*/*.xdc
 !/ip/xilinx/coregen/*/*.xci
 !/ip/xilinx/coregen/*/*.mif
+!/ip/xilinx/coregen/*/*_stub.vhdl
 
 # Untracked for the DDR Xilinx IP files
 !/ip/xilinx/coregen/*/*.prj
