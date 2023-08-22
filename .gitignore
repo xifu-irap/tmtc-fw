@@ -8,14 +8,39 @@
 ##########################
 /doc
 
-# IP: remove unecessary files
-##########################
-/ip/xilinx/coregen/*/*
-!/ip/xilinx/coregen/*/*.xco
+#########################################################
+# Vivado project files
+#########################################################
+# untracked all files
+/project/vivado00/*
+# track only the *.xpr files
+!/project/vivado00/*.xpr
 
-# project: remove unecessary files
-##########################
-/project/ise/*
-!/project/ise/*.xise
-!/project/ise/*.gise
-!/project/ise/*.bit
+# Untracked no necessary Xilinx IP Files
+
+# Track essential Xilinx IP files
+/ip/xilinx/coregen/*/*
+!/ip/xilinx/coregen/*/*.xdc
+!/ip/xilinx/coregen/*/*.xci
+!/ip/xilinx/coregen/*/*.mif
+!/ip/xilinx/coregen/*/*_stub.vhdl
+
+# Untracked for the DDR Xilinx IP files
+!/ip/xilinx/coregen/*/*.prj
+
+
+# Untracked Opal Kelly IPs
+/ip/opal_kelly/Front_panel_XEM7350-K160T/simu/*
+!/ip/opal_kelly/Front_panel_XEM7350-K160T/simu/.keep
+/ip/opal_kelly/Front_panel_XEM7350-K160T/syn/*
+!/ip/opal_kelly/Front_panel_XEM7350-K160T/syn/.keep
+
+
+# Untracked some doc files
+/doc/spec/*
+
+# Untracked some constraints files
+/constraints/constrs_1/*.ucf
+
+# untracted Sigasi files
+.settings

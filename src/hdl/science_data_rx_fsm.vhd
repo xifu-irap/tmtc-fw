@@ -76,6 +76,13 @@ signal	science_data_FFF	:	std_logic;
 signal	i_science_data_FF	:	std_logic;
 signal	science_data		:	std_logic;	
 
+attribute ASYNC_REG : string;
+attribute ASYNC_REG of i_science_ctrl_FF: signal is "TRUE";
+attribute ASYNC_REG of science_ctrl_FFF: signal is "TRUE";
+
+attribute ASYNC_REG of science_data_FFF: signal is "TRUE";
+attribute ASYNC_REG of i_science_data_FF: signal is "TRUE";
+
 begin
 
 -------------------------------------------------------------------------------------------------

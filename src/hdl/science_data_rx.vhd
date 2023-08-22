@@ -87,6 +87,12 @@ signal frame_fifo : t_ARRAY128bits (0 to 2);
 signal start_maker : std_logic;
 signal cpt_synchro : std_logic_vector(1 downto 0);
 
+attribute ASYNC_REG : string;
+attribute ASYNC_REG of reg_ctrl_r: signal is "TRUE";
+attribute ASYNC_REG of reg_ctrl_rr: signal is "TRUE";
+attribute ASYNC_REG of reg_data_out_r: signal is "TRUE";
+attribute ASYNC_REG of reg_data_out_rr: signal is "TRUE";
+
 begin
 
    -- ------------------------------------------------------------------------------------------------------
