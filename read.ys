@@ -14,7 +14,7 @@ verific -work unisim -vhdl ./third-party-libraries/ip/vivado/2022.1/data/vhdl/sr
 # Add FrontPanelUSB library from Opal Kelly Vendor (black box for the Linty tool)
 #############################################################################
 #    module component declaration
-verific -vhdl -lib ./third-party-libraries/ip/vivado/opal_kelly/syn/okLibrary.vhd
+verific -vhdl -lib ./third-party-libraries/ip/vivado/opal_kelly/Front_panel_XEM7350-K160T/syn/okLibrary.vhd
 
 ##############################################################################
 # Project files
