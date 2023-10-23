@@ -1,14 +1,13 @@
 ############################################################################
 # XEM7350 - Xilinx constraints file
 #
-# Pin mappings for the XEM7350.  Use this as a template and comment out 
+# Pin mappings for the XEM7350.  Use this as a template and comment out
 # the pins that are not used in your design.  (By default, map will fail
 # if this file contains constraints for signals not in your design).
 #
 # Copyright (c) 2004-2014 Opal Kelly Incorporated
 #
 #
-# requirement: FPASIM-FW-REQ-0040 (applicable to the file)
 ############################################################################
 
 
@@ -90,220 +89,220 @@ set_property PACKAGE_PIN AC3 [get_ports {sys_clkn}]
 # set_property SLEW FAST [get_ports {i_reset}]
 
 
-# FMC-A1 
+# FMC-A1
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A10 
+# FMC-A10
 # set_property PACKAGE_PIN B6 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A11 
+# FMC-A11
 # set_property PACKAGE_PIN B5 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A12 
+# FMC-A12
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A13 
+# FMC-A13
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A14 
+# FMC-A14
 # set_property PACKAGE_PIN R4 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A15 
+# FMC-A15
 # set_property PACKAGE_PIN R3 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A16 
+# FMC-A16
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A17 
+# FMC-A17
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A18 
+# FMC-A18
 # set_property PACKAGE_PIN N4 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A19 
+# FMC-A19
 # set_property PACKAGE_PIN N3 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A2 
+# FMC-A2
 # set_property PACKAGE_PIN E4 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A20 
+# FMC-A20
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A21 
+# FMC-A21
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A22 
+# FMC-A22
 # set_property PACKAGE_PIN D2 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A23 
+# FMC-A23
 # set_property PACKAGE_PIN D1 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A24 
+# FMC-A24
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A25 
+# FMC-A25
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A26 
+# FMC-A26
 # set_property PACKAGE_PIN B2 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A27 
+# FMC-A27
 # set_property PACKAGE_PIN B1 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A28 
+# FMC-A28
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A29 
+# FMC-A29
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A3 
+# FMC-A3
 # set_property PACKAGE_PIN E3 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A30 
+# FMC-A30
 # set_property PACKAGE_PIN A4 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A31 
+# FMC-A31
 # set_property PACKAGE_PIN A3 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A32 
+# FMC-A32
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A33 
+# FMC-A33
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A34 
+# FMC-A34
 # set_property PACKAGE_PIN P2 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A35 
+# FMC-A35
 # set_property PACKAGE_PIN P1 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A36 
+# FMC-A36
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A37 
+# FMC-A37
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A38 
+# FMC-A38
 # set_property PACKAGE_PIN M2 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A39 
+# FMC-A39
 # set_property PACKAGE_PIN M1 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A4 
+# FMC-A4
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A40 
+# FMC-A40
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A5 
+# FMC-A5
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A6 
+# FMC-A6
 # set_property PACKAGE_PIN C4 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A7 
+# FMC-A7
 # set_property PACKAGE_PIN C3 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A8 
+# FMC-A8
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-A9 
+# FMC-A9
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B1 
+# FMC-B1
 # set_property PACKAGE_PIN M26 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B10 
+# FMC-B10
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B11 
+# FMC-B11
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B12 
+# FMC-B12
 # set_property PACKAGE_PIN J4 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B13 
+# FMC-B13
 # set_property PACKAGE_PIN J3 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B14 
+# FMC-B14
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B15 
+# FMC-B15
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B16 
+# FMC-B16
 # set_property PACKAGE_PIN L4 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B17 
+# FMC-B17
 # set_property PACKAGE_PIN L3 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B18 
+# FMC-B18
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B19 
+# FMC-B19
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B2 
+# FMC-B2
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B20 
+# FMC-B20
 # set_property PACKAGE_PIN H6 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B21 
+# FMC-B21
 # set_property PACKAGE_PIN H5 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B22 
+# FMC-B22
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B23 
+# FMC-B23
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B26 
+# FMC-B26
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B27 
+# FMC-B27
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B3 
+# FMC-B3
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B30 
+# FMC-B30
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B31 
+# FMC-B31
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B32 
+# FMC-B32
 # set_property PACKAGE_PIN H2 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B33 
+# FMC-B33
 # set_property PACKAGE_PIN H1 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B34 
+# FMC-B34
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B35 
+# FMC-B35
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B36 
+# FMC-B36
 # set_property PACKAGE_PIN K2 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B37 
+# FMC-B37
 # set_property PACKAGE_PIN K1 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B38 
+# FMC-B38
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B39 
+# FMC-B39
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B6 
+# FMC-B6
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-B7 
+# FMC-B7
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C1 
+# FMC-C1
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-C10
@@ -315,7 +314,7 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[7]}]
 # FMC-C12
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C13 
+# FMC-C13
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-C14
@@ -327,7 +326,7 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[6]}]
 # FMC-C16
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C17 
+# FMC-C17
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-C18
@@ -339,10 +338,10 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[3]}]
 # FMC-C2
 # set_property PACKAGE_PIN F2 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C20 
+# FMC-C20
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C21 
+# FMC-C21
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-C22
@@ -354,7 +353,7 @@ set_property IOSTANDARD LVDS_25 [get_ports {clk_science_n[1]}]
 # FMC-C24
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C25 
+# FMC-C25
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-C26
@@ -366,67 +365,67 @@ set_property IOSTANDARD LVDS_25 [get_ports {clk_science_n[1]}]
 # FMC-C28
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C29 
+# FMC-C29
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C3 
+# FMC-C3
 # set_property PACKAGE_PIN F1 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C30 
+# FMC-C30
 # set_property PACKAGE_PIN  [get_ports {}];# I2C_SCL
 # set_property IOSTANDARD LVCMOS25 [get_ports {}];# I2C_SCL
-# FMC-C31 
+# FMC-C31
 # set_property PACKAGE_PIN  [get_ports {}];# i2C_SDA
 # set_property IOSTANDARD LVCMOS25 [get_ports {}];# i2C_SDA
-# FMC-C32 
+# FMC-C32
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C33 
+# FMC-C33
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C34 
+# FMC-C34
 # set_property PACKAGE_PIN  [get_ports {}];# GA0
 # set_property IOSTANDARD  [get_ports {}];# GA0
-# FMC-C35 
+# FMC-C35
 # set_property PACKAGE_PIN  [get_ports {}];# 12V
 # set_property IOSTANDARD  [get_ports {}];# 12V
-# FMC-C36 
+# FMC-C36
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C37 
+# FMC-C37
 # set_property PACKAGE_PIN  [get_ports {}];# 12V
 # set_property IOSTANDARD  [get_ports {}];# 12V
-# FMC-C38 
+# FMC-C38
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C39 
+# FMC-C39
 # set_property PACKAGE_PIN  [get_ports {}];# 3.3V
 # set_property IOSTANDARD  [get_ports {}];# 3.3V
-# FMC-C4 
+# FMC-C4
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C40 
+# FMC-C40
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C5 
+# FMC-C5
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C6 
+# FMC-C6
 # set_property PACKAGE_PIN G4 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C7 
+# FMC-C7
 # set_property PACKAGE_PIN G3 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C8 
+# FMC-C8
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-C9 
+# FMC-C9
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-D1 
+# FMC-D1
 # set_property PACKAGE_PIN  [get_ports {}];# PG_C2M
 # set_property IOSTANDARD  [get_ports {}];# PG_C2M
-# FMC-D10 
+# FMC-D10
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-D11
@@ -456,7 +455,7 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[2]}]
 # FMC-D19
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-D2 
+# FMC-D2
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-D20
@@ -486,55 +485,55 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_ctrl_n[0]}]
 # FMC-D28
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-D29 
+# FMC-D29
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-D3 
+# FMC-D3
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-D30 
+# FMC-D30
 # set_property PACKAGE_PIN  [get_ports {}];# TDI2TDO
 # set_property IOSTANDARD  [get_ports {}];# TDI2TDO
-# FMC-D31 
+# FMC-D31
 # set_property PACKAGE_PIN  [get_ports {}];# TDI2TDO
 # set_property IOSTANDARD  [get_ports {}];# TDI2TDO
-# FMC-D32 
+# FMC-D32
 # set_property PACKAGE_PIN  [get_ports {}];# 3.3V Aux
 # set_property IOSTANDARD  [get_ports {}];# 3.3V Aux
-# FMC-D33 
+# FMC-D33
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-D34 
+# FMC-D34
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-D35 
+# FMC-D35
 # set_property PACKAGE_PIN  [get_ports {}];# GA1
 # set_property IOSTANDARD  [get_ports {}];# GA1
-# FMC-D36 
+# FMC-D36
 # set_property PACKAGE_PIN  [get_ports {}];# 3.3V
 # set_property IOSTANDARD  [get_ports {}];# 3.3V
-# FMC-D37 
+# FMC-D37
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-D38 
+# FMC-D38
 # set_property PACKAGE_PIN  [get_ports {}];# 3.3V
 # set_property IOSTANDARD  [get_ports {}];# 3.3V
-# FMC-D39 
+# FMC-D39
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-D4 
+# FMC-D4
 # set_property PACKAGE_PIN D6 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-D40 
+# FMC-D40
 # set_property PACKAGE_PIN  [get_ports {}];# 3.3V
 # set_property IOSTANDARD  [get_ports {}];# 3.3V
-# FMC-D5 
+# FMC-D5
 # set_property PACKAGE_PIN D5 [get_ports {}];# 1
 # set_property IOSTANDARD  [get_ports {}];# 1
-# FMC-D6 
+# FMC-D6
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-D7 
+# FMC-D7
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-D8
@@ -546,133 +545,133 @@ set_property IOSTANDARD LVCMOS25 [get_ports {o_mosi}]
 # FMC-E1
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E10 
+# FMC-E10
 # set_property PACKAGE_PIN AE26 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E11 
+# FMC-E11
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E12 
+# FMC-E12
 # set_property PACKAGE_PIN Y25 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E13 
+# FMC-E13
 # set_property PACKAGE_PIN Y26 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E14 
+# FMC-E14
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E15 
+# FMC-E15
 # set_property PACKAGE_PIN U26 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E16 
+# FMC-E16
 # set_property PACKAGE_PIN V26 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E17 
+# FMC-E17
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E18 
+# FMC-E18
 # set_property PACKAGE_PIN U22 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E19 
+# FMC-E19
 # set_property PACKAGE_PIN V22 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E2 
+# FMC-E2
 # set_property PACKAGE_PIN Y23 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E20 
+# FMC-E20
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E21 
+# FMC-E21
 # set_property PACKAGE_PIN V16 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E22 
+# FMC-E22
 # set_property PACKAGE_PIN V17 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E23 
+# FMC-E23
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E24 
+# FMC-E24
 # set_property PACKAGE_PIN V14 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E25 
+# FMC-E25
 # set_property PACKAGE_PIN W14 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E26 
+# FMC-E26
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E27 
+# FMC-E27
 # set_property PACKAGE_PIN AA19 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E28 
+# FMC-E28
 # set_property PACKAGE_PIN AA20 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E29 
+# FMC-E29
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E3 
+# FMC-E3
 # set_property PACKAGE_PIN AA24 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E30 
+# FMC-E30
 # set_property PACKAGE_PIN AB14 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E31 
+# FMC-E31
 # set_property PACKAGE_PIN AB15 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E32 
+# FMC-E32
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E33 
+# FMC-E33
 # set_property PACKAGE_PIN AC19 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E34 
+# FMC-E34
 # set_property PACKAGE_PIN AD19 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E35 
+# FMC-E35
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E36 
+# FMC-E36
 # set_property PACKAGE_PIN AE18 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E37 
+# FMC-E37
 # set_property PACKAGE_PIN AF18 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E38 
+# FMC-E38
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E39 
+# FMC-E39
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E4 
+# FMC-E4
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E40 
+# FMC-E40
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E5 
+# FMC-E5
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E6 
+# FMC-E6
 # set_property PACKAGE_PIN W23 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E7 
+# FMC-E7
 # set_property PACKAGE_PIN W24 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E8 
+# FMC-E8
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-E9 
+# FMC-E9
 # set_property PACKAGE_PIN AD26 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F1 
+# FMC-F1
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F10 
+# FMC-F10
 # set_property PACKAGE_PIN AB26 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F11 
+# FMC-F11
 # set_property PACKAGE_PIN AC26 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F12 
+# FMC-F12
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-F13
@@ -684,40 +683,40 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_ctrl_n[1]}]
 # FMC-F15
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F16 
+# FMC-F16
 # set_property PACKAGE_PIN U24 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F17 
+# FMC-F17
 # set_property PACKAGE_PIN U25 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F18 
+# FMC-F18
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F19 
+# FMC-F19
 # set_property PACKAGE_PIN AB21 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F2 
+# FMC-F2
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F20 
+# FMC-F20
 # set_property PACKAGE_PIN AC21 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F21 
+# FMC-F21
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F22 
+# FMC-F22
 # set_property PACKAGE_PIN V18 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F23 
+# FMC-F23
 # set_property PACKAGE_PIN V19 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F24 
+# FMC-F24
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F25 
+# FMC-F25
 # set_property PACKAGE_PIN W18 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
-# FMC-F26 
+# FMC-F26
 # set_property PACKAGE_PIN W19 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-F27
