@@ -28,8 +28,8 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
-use ieee.std_logic_arith.all;
+
+
 use ieee.numeric_std.all;
 
 
@@ -220,7 +220,7 @@ architecture RTL of fmc_to_usb is
   signal  init_calib_complete : STD_LOGIC;
   signal init_calib_complete_sync : std_logic;
   signal  sys_rst       : STD_LOGIC;
-  signal  rst_cnt       : STD_LOGIC_VECTOR  (3 downto 0);
+  signal rst_cnt                  : unsigned(4 downto 0) := (others => '0');
   --
 
   signal app_ecc_multiple_err : STD_LOGIC_VECTOR(2*nCK_PER_CLK-1 downto 0);
@@ -241,7 +241,7 @@ architecture RTL of fmc_to_usb is
 
   signal cpt0           : integer;
   signal cpt1                 : integer;
-  signal start_temp0      : STD_LOGIC_VECTOR(3 downto 0);
+  signal start_temp0 : unsigned(3 downto 0);
   signal start_temp1          : STD_LOGIC_VECTOR(3 downto 0);
   signal led_temp       : STD_LOGIC_VECTOR(3 downto 0);
 
@@ -300,7 +300,7 @@ architecture RTL of fmc_to_usb is
 
   signal clk_slow     :   STD_LOGIC;
 
-  signal signal_read_piper_out  : STD_LOGIC_VECTOR(31 downto 0);
+  signal signal_read_piper_out : unsigned(31 downto 0);
 
   --  HK
 
@@ -344,7 +344,7 @@ architecture RTL of fmc_to_usb is
   signal i_science_data : std_logic_vector(LignNumber - 1 downto 0);
   signal start_detected : std_logic_vector(LinkNumber-1 downto 0);
 
-  constant c_SPI_SER_WD_S_V_S   : integer := log2_ceil(c_DAC_SPI_SER_WD_S+1)                                  ; --! DAC SPI: Serial word size vector bus size
+  constant c_SPI_SER_WD_S_V_S   : integer := log2_ceil(c_DAC_SPI_SER_WD_S + 1)                                  ; --! DAC SPI: Serial word size vector bus size
   constant c_DAC_SPI_SER_WD_S_V : std_logic_vector(c_SPI_SER_WD_S_V_S-1 downto 0) :=
                   std_logic_vector(to_unsigned(c_DAC_SPI_SER_WD_S, c_SPI_SER_WD_S_V_S))       ; --! DAC SPI: Serial word size vector
   signal pipe_in_data_big_endian : std_logic_vector(31 downto 0);
@@ -370,6 +370,10 @@ attribute ASYNC_REG of ep27wire_two: signal is "TRUE";
 attribute ASYNC_REG of ep28wire_one: signal is "TRUE";
 attribute ASYNC_REG of ep28wire_two: signal is "TRUE";
 
+
+
+  signal cnt_r1 : unsigned(26 downto 0) := (others => '0');
+  signal trig   : std_logic;
 
 begin
 
@@ -412,7 +416,7 @@ GEN_IBUFDS_clk_science : for i in 0 to LinkNumber - 1 generate
   );
 end generate ;
 
-spi_mgt1 : spi_mgt
+spi_mgt1 : entity work.spi_mgt
   port map
     (i_rst         => ddr_rst,
   i_clk          =>   clk,
@@ -445,7 +449,7 @@ begin
   elsif rising_edge(clk_science(0)) then
     cpt0 <= cpt0 + 1;
     if start_detected(0) ='1' then
-      start_temp0 <= start_temp0 +'1';
+      start_temp0 <= start_temp0 + 1;
     end if;
     if cpt0 = 10000000 then
       if start_temp0 = "0000" then
@@ -468,7 +472,7 @@ begin
       if rst_science0 = '1' then
     cpt1 <= 0;
     led_temp(2) <= '1';
-        led_temp(3) <= '1';
+    led_temp(3) <= '1';
   elsif rising_edge(clk_science(1))then
     cpt1 <= cpt1 + 1 ;
     if cpt1 = 10000000 then
@@ -1104,7 +1108,7 @@ else
   if rising_edge (okClk) then
     if po0_ep_read = '1' then
     signal_read_piper_out <= signal_read_piper_out + 1;
-    ep25wire  <= signal_read_piper_out;
+          ep25wire              <= std_logic_vector(signal_read_piper_out);
     else
       if empty = '1' then
       ep25wire  <= (others => '0');
