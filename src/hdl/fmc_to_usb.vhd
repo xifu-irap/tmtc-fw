@@ -228,7 +228,7 @@ architecture RTL of fmc_to_usb is
   signal cpt1        : integer;
   signal start_temp0 : unsigned(3 downto 0);
   signal start_temp1 : std_logic_vector(3 downto 0);
-  signal led_temp    : std_logic_vector(3 downto 0);
+  signal led_temp    : std_logic;
 
   --  icon et ila
   signal CONTROL0 : std_logic_vector(35 downto 0);
@@ -391,8 +391,7 @@ begin
   begin
     if rst_science0 = '1' then
       cpt0        <= 0;
-      led_temp(0) <= '1';
-      led_temp(1) <= '1';
+      led_temp <= '1';
     elsif rising_edge(clk_science(0)) then
       cpt0 <= cpt0 + 1;
       if start_detected(0) = '1' then
@@ -400,11 +399,10 @@ begin
       end if;
       if cpt0 = 10000000 then
         if start_temp0 = "0000" then
-          led_temp(1) <= '0';
+          led_temp <= '0';
         else
-          led_temp(1) <= '1';
+          led_temp <= '1';
         end if;
-        led_temp(0) <= not led_temp(0);
         cpt0        <= 0;
       end if;
     end if;
@@ -412,30 +410,8 @@ begin
 
   -- leds
   led(0) <= not('1');
-  led(1) <= led_temp(1);
+  led(1) <= led_temp;
 
-  p_clock_science_link1 : process (clk_science(1), rst_science0)
-  begin
-    if rst_science0 = '1' then
-      cpt1        <= 0;
-      led_temp(2) <= '1';
-      led_temp(3) <= '1';
-    elsif rising_edge(clk_science(1))then
-      cpt1 <= cpt1 + 1;
-      if cpt1 = 10000000 then
-        if start_detected(1) = '0' then
-          led_temp(3) <= '1';
-        else
-          led_temp(3) <= '0';
-        end if;
-        led_temp(2) <= not led_temp(2);
-        cpt1        <= 0;
-      end if;
-    end if;
-  end process;
-
-  --led(2) <= led_temp(2);
-  --led(3) <= led_temp(3);
 
   p_blink : process (clk) is
   begin
@@ -443,6 +419,7 @@ begin
       cnt_r1 <= cnt_r1 + 1;
     end if;
   end process p_blink;
+
   trig <= cnt_r1(cnt_r1'high);
 
   led(2)  <= not(init_calib_complete);
