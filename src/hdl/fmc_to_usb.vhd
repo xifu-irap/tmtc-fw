@@ -274,10 +274,10 @@ architecture RTL of fmc_to_usb is
   signal data_rate_enable : std_logic;
 
   -- Paul Part --
-  signal i_science_ctrl : std_logic_vector(LinkNumber - 1 downto 0);
+  signal science_ctrl : std_logic_vector(LinkNumber - 1 downto 0);
 
   signal clk_science    : std_logic_vector(LinkNumber - 1 downto 0);
-  signal i_science_data : std_logic_vector(LignNumber - 1 downto 0);
+  signal science_data   : std_logic_vector(LignNumber - 1 downto 0);
   signal start_detected : std_logic_vector(LinkNumber-1 downto 0);
 
   constant c_SPI_SER_WD_S_V_S   : integer := log2_ceil(c_DAC_SPI_SER_WD_S + 1);  --! DAC SPI: Serial word size vector bus size
@@ -316,7 +316,7 @@ begin
         IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
         IOSTANDARD   => "DEFAULT")
       port map (
-        O  => i_science_data(i),        -- Buffer output
+        O  => science_data(i),          -- Buffer output
         I  => i_science_data_p(i),  -- Diff_p buffer input (connect directly to top-level port)
         IB => i_science_data_n(i)  -- Diff_n buffer input (connect directly to top-level port)
         );
@@ -329,7 +329,7 @@ begin
         IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
         IOSTANDARD   => "DEFAULT")
       port map (
-        O  => i_science_ctrl(i),        -- Buffer output
+        O  => science_ctrl(i),          -- Buffer output
         I  => i_science_ctrl_p(i),  -- Diff_p buffer input (connect directly to top-level port)
         IB => i_science_ctrl_n(i)  -- Diff_n buffer input (connect directly to top-level port)
         );
@@ -372,8 +372,8 @@ begin
       o_sync_n     => sync_n
       );
 
-  cs_n(0) <= sync_n or not spi_chipselect_ras;  -- Chip select _n for RAS
-  cs_n(1) <= sync_n or spi_chipselect_ras;      -- Chip select _n for DEMUX
+  cs_n(0) <= sync_n when spi_chipselect_ras = '1' else '1';  -- Chip select _n for RAS
+  cs_n(1) <= sync_n when spi_chipselect_ras = '0' else '1';  -- Chip select _n for DEMUX (in the future, maybe there will be more DEMUX)
 
   -- output
   o_cs_n <= cs_n;
@@ -721,16 +721,13 @@ begin
       ep_dataout => ep02wire
       );
 
-  p_defaults : process (okClk, usb_rst)
+  p_pipe : process (okClk)
   begin
-    if usb_rst = '1' then
-      spi_chipselect_ras <= '1';
-      sel_main_n         <= '0';
-    elsif rising_edge(okClk)then
+    if rising_edge(okClk)then
       spi_chipselect_ras <= ep01wire(0);
       sel_main_n         <= ep02wire(0);
     end if;
-  end process;
+  end process p_pipe;
 
   o_sel_main_n <= sel_main_n;
 
@@ -830,7 +827,7 @@ begin
 --  ok wire firmware_name
 ----------------------------------------------------
 -- Ajout de la gestion du firmware name
-  ep3Ewire <= x"544D5443"; -- TMTC: hex ASCII CODE
+  ep3Ewire <= x"544D5443";              -- TMTC: hex ASCII CODE
 
   inst_okWireOut_fw_name : okWireOut
     port map (
@@ -983,8 +980,8 @@ begin
 
       start_detected => start_detected,
 
-      i_science_ctrl   => i_science_ctrl,
-      i_science_data   => i_science_data,
+      i_science_ctrl   => science_ctrl,
+      i_science_data   => science_data,
       data_rate_enable => data_rate_enable,
 
       --  fifo
