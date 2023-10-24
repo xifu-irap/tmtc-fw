@@ -58,10 +58,10 @@ create_clock -period 10  -name virtual_ddr_clk;
 # rename auto-derived clock
 ###############################################################################################################
 # define variables
-set usb_clk_in_pin       [get_pins label_okHost/mmcm0/CLKIN1];
-set usb_clk_out_pin      [get_pins label_okHost/mmcm0/CLKOUT0];
-set ddr_clk_in_pin       [get_pins label_ddr3_256_16/u_ddr3_256_16_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKIN1];
-set ddr_clk_user_out_pin [get_pins label_ddr3_256_16/u_ddr3_256_16_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKFBOUT];
+set usb_clk_in_pin       [get_pins inst_okHost/mmcm0/CLKIN1];
+set usb_clk_out_pin      [get_pins inst_okHost/mmcm0/CLKOUT0];
+set ddr_clk_in_pin       [get_pins inst_ddr3_256_16/u_ddr3_256_16_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKIN1];
+set ddr_clk_user_out_pin [get_pins inst_ddr3_256_16/u_ddr3_256_16_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKFBOUT];
 
 
 # rename clock
@@ -78,8 +78,8 @@ create_generated_clock -name gen_spi_clk -multiply_by 1 -source [get_pins spi_mg
 ###############################################################################################################
 # usb: constraints register/Q on register/clk
 ###############################################################################################################
-set usb_src  [get_pins label_okHost/core0/core0/a0/d0/lc4da648cb12eeeb24e4d199c1195ed93_reg[4]/C];
-set usb_dest [get_pins label_okHost/core0/core0/a0/d0/lc4da648cb12eeeb24e4d199c1195ed93_reg[4]/Q];
+set usb_src  [get_pins inst_okHost/core0/core0/a0/d0/lc4da648cb12eeeb24e4d199c1195ed93_reg[4]/C];
+set usb_dest [get_pins inst_okHost/core0/core0/a0/d0/lc4da648cb12eeeb24e4d199c1195ed93_reg[4]/Q];
 create_generated_clock -name usb_clk_regQ_on_clk_pin -source $usb_src -divide_by 2 $usb_dest;
 
 ###############################################################################################################
