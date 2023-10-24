@@ -379,7 +379,7 @@ begin
   o_cs_n <= cs_n;
 
   -- endianess: swap bytes
-  pipe_in_data_big_endian <= pipe_in_data(7 downto 0)&pipe_in_data(15 downto 8)&pipe_in_data(23 downto 16)&pipe_in_data(31 downto 24);
+  pipe_in_data_big_endian <= pipe_in_data(7 downto 0) & pipe_in_data(15 downto 8) & pipe_in_data(23 downto 16) & pipe_in_data(31 downto 24);
 
 ----------------------------------------------------
 --  OPAL KELLY LEDs
@@ -397,7 +397,7 @@ begin
       if start_detected(0) = '1' then
         start_temp0 <= start_temp0 + 1;
       end if;
-      if cpt0 = 10000000 then
+      if cpt0 = 1000000 then
         if start_temp0 = "0000" then
           led_temp <= '0';
         else
