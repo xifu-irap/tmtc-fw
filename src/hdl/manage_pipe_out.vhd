@@ -49,7 +49,7 @@ entity manage_pipe_out is
     rd_data_count : in std_logic_vector(16 downto 0);
 
     --  ctrl interface
-    ep20wire_three : out std_logic_vector(31 downto 0)
+    ep20wire : out std_logic_vector(31 downto 0)
 
     );
 end entity;
@@ -62,11 +62,11 @@ begin
   p_reshape : process (okClk, reset)
   begin
     if reset = '1' then
-      ep20wire_three <= (others => '0');
+      ep20wire <= (others => '0');
     else
 
       if rising_edge(okClk) then
-        ep20wire_three <= x"0000" & '0' & (rd_data_count(16 downto 2));
+        ep20wire <= x"0000" & '0' & (rd_data_count(16 downto 2));
       end if;
     end if;
   end process p_reshape;

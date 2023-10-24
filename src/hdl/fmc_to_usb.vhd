@@ -31,12 +31,8 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
-
-
 use ieee.numeric_std.all;
 
-
---use work.okLibrary.all;
 library work;
 use work.FRONTPANEL.all;
 use work.science_data_rx_package.all;
@@ -66,8 +62,9 @@ entity fmc_to_usb is
     sys_clkp : in std_logic;            -- input    wire         sys_clkp,
     sys_clkn : in std_logic;            -- input  wire         sys_clkn,
 
+    o_led : out std_logic_vector(3 downto 0);  -- FMC 105 LEDS
+    led   : out std_logic_vector(3 downto 0);  -- Opal Kelly LEDs
 
-    led : out std_logic_vector(3 downto 0);
 
     ddr3_dq      : inout std_logic_vector (DQ_WIDTH-1 downto 0);  -- inout  wire [DQ_WIDTH-1:0]                 ddr3_dq,  //16
     ddr3_addr    : out   std_logic_vector (ROW_WIDTH-1 downto 0);  -- output wire [ROW_WIDTH-1:0]                ddr3_addr,  //15
@@ -85,9 +82,9 @@ entity fmc_to_usb is
     ddr3_dqs_n   : inout std_logic_vector (DQS_WIDTH-1 downto 0);  -- inout  wire [DQS_WIDTH-1:0]                ddr3_dqs_n,
     ddr3_reset_n : out   std_logic;  -- output wire                                ddr3_reset_n
 
-    --  from NG-LARGE
-    clk_science_p : in std_logic_vector(LinkNumber-1 downto 0);
-    clk_science_n : in std_logic_vector(LinkNumber-1 downto 0);
+    --  from DEMUX
+    i_clk_science_p : in std_logic_vector(LinkNumber-1 downto 0);
+    i_clk_science_n : in std_logic_vector(LinkNumber-1 downto 0);
 
     i_science_ctrl_p : in std_logic_vector(LinkNumber-1 downto 0);
     i_science_ctrl_n : in std_logic_vector(LinkNumber-1 downto 0);
@@ -95,12 +92,17 @@ entity fmc_to_usb is
     i_science_data_p : in std_logic_vector(LignNumber-1 downto 0);
     i_science_data_n : in std_logic_vector(LignNumber-1 downto 0);
 
-    -- Paul Test --
-    i_miso   : in  std_logic;
-    o_mosi   : out std_logic;
-    o_sclk   : out std_logic;
-    o_sync_n : out std_logic
+-- Le chip select passe sur 2 bits
+-- Le chip select est renommé en cs_n dans tout le code car il est actif à l'état bas.
+    -- SPI --
+    i_miso : in  std_logic;
+    o_mosi : out std_logic;
+    o_sclk : out std_logic;
+    o_cs_n : out std_logic_vector(1 downto 0);
 
+
+    -- ICU selection : 0 for main, 1 for redundant
+    o_sel_main_n : out std_logic
     );
 end entity;
 
@@ -122,7 +124,7 @@ architecture RTL of fmc_to_usb is
   signal okEH : std_logic_vector(64 downto 0);
 
   --  okWireOR
-  signal okEHx : std_logic_vector(65*11-1 downto 0);
+  signal okEHx : std_logic_vector(65*12-1 downto 0);
 
   -- fifo instrument
   signal read_instrument       : std_logic;
@@ -133,11 +135,10 @@ architecture RTL of fmc_to_usb is
   signal full_fifo_instrument_2 : std_logic;
   signal enable_debug           : std_logic;
 
-  signal valid_fifo_instrument   : std_logic;
-  signal dataout_instrument      : std_logic_vector(127 downto 0);
-  signal dataout_instrument_wire : std_logic_vector(15 downto 0);
-  signal write_instrument        : std_logic;
-  signal load_MSB                : std_logic;
+  signal valid_fifo_instrument : std_logic;
+  signal dataout_instrument    : std_logic_vector(127 downto 0);
+  signal write_instrument      : std_logic;
+  signal load_MSB              : std_logic;
 
   signal data_instrument : std_logic_vector(127 downto 0);
 
@@ -172,37 +173,35 @@ architecture RTL of fmc_to_usb is
 
   --  wire
   signal ep00wire : std_logic_vector(31 downto 0);
+  signal ep01wire : std_logic_vector(31 downto 0);
+  signal ep02wire : std_logic_vector(31 downto 0);
   signal ep20wire : std_logic_vector(31 downto 0);
   signal ep22wire : std_logic_vector(31 downto 0);
+  signal ep23wire : std_logic_vector(31 downto 0);
   signal ep25wire : std_logic_vector(31 downto 0);
   signal ep26wire : std_logic_vector(31 downto 0);
   signal ep27wire : std_logic_vector(31 downto 0);
-  signal ep28wire : std_logic_vector(31 downto 0);
+  signal ep3Ewire : std_logic_vector(31 downto 0);
+  signal ep3Fwire : std_logic_vector(31 downto 0);
 
-  signal ep20wire_one   : std_logic_vector(31 downto 0);
-  signal ep20wire_two   : std_logic_vector(31 downto 0);
-  signal ep20wire_three : std_logic_vector(31 downto 0);
-  signal ep23wire_one   : std_logic_vector(31 downto 0);
-  signal ep23wire_two   : std_logic_vector(31 downto 0);
-  signal ep22wire_one   : std_logic_vector(31 downto 0);
-  signal ep22wire_two   : std_logic_vector(31 downto 0);
-  signal ep24wire_one   : std_logic_vector(31 downto 0);
-  signal ep24wire_two   : std_logic_vector(31 downto 0);
-  signal ep25wire_one   : std_logic_vector(31 downto 0);
-  signal ep25wire_two   : std_logic_vector(31 downto 0);
-  signal ep26wire_one   : std_logic_vector(31 downto 0);
-  signal ep26wire_two   : std_logic_vector(31 downto 0);
-  signal ep27wire_one   : std_logic_vector(31 downto 0);
-  signal ep27wire_two   : std_logic_vector(31 downto 0);
-  signal ep28wire_one   : std_logic_vector(31 downto 0);
-  signal ep28wire_two   : std_logic_vector(31 downto 0);
+  signal ep23wire_one : std_logic_vector(31 downto 0);
+  signal ep23wire_two : std_logic_vector(31 downto 0);
+  signal ep22wire_one : std_logic_vector(31 downto 0);
+  signal ep22wire_two : std_logic_vector(31 downto 0);
+  signal ep25wire_one : std_logic_vector(31 downto 0);
+  signal ep25wire_two : std_logic_vector(31 downto 0);
+  signal ep27wire_one : std_logic_vector(31 downto 0);
+  signal ep27wire_two : std_logic_vector(31 downto 0);
 
   --  ddr3 stamp
-  signal ep23wire                    : std_logic_vector(31 downto 0);
-  signal ep24wire                    : std_logic_vector(31 downto 0);
   signal buffer_new_cmd_byte_addr_rd : std_logic_vector(54 downto 0);
   signal buffer_new_cmd_byte_addr_wr : std_logic_vector(54 downto 0);
   signal Subtraction_addr_wr_addr_rd : std_logic_vector(54 downto 0);
+
+
+-- Ajout d'un signal spi_chipselect_ras qui vient du XIFU Studio par l'USB pour définir
+-- la valeur des chip select DEMUX et RAS de la prochaine commande SPI.
+  signal spi_chipselect_ras : std_logic;
 
   --  ddr3 interconnect
   signal init_calib_complete      : std_logic;
@@ -246,35 +245,17 @@ architecture RTL of fmc_to_usb is
   signal tREFI_std         : std_logic_vector(31 downto 0);
   signal counter_tREFI_std : std_logic_vector(31 downto 0);
 
-  --  refresh process
-  signal tREFI                : integer;
-  signal app_ref_req          : std_logic;
-  signal app_ref_ack          : std_logic;
-  signal app_ref_ack_received : std_logic;
-
-  -- simulate data rate by counter
-  signal simulate_data_instrument : std_logic_vector(31 downto 0);
-  signal timer_instrument         : integer range 0 to 10002;
-
-  signal first_data : std_logic;
-
   -- manage ep20wire
   signal counter_BL_read_DRR3 : std_logic_vector(31 downto 0);
   signal load_ep_wire         : std_logic;
   signal fifo_filled          : std_logic;
-  signal signal_empty_fast    : std_logic;
 
   signal prog_full  : std_logic;
   signal prog_empty : std_logic;
 
-  signal before_prog_full  : std_logic;
-  signal before_prog_empty : std_logic;
-
   --  output
   signal ack_time_out : std_logic;
   signal time_out     : std_logic;
-
-  signal clk_slow : std_logic;
 
   signal signal_read_piper_out : unsigned(31 downto 0);
 
@@ -289,25 +270,8 @@ architecture RTL of fmc_to_usb is
   signal rd_data_count_hk : std_logic_vector(9 downto 0);
 
   --
-  signal init_calib_complete_one  : std_logic;
-  signal init_calib_complete_fast : std_logic;
 
-  signal ep00wire_one  : std_logic;
-  signal ep00wire_fast : std_logic;
-
-  signal start      : std_logic;
-  signal start_one  : std_logic;
-  signal start_fast : std_logic;
-
-  -- NG-LARGE
-  signal start_data_rate : std_logic;
-  signal clk_ng_large    : std_logic;
-  signal clk_ng_large_n  : std_logic;
-  signal ok_pattern      : t_sc_data_w(0 to c_DMX_NB_COL*c_SC_DATA_SER_NB);
-
-  signal i_science_data_tx_ena : std_logic;
-  signal start_pattern         : std_logic;
-  signal data_rate_enable      : std_logic;
+  signal data_rate_enable : std_logic;
 
   -- Paul Part --
   signal i_science_ctrl : std_logic_vector(LinkNumber - 1 downto 0);
@@ -320,6 +284,10 @@ architecture RTL of fmc_to_usb is
   constant c_DAC_SPI_SER_WD_S_V : std_logic_vector(c_SPI_SER_WD_S_V_S-1 downto 0) :=
     std_logic_vector(to_unsigned(c_DAC_SPI_SER_WD_S, c_SPI_SER_WD_S_V_S));  --! DAC SPI: Serial word size vector
   signal pipe_in_data_big_endian : std_logic_vector(31 downto 0);
+  signal sync_n                  : std_logic;
+  signal cs_n                    : std_logic_vector(o_cs_n'range);
+
+  signal sel_main_n : std_logic;
 
 
   attribute ASYNC_REG                 : string;
@@ -329,18 +297,11 @@ architecture RTL of fmc_to_usb is
   attribute ASYNC_REG of ep22wire_one : signal is "TRUE";
   attribute ASYNC_REG of ep22wire_two : signal is "TRUE";
 
-  attribute ASYNC_REG of ep24wire_one : signal is "TRUE";
-  attribute ASYNC_REG of ep24wire_two : signal is "TRUE";
-
   attribute ASYNC_REG of ep25wire_one : signal is "TRUE";
   attribute ASYNC_REG of ep25wire_two : signal is "TRUE";
 
   attribute ASYNC_REG of ep27wire_one : signal is "TRUE";
   attribute ASYNC_REG of ep27wire_two : signal is "TRUE";
-
-  attribute ASYNC_REG of ep28wire_one : signal is "TRUE";
-  attribute ASYNC_REG of ep28wire_two : signal is "TRUE";
-
 
 
   signal cnt_r1 : unsigned(26 downto 0) := (others => '0');
@@ -382,10 +343,18 @@ begin
         IOSTANDARD   => "DEFAULT")
       port map (
         O  => clk_science(i),           -- Buffer output
-        I  => clk_science_p(i),  -- Diff_p buffer input (connect directly to top-level port)
-        IB => clk_science_n(i)  -- Diff_n buffer input (connect directly to top-level port)
+        I  => i_clk_science_p(i),  -- Diff_p buffer input (connect directly to top-level port)
+        IB => i_clk_science_n(i)  -- Diff_n buffer input (connect directly to top-level port)
         );
   end generate;
+
+-- Gestion de o_cs_n sur 2 bits
+-- le spi_chipselect_ras est utilisé pour "orienter" le o_sync_n vers le DEMUX ou le RAS
+-- si spi_chipselect_ras = 1 on sélectionne le RAS
+
+----------------------------------------------------
+--  SPI
+----------------------------------------------------
 
   inst_spi_mgt : entity work.spi_mgt
     port map(
@@ -400,14 +369,20 @@ begin
       o_data       => pipe_out_data_hk,
       o_mosi       => o_mosi,
       o_sclk       => o_sclk,
-      o_sync_n     => o_sync_n
+      o_sync_n     => sync_n
       );
+
+  cs_n(0) <= sync_n or not spi_chipselect_ras;  -- Chip select _n for RAS
+  cs_n(1) <= sync_n or spi_chipselect_ras;      -- Chip select _n for DEMUX
+
+  -- output
+  o_cs_n <= cs_n;
 
   -- endianess: swap bytes
   pipe_in_data_big_endian <= pipe_in_data(7 downto 0)&pipe_in_data(15 downto 8)&pipe_in_data(23 downto 16)&pipe_in_data(31 downto 24);
 
 ----------------------------------------------------
---  LED
+--  OPAL KELLY LEDs
 --    inversed logical:
 --      led off: led <= '1';
 --      led on:  led <= '0';
@@ -476,6 +451,27 @@ begin
 --  RESET
 ----------------------------------------------------
   usb_rst <= ep00wire(0);
+
+-- Sortie des chip select sur 2 leds
+
+----------------------------------------------------
+--  FMC 105 LEDs
+----------------------------------------------------
+  p_leds : process (okClk, usb_rst)
+  begin
+    if usb_rst = '1' then
+      o_led(0) <= '0';
+      o_led(1) <= '0';
+      o_led(2) <= '0';
+      o_led(3) <= '0';
+    elsif rising_edge(okClk)then
+      o_led(0) <= '1';
+      o_led(1) <= cs_n(0);
+      o_led(2) <= cs_n(1);
+      o_led(3) <= sel_main_n;
+    end if;
+  end process;
+
 
 ----------------------------------------------------
 --  Controller DDR3
@@ -630,13 +626,15 @@ begin
       rd_data_count => rd_data_count,
 
       --  ctrl interface
-      ep20wire_three => ep20wire_three
+
+      ep20wire => ep20wire
 
       );
 
 -- ----------------------------------------------------
 -- meta wire out
 -- ----------------------------------------------------
+-- resynchronized register
   p_synchronized_register : process (okClk, usb_rst)
   begin
     if usb_rst = '1' then
@@ -645,14 +643,11 @@ begin
       ep23wire_two <= (others => '0');
       ep22wire_one <= (others => '0');
       ep22wire_two <= (others => '0');
-      ep24wire_one <= (others => '0');
-      ep24wire_two <= (others => '0');
+
       ep25wire_one <= (others => '0');
       ep25wire_two <= (others => '0');
       ep27wire_one <= (others => '0');
       ep27wire_two <= (others => '0');
-      ep28wire_one <= (others => '0');
-      ep28wire_two <= (others => '0');
 
     else
       if rising_edge (okClk) then
@@ -663,17 +658,11 @@ begin
         ep22wire_one <= ep22wire;
         ep22wire_two <= ep22wire_one;
 
-        ep24wire_one <= ep24wire;
-        ep24wire_two <= ep24wire_one;
-
         ep25wire_one <= ep25wire;
         ep25wire_two <= ep25wire_one;
 
         ep27wire_one <= ep27wire;
         ep27wire_two <= ep27wire_one;
-
-        ep28wire_one <= ep28wire;
-        ep28wire_two <= ep28wire_one;
 
       end if;
     end if;
@@ -698,7 +687,7 @@ begin
 ----------------------------------------------------
 --  ok wire OR
 ----------------------------------------------------
-  inst_okWireOR : okWireOR generic map (N => 11)
+  inst_okWireOR : okWireOR generic map (N => 12)
     port map (
       okEH  => okEH,
       okEHx => okEHx
@@ -714,16 +703,48 @@ begin
       ep_dataout => ep00wire
       );
 
+
+-- Le signal spi_chipselect_ras est reçu sur le wire x"01"
+-- La valeur au reset est fixée à: spi_chipselect_ras = '1'
+-- Relecture du spi_chipselect_ras sur le wire x"24"
+  label_okWireIn_chipselect : okWireIn
+    port map (
+      okHE       => okHE,
+      ep_addr    => x"01",
+      ep_dataout => ep01wire
+      );
+
+  label_okWireIn_icu_main : okWireIn
+    port map (
+      okHE       => okHE,
+      ep_addr    => x"02",
+      ep_dataout => ep02wire
+      );
+
+  p_defaults : process (okClk, usb_rst)
+  begin
+    if usb_rst = '1' then
+      spi_chipselect_ras <= '1';
+      sel_main_n         <= '0';
+    elsif rising_edge(okClk)then
+      spi_chipselect_ras <= ep01wire(0);
+      sel_main_n         <= ep02wire(0);
+    end if;
+  end process;
+
+  o_sel_main_n <= sel_main_n;
+
 ----------------------------------------------------
 --  ok wire out
 ----------------------------------------------------
-  inst_okWireOut : okWireOut
+  inst_okWireOut_spi_chipselect_ras : okWireOut
     port map (
       okHE      => okHE,
       okEH      => okEHx(1*65-1 downto 0*65),
       ep_addr   => x"24",
-      ep_datain => ep24wire_two
+      ep_datain => ep01wire
       );
+
 
 ----------------------------------------------------
 --  ok pipe out
@@ -769,11 +790,11 @@ begin
       okHE      => okHE,
       okEH      => okEHx(5*65-1 downto 4*65),
       ep_addr   => x"21",
-      ep_datain => ep20wire_three
+      ep_datain => ep20wire
       );
 
 ----------------------------------------------------
---  ok wire out ddr3 stamp msb
+--  ok wire out debug
 ----------------------------------------------------
   inst_okWireOut_debug : okWireOut
     port map (
@@ -806,15 +827,34 @@ begin
       );
 
 ----------------------------------------------------
---  ok wire debug
+--  ok wire firmware_name
 ----------------------------------------------------
-  inst_okWireOut_debug2 : okWireOut
+-- Ajout de la gestion du firmware name
+  ep3Ewire <= x"544D5443"; -- TMTC: hex ASCII CODE
+
+  inst_okWireOut_fw_name : okWireOut
     port map (
       okHE      => okHE,
       okEH      => okEHx(9*65-1 downto 8*65),
-      ep_addr   => x"28",
-      ep_datain => ep28wire_two
+      ep_addr   => x"3E",
+      ep_datain => ep3Ewire
       );
+
+
+----------------------------------------------------
+--  ok wire firmware_id
+----------------------------------------------------
+-- Ajout de la gestion du firmware id
+  ep3Fwire <= x"00000011";
+
+  inst_okWireOut_fw_id : okWireOut
+    port map (
+      okHE      => okHE,
+      okEH      => okEHx(10*65-1 downto 9*65),
+      ep_addr   => x"3F",
+      ep_datain => ep3Fwire
+      );
+
 
 ----------------------------------------------------
 --  ok pipe out hk
@@ -822,7 +862,7 @@ begin
   inst_okPipeOut_hk : okPipeOut         --okBTPipeOut
     port map (
       okHE      => okHE,
-      okEH      => okEHx(10*65-1 downto 9*65),
+      okEH      => okEHx(11*65-1 downto 10*65),
       ep_addr   => x"A1",
       ep_read   => po0_ep_read_hk,
       ep_datain => po0_ep_datain_hk
@@ -834,7 +874,7 @@ begin
   inst_okPipeIn : okPipeIn              --okBTPipeIn
     port map (
       okHE       => okHE,
-      okEH       => okEHx(11*65-1 downto 10*65),
+      okEH       => okEHx(12*65-1 downto 11*65),
       ep_addr    => x"80",
       ep_write   => pi0_ep_write,
       ep_dataout => pi0_ep_dataout
@@ -921,7 +961,6 @@ begin
       valid         => valid_fifo_instrument,
       rd_data_count => open,            --// Bus [7 : 0]
       wr_data_count => open,            --// Bus [9 : 0]
---  prog_full     =>  prog_full,
       prog_empty    => prog_empty
 
 
@@ -978,7 +1017,6 @@ begin
       );
 
   ep27wire <= "00000000000000000"&wr_data_count;
-  ep28wire <= "0000000000000000"&dataout_instrument_wire;
 
 ---------------------------------------------------------------
 --  Pipe out fifo  hk
