@@ -42,8 +42,8 @@ create_clock -period 9.920 -name usb_clk_in [get_ports {okUH[0]}];
 create_clock -name virt_usb_clk_in -period 9.920;
 
  # 62.5 MHz
-create_clock -period 16 -name science_clk1 [get_ports {clk_science_p[0]}];
-create_clock -period 16 -name science_clk2 [get_ports {clk_science_p[1]}];
+create_clock -period 16 -name science_clk1 [get_ports {i_clk_science_p[0]}];
+create_clock -period 16 -name science_clk2 [get_ports {i_clk_science_p[1]}];
 
 # science
 #    create the associated virtual input clock to science_clk1 and science_clk2
@@ -72,7 +72,7 @@ create_generated_clock -name ddr_user_clk  -source $ddr_clk_in_pin $ddr_clk_user
 ###############################################################################################################
 # ODDR : forward clock
 ###############################################################################################################
-create_generated_clock -name gen_spi_clk -multiply_by 1 -source [get_pins spi_mgt1/I_dac_spi_master/o_sclk/C] [get_ports {o_sclk}]
+create_generated_clock -name gen_spi_clk -multiply_by 1 -source [get_pins inst_spi_mgt/inst_dac_spi_master/o_sclk*/C] [get_ports {o_sclk}]
 
 
 ###############################################################################################################
@@ -204,7 +204,7 @@ set tsu          1;           # destination device setup time requirement
 set thd          1;           # destination device hold time requirement
 set trce_dly_max 0.000;            # maximum board trace delay
 set trce_dly_min 0.000;            # minimum board trace delay
-set output_ports {o_mosi o_sync_n};   # list of output ports
+set output_ports {o_mosi o_cs_n};   # list of output ports
 
 # Output Delay Constraints
 set_output_delay -clock $fwclk -max [expr $trce_dly_max + $tsu] [get_ports $output_ports];
@@ -304,8 +304,8 @@ set_input_delay -clock $input_clock -min $dv_are                              [g
 
 
 # Force the MMCM placement
-set_property LOC MMCME2_ADV_X1Y1 [get_cells -hier -filter {NAME =~ *u_ddr3_256_16_mig/u_iodelay_ctrl/clk_ref_mmcm_gen.mmcm_i}]
-set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_pins -hierarchical *clk_ref_mmcm_gen.mmcm_i*CLKIN1]
+# set_property LOC MMCME2_ADV_X1Y1 [get_cells -hier -filter {NAME =~ *u_ddr3_256_16_mig/u_iodelay_ctrl/clk_ref_mmcm_gen.mmcm_i}]
+# set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_pins -hierarchical *clk_ref_mmcm_gen.mmcm_i*CLKIN1]
 
 # constraints ddr sys_rst reset (input reset)
 set_max_delay -from [get_clocks usb_clk] -to [get_clocks ddr_user_clk] -datapath_only 5.0; #200 MHz
@@ -358,6 +358,8 @@ set_false_path -hold   -fall_from [get_clocks virtual_ddr_clk] -rise_to [get_clo
 # others (input ports): asynchronuous ports
 ##################################################################################
 set_false_path -to   [get_ports "led*"];
+set_false_path -to   [get_ports "o_led*"];
+set_false_path -to   [get_ports "o_sel_main_n"];
 
 ##################################################################################
 # SPI: IO
@@ -368,7 +370,7 @@ set_property IOB true [get_ports o_mosi];
 set_property IOB true [get_ports o_sclk];
 set_property IOB true [get_ports i_miso];
 # cs
-set_property IOB true [get_ports o_sync_n];
+set_property IOB true [get_ports o_cs_n];
 
 
 ##################################################################################
