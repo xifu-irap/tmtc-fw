@@ -873,7 +873,7 @@ begin
 --  ok wire firmware_id
 ----------------------------------------------------
 -- Ajout de la gestion du firmware id
-  ep3Fwire <= x"00000011";
+  ep3Fwire <= std_logic_vector(to_unsigned(16#11#,ep3Fwire'length)); -- 0x11
 
   inst_okWireOut_fw_id : okWireOut
     port map (
