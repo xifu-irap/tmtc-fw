@@ -38,14 +38,14 @@ use work.science_data_rx_package.all;
 entity science_data_rx is
   port (
     reset_n       : in std_logic;
-    i_clk_science : in std_logic_vector(LinkNumber-1 downto 0);
+    i_clk_science : in std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
     -- test signal --
-    start_detected : out std_logic_vector(LinkNumber-1 downto 0);
+    start_detected : out std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
     -- Link
-    i_science_ctrl   : in std_logic_vector((ColNumber/2)-1 downto 0);
-    i_science_data   : in std_logic_vector(LignNumber-1 downto 0);
+    i_science_ctrl   : in std_logic_vector((pkg_COL_NUMBER/2)-1 downto 0);
+    i_science_data   : in std_logic_vector(pkg_LINE_NUMBER-1 downto 0);
     data_rate_enable : in std_logic;
 
     --  fifo
@@ -58,42 +58,42 @@ end science_data_rx;
 
 architecture RTL of science_data_rx is
 
-  signal cpt_fifo   : integer;
-  signal cpt_frame  : integer;
-  signal write_data : std_logic;
+  signal cpt_fifo_r1   : integer;
+  signal cpt_frame_r1  : integer;
+  signal write_data_r1 : std_logic;
 
   signal data_out   : t_ARRAY8bits;
   signal CTRL       : t_ARRAY8bits_ctrl;
-  signal data_ready : std_logic_vector((ColNumber/2)-1 downto 0);
+  signal data_ready : std_logic_vector((pkg_COL_NUMBER/2)-1 downto 0);
 
 --- Register ----
-  signal reg_ctrl        : t_ARRAY8bits_ctrl;
-  signal reg_ctrl_r      : t_ARRAY8bits_ctrl;
-  signal reg_ctrl_rr     : t_ARRAY8bits_ctrl;
-  signal reg_data_ready  : std_logic_vector (LinkNumber-1 downto 0);
-  signal reg_data_out    : t_ARRAY8bits;
-  signal reg_data_out_r  : t_ARRAY8bits;
-  signal reg_data_out_rr : t_ARRAY8bits;
-  signal frame           : t_ARRAY96bits(0 to 3);
-  signal frame_fifo      : t_ARRAY128bits (0 to 2);
+  signal ctrl_r1         : t_ARRAY8bits_ctrl;
+  signal reg_ctrl_r2     : t_ARRAY8bits_ctrl;
+  signal reg_ctrl_r3     : t_ARRAY8bits_ctrl;
+  signal data_ready_r1   : std_logic_vector (pkg_LINK_NUMBER-1 downto 0);
+  signal data_out_r1     : t_ARRAY8bits;
+  signal reg_data_out_r2 : t_ARRAY8bits;
+  signal reg_data_out_r3 : t_ARRAY8bits;
+  signal frame_r4        : t_ARRAY96bits(0 to 3);
+  signal frame_fifo_r5   : t_ARRAY128bits (0 to 2);
 
 -- Resynchro signal --
-  signal start_maker : std_logic;
-  signal cpt_synchro : std_logic_vector(1 downto 0);
+  signal start_maker_r1 : std_logic;
+  signal cpt_synchro_r1 : std_logic_vector(1 downto 0);
 
   attribute ASYNC_REG                    : string;
-  attribute ASYNC_REG of reg_ctrl_r      : signal is "TRUE";
-  attribute ASYNC_REG of reg_ctrl_rr     : signal is "TRUE";
-  attribute ASYNC_REG of reg_data_out_r  : signal is "TRUE";
-  attribute ASYNC_REG of reg_data_out_rr : signal is "TRUE";
+  attribute ASYNC_REG of reg_ctrl_r2     : signal is "TRUE";
+  attribute ASYNC_REG of reg_ctrl_r3     : signal is "TRUE";
+  attribute ASYNC_REG of reg_data_out_r2 : signal is "TRUE";
+  attribute ASYNC_REG of reg_data_out_r3 : signal is "TRUE";
 
 begin
 
   -- ------------------------------------------------------------------------------------------------------
   --   deserialyze data
   -- ------------------------------------------------------------------------------------------------------
-  gen_science_data_rx_fsm : for I in LinkNumber - 1 downto 0 generate
-    gen_science_data_rx_fsm_link : for N in (LignNumber/2)-1 downto 0 generate
+  gen_science_data_rx_fsm : for I in pkg_LINK_NUMBER - 1 downto 0 generate
+    gen_science_data_rx_fsm_link : for N in (pkg_LINE_NUMBER/2)-1 downto 0 generate
       inst_science_data_rx_fsm : entity work.science_data_rx_fsm
         port map (
 
@@ -107,8 +107,8 @@ begin
           i_science_data => i_science_data(4*I+N),
 
           -- deserialize
-          CTRL     => open,
-          data_out => data_out(4*I+N),
+          CTRL       => open,
+          data_out   => data_out(4*I+N),
           data_ready => open
           );
     end generate gen_science_data_rx_fsm_link;
@@ -117,7 +117,7 @@ begin
   -- ------------------------------------------------------------------------------------------------------
   --   deserialyze CTRL and generate ready
   -- ------------------------------------------------------------------------------------------------------
-  gen_science_ctrl_rx_fsm : for N in LinkNumber-1 downto 0 generate
+  gen_science_ctrl_rx_fsm : for N in pkg_LINK_NUMBER-1 downto 0 generate
     inst_ctrl_rx_fsm : entity work.ctrl_rx_fsm
       port map (
         -- global
@@ -138,26 +138,26 @@ begin
   -- ------------------------------------------------------------------------------------------------------
   --   Register to maintain the value
   -- ------------------------------------------------------------------------------------------------------
-  gen_reg : for N in LinkNumber-1 downto 0 generate
+  gen_reg : for N in pkg_LINK_NUMBER-1 downto 0 generate
     p_ctrl_register : process (reset_n, i_clk_science(N))
     begin
       if reset_n = '0' then
-        reg_ctrl(N)         <= (others => '0');
-        reg_data_ready(N)   <= '0';
-        reg_data_out(4*N)   <= (others => '0');
-        reg_data_out(4*N+1) <= (others => '0');
-        reg_data_out(4*N+2) <= (others => '0');
-        reg_data_out(4*N+3) <= (others => '0');
+        ctrl_r1(N)         <= (others => '0');
+        data_ready_r1(N)   <= '0';
+        data_out_r1(4*N)   <= (others => '0');
+        data_out_r1(4*N+1) <= (others => '0');
+        data_out_r1(4*N+2) <= (others => '0');
+        data_out_r1(4*N+3) <= (others => '0');
       elsif rising_edge(i_clk_science(N)) then
         if data_ready(N) = '1' then
-          reg_ctrl(N)         <= CTRL(N);
-          reg_data_ready(N)   <= data_ready(N);
-          reg_data_out(4*N)   <= data_out(4*N);
-          reg_data_out(4*N+1) <= data_out(4*N+1);
-          reg_data_out(4*N+2) <= data_out(4*N+2);
-          reg_data_out(4*N+3) <= data_out(4*N+3);
-        elsif cpt_synchro = "10" then
-          reg_data_ready(N) <= '0';
+          ctrl_r1(N)         <= CTRL(N);
+          data_ready_r1(N)   <= data_ready(N);
+          data_out_r1(4*N)   <= data_out(4*N);
+          data_out_r1(4*N+1) <= data_out(4*N+1);
+          data_out_r1(4*N+2) <= data_out(4*N+2);
+          data_out_r1(4*N+3) <= data_out(4*N+3);
+        elsif cpt_synchro_r1 = "10" then
+          data_ready_r1(N) <= '0';
         end if;
       end if;
     end process p_ctrl_register;
@@ -169,24 +169,24 @@ begin
   p_sync_link : process (reset_n, i_clk_science(0))
   begin
     if reset_n = '0' then
-      reg_ctrl_r      <= (others => (others => '0'));
-      reg_ctrl_rr     <= (others => (others => '0'));
-      reg_data_out_r  <= (others => (others => '0'));
-      reg_data_out_rr <= (others => (others => '0'));
-      start_maker     <= '0';
-      cpt_synchro     <= "00";
+      reg_ctrl_r2     <= (others => (others => '0'));
+      reg_ctrl_r3     <= (others => (others => '0'));
+      reg_data_out_r2 <= (others => (others => '0'));
+      reg_data_out_r3 <= (others => (others => '0'));
+      start_maker_r1  <= '0';
+      cpt_synchro_r1  <= "00";
     elsif rising_edge(i_clk_science(0)) then
-      start_maker <= '0';
-      if reg_data_ready = (reg_data_ready'range => '1') then
-        cpt_synchro     <= std_logic_vector(unsigned(cpt_synchro) + 1);
-        reg_ctrl_r      <= reg_ctrl;
-        reg_ctrl_rr     <= reg_ctrl_r;
-        reg_data_out_r  <= reg_data_out;
-        reg_data_out_rr <= reg_data_out_r;
+      start_maker_r1 <= '0';
+      if data_ready_r1 = (data_ready_r1'range => '1') then
+        cpt_synchro_r1  <= std_logic_vector(unsigned(cpt_synchro_r1) + 1);
+        reg_ctrl_r2     <= ctrl_r1;
+        reg_ctrl_r3     <= reg_ctrl_r2;
+        reg_data_out_r2 <= data_out_r1;
+        reg_data_out_r3 <= reg_data_out_r2;
       end if;
-      if cpt_synchro = "10" then
-        start_maker <= '1';
-        cpt_synchro <= "00";
+      if cpt_synchro_r1 = "10" then
+        start_maker_r1 <= '1';
+        cpt_synchro_r1 <= "00";
       end if;
     end if;
   end process p_sync_link;
@@ -194,33 +194,33 @@ begin
   p_frame_build : process(reset_n, i_clk_science(0))
   begin
     if reset_n = '0' then
-      frame              <= (others => (others => '0'));
-      frame_fifo         <= (others => (others => '0'));
+      frame_r4           <= (others => (others => '0'));
+      frame_fifo_r5      <= (others => (others => '0'));
       dataout_instrument <= (others => '0');
       write_instrument   <= '0';
-      write_data         <= '0';
-      cpt_frame          <= 0;
-      cpt_fifo           <= 0;
+      write_data_r1      <= '0';
+      cpt_frame_r1       <= 0;
+      cpt_fifo_r1        <= 0;
     elsif rising_edge(i_clk_science(0)) then
-      if start_maker = '1' then
-        cpt_frame        <= cpt_frame + 1;
-        frame(cpt_frame) <= x"AAAA" & reg_ctrl_rr(0) & reg_ctrl_rr(1) & reg_data_out_rr(0) & reg_data_out_rr(1) & reg_data_out_rr(2) & reg_data_out_rr(3) & reg_data_out_rr(4) & reg_data_out_rr(5) & reg_data_out_rr(6) & reg_data_out_rr(7);
+      if start_maker_r1 = '1' then
+        cpt_frame_r1           <= cpt_frame_r1 + 1;
+        frame_r4(cpt_frame_r1) <= x"AAAA" & reg_ctrl_r3(0) & reg_ctrl_r3(1) & reg_data_out_r3(0) & reg_data_out_r3(1) & reg_data_out_r3(2) & reg_data_out_r3(3) & reg_data_out_r3(4) & reg_data_out_r3(5) & reg_data_out_r3(6) & reg_data_out_r3(7);
       end if;
-      if cpt_frame = 4 then
-        cpt_frame     <= 0;
-        frame_fifo(0) <= frame(0) & frame(1)(95 downto 64);
-        frame_fifo(1) <= frame(1)(63 downto 0) & frame(2)(95 downto 32);
-        frame_fifo(2) <= frame(2)(31 downto 0) & frame(3);
-        write_data    <= '1';
+      if cpt_frame_r1 = 4 then
+        cpt_frame_r1     <= 0;
+        frame_fifo_r5(0) <= frame_r4(0) & frame_r4(1)(95 downto 64);
+        frame_fifo_r5(1) <= frame_r4(1)(63 downto 0) & frame_r4(2)(95 downto 32);
+        frame_fifo_r5(2) <= frame_r4(2)(31 downto 0) & frame_r4(3);
+        write_data_r1    <= '1';
       end if;
-      if write_data = '1' and cpt_fifo < 3 then
-        cpt_fifo           <= cpt_fifo + 1;
-        dataout_instrument <= frame_fifo(cpt_fifo);
+      if write_data_r1 = '1' and cpt_fifo_r1 < 3 then
+        cpt_fifo_r1        <= cpt_fifo_r1 + 1;
+        dataout_instrument <= frame_fifo_r5(cpt_fifo_r1);
         write_instrument   <= '1';
       end if;
-      if cpt_fifo = 3 then
-        write_data       <= '0';
-        cpt_fifo         <= 0;
+      if cpt_fifo_r1 = 3 then
+        write_data_r1    <= '0';
+        cpt_fifo_r1      <= 0;
         write_instrument <= '0';
       end if;
     end if;

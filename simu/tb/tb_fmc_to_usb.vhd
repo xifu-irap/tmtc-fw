@@ -87,12 +87,12 @@ architecture Simulation of tb_fmc_to_usb is
   signal tdqs_n           : std_logic_vector (DQS_WIDTH-1 downto 0);  -- not used
   signal ddr3_reset_n     : std_logic;
   --  from NG-LARGE
-  signal clk_science_p    : std_logic_vector(LinkNumber-1 downto 0);
-  signal clk_science_n    : std_logic_vector(LinkNumber-1 downto 0);
-  signal i_science_ctrl_p : std_logic_vector(LinkNumber-1 downto 0);
-  signal i_science_ctrl_n : std_logic_vector(LinkNumber-1 downto 0);
-  signal i_science_data_p : std_logic_vector(LignNumber-1 downto 0);
-  signal i_science_data_n : std_logic_vector(LignNumber-1 downto 0);
+  signal clk_science_p    : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
+  signal clk_science_n    : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
+  signal i_science_ctrl_p : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
+  signal i_science_ctrl_n : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
+  signal i_science_data_p : std_logic_vector(pkg_LINE_NUMBER-1 downto 0);
+  signal i_science_data_n : std_logic_vector(pkg_LINE_NUMBER-1 downto 0);
   -- Paul Test --
   signal i_miso           : std_logic;
   signal o_mosi           : std_logic;

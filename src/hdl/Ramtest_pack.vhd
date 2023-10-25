@@ -40,21 +40,21 @@ use ieee.std_logic_1164.all;
 package Ramtest_pack is
 
 
-  constant BANK_WIDTH   : integer := 3;  -- --// # of memory Bank Address bits.
-  constant CK_WIDTH     : integer := 1;
-  constant CS_WIDTH     : integer := 1;
-  constant nCS_PER_RANK : integer := 1;
-  constant CKE_WIDTH    : integer := 1;
-  constant DM_WIDTH     : integer := 2;
-  constant DQ_WIDTH     : integer := 16;
-  constant DQS_WIDTH    : integer := 2;
+  constant pkg_BANK_WIDTH   : integer := 3;  -- --// # of memory Bank Address bits.
+  constant pkg_CK_WIDTH     : integer := 1;
+  constant pkg_CS_WIDTH     : integer := 1;
+  constant pkg_nCS_PER_RANK : integer := 1;
+  constant pkg_CKE_WIDTH    : integer := 1;
+  constant pkg_DM_WIDTH     : integer := 2;
+  constant pkg_DQ_WIDTH     : integer := 16;
+  constant pkg_DQS_WIDTH    : integer := 2;
 
-  constant ROW_WIDTH   : integer := 15;
-  constant ADDR_WIDTH  : integer := 29;
-  constant nCK_PER_CLK : integer := 4;
+  constant pkg_ROW_WIDTH   : integer := 15;
+  constant pkg_ADDR_WIDTH  : integer := 29;
+  constant pkg_nCK_PER_CLK : integer := 4;
 
-  constant APP_DATA_WIDTH : integer := 128;  -- 2 * nCK_PER_CLK * PAYLOAD_WIDTH;
-  constant APP_MASK_WIDTH : integer := 16;   -- APP_DATA_WIDTH / 8;
+  constant pkg_APP_DATA_WIDTH : integer := 128;  -- 2 * nCK_PER_CLK * PAYLOAD_WIDTH;
+  constant pkg_APP_MASK_WIDTH : integer := 16;   -- APP_DATA_WIDTH / 8;
 
   -- =============================================================
   function endian64(rhs : std_logic_vector(63 downto 0)) return std_logic_vector;

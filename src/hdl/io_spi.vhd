@@ -169,8 +169,8 @@ begin
       o_data => data_pipe_tmp3          -- output data with/without delay
       );
 
-    o_spi_mosi <= data_pipe_tmp3(c_IDX1_H);
-    o_spi_cs_n <= data_pipe_tmp3(c_IDX0_H downto c_IDX0_L);
+  o_spi_mosi <= data_pipe_tmp3(c_IDX1_H);
+  o_spi_cs_n <= data_pipe_tmp3(c_IDX0_H downto c_IDX0_L);
 
 
 end architecture RTL;

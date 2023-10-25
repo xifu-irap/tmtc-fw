@@ -55,26 +55,26 @@ end science_data_rx_fsm;
 
 architecture Behavioral of science_data_rx_fsm is
 
-  type T_Rx_State is (Wait_First_start, Wait_Second_start, Wait_Third_start, decode);
-  signal Rx_State : T_Rx_State;
+  type t_rx_state is (E_WAIT1_START, E_WAIT2_START, E_WAIT3_START, E_DECODE);
+  signal sm_rx_state_r1 : t_rx_state;
 
-  signal N              : integer range 0 to 5;
+  signal N_r1 : integer range 0 to 5;
 
 
-  signal science_ctrl_FFF  : std_logic;
-  signal i_science_ctrl_FF : std_logic;
-  signal science_ctrl      : std_logic;
+  signal science_ctrl_r2 : std_logic;
+  signal science_ctrl_r1 : std_logic;
+  signal science_ctrl_r3 : std_logic;
 
-  signal science_data_FFF  : std_logic;
-  signal i_science_data_FF : std_logic;
-  signal science_data      : std_logic;
+  signal science_data_r2 : std_logic;
+  signal science_data_r1 : std_logic;
+  signal science_data_r3 : std_logic;
 
-  attribute ASYNC_REG                      : string;
-  attribute ASYNC_REG of i_science_ctrl_FF : signal is "TRUE";
-  attribute ASYNC_REG of science_ctrl_FFF  : signal is "TRUE";
+  attribute ASYNC_REG                    : string;
+  attribute ASYNC_REG of science_ctrl_r1 : signal is "TRUE";
+  attribute ASYNC_REG of science_ctrl_r2 : signal is "TRUE";
 
-  attribute ASYNC_REG of science_data_FFF  : signal is "TRUE";
-  attribute ASYNC_REG of i_science_data_FF : signal is "TRUE";
+  attribute ASYNC_REG of science_data_r2 : signal is "TRUE";
+  attribute ASYNC_REG of science_data_r1 : signal is "TRUE";
 
 begin
 
@@ -84,11 +84,11 @@ begin
   p_meta_ctrl : process(reset_n, i_clk_science)
   begin
     if reset_n = '0' then
-      i_science_ctrl_FF <= '0';
+      science_ctrl_r1 <= '0';
     else
       if i_clk_science = '1' and i_clk_science'event then
-        i_science_ctrl_FF <= i_science_ctrl;
-        science_ctrl_FFF  <= i_science_ctrl_FF;
+        science_ctrl_r1 <= i_science_ctrl;
+        science_ctrl_r2 <= science_ctrl_r1;
       end if;
     end if;
   end process p_meta_ctrl;
@@ -99,11 +99,11 @@ begin
   p_meta_data : process(reset_n, i_clk_science)
   begin
     if reset_n = '0' then
-      i_science_data_FF <= '0';
+      science_data_r1 <= '0';
     else
       if i_clk_science = '1' and i_clk_science'event then
-        i_science_data_FF <= i_science_data;
-        science_data_FFF  <= i_science_data_FF;
+        science_data_r1 <= i_science_data;
+        science_data_r2 <= science_data_r1;
       end if;
     end if;
   end process p_meta_data;
@@ -114,13 +114,13 @@ begin
   p_data_rate : process(reset_n, i_clk_science)
   begin
     if reset_n = '0' then
-      science_ctrl <= '0';
-      science_data <= '0';
+      science_ctrl_r3 <= '0';
+      science_data_r3 <= '0';
     else
       if i_clk_science = '1' and i_clk_science'event then
         if data_rate_enable = '1' then
-          science_ctrl <= science_ctrl_FFF;
-          science_data <= science_data_FFF;
+          science_ctrl_r3 <= science_ctrl_r2;
+          science_data_r3 <= science_data_r2;
         end if;
       end if;
     end if;
@@ -135,8 +135,8 @@ begin
   begin
 
     if reset_n = '0' then
-      Rx_State       <= Wait_First_start;
-      N              <= 0;
+      sm_rx_state_r1 <= E_WAIT1_START;
+      N_r1           <= 0;
       data_out       <= (others => '0');
       data_ready     <= '0';
       CTRL           <= (others => '0');
@@ -144,49 +144,49 @@ begin
       if i_clk_science = '1' and i_clk_science'event then
         data_ready <= '0';
 
-        case Rx_State is
+        case sm_rx_state_r1 is
 
-          when Wait_First_start =>
-            if science_ctrl = '0' then
-              Rx_State <= Wait_Second_start;
+          when E_WAIT1_START =>
+            if science_ctrl_r3 = '0' then
+              sm_rx_state_r1 <= E_WAIT2_START;
             else
-              Rx_State <= Wait_First_start;
+              sm_rx_state_r1 <= E_WAIT1_START;
             end if;
 
-          when Wait_Second_start =>
-            if science_ctrl = '1' then
-              Rx_State    <= Wait_Third_start;
-              data_out(7) <= science_data;
-              CTRL(7)     <= science_ctrl;
+          when E_WAIT2_START =>
+            if science_ctrl_r3 = '1' then
+              sm_rx_state_r1 <= E_WAIT3_START;
+              data_out(7)    <= science_data_r3;
+              CTRL(7)        <= science_ctrl_r3;
             else
-              Rx_State <= Wait_Second_start;
+              sm_rx_state_r1 <= E_WAIT2_START;
             end if;
 
-          when Wait_Third_start =>
-            if science_ctrl = '1' then
-              Rx_State       <= decode;
-              data_out(6)    <= science_data;
-              CTRL(6)        <= science_ctrl;
-              N              <= 5;
+          when E_WAIT3_START =>
+            if science_ctrl_r3 = '1' then
+              sm_rx_state_r1 <= E_DECODE;
+              data_out(6)    <= science_data_r3;
+              CTRL(6)        <= science_ctrl_r3;
+              N_r1           <= 5;
             else
-              Rx_State <= Wait_Second_start;
+              sm_rx_state_r1 <= E_WAIT2_START;
             end if;
 
 
-          when decode =>
-            if N = 0 then
+          when E_DECODE =>
+            if N_r1 = 0 then
               data_ready     <= '1';
-              data_out(N)    <= science_data;
-              CTRL(N)        <= science_ctrl;
-              if science_ctrl = '0' then
-                Rx_State <= Wait_Second_start;
+              data_out(N_r1) <= science_data_r3;
+              CTRL(N_r1)     <= science_ctrl_r3;
+              if science_ctrl_r3 = '0' then
+                sm_rx_state_r1 <= E_WAIT2_START;
               else
-                Rx_State <= Wait_First_start;
+                sm_rx_state_r1 <= E_WAIT1_START;
               end if;
             else
-              data_out(N) <= science_data;
-              CTRL(N)     <= science_ctrl;
-              N           <= N-1;
+              data_out(N_r1) <= science_data_r3;
+              CTRL(N_r1)     <= science_ctrl_r3;
+              N_r1           <= N_r1-1;
             end if;
 
           when others =>

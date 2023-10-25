@@ -35,15 +35,15 @@ use IEEE.math_real.all;
 
 package science_data_rx_package is
 
-  constant LinkNumber : integer := 2;
-  constant ColNumber  : integer := LinkNumber*2;
-  constant LignNumber : integer := ColNumber*2;
+  constant pkg_LINK_NUMBER : integer := 2;
+  constant pkg_COL_NUMBER  : integer := pkg_LINK_NUMBER*2;
+  constant pkg_LINE_NUMBER : integer := pkg_COL_NUMBER*2;
 
 
   type t_ARRAY16bits is array (natural range <>) of std_logic_vector(15 downto 0);
-  type t_ARRAY8bits is array (LignNumber-1 downto 0) of std_logic_vector(7 downto 0);
-  type t_ARRAY3bits is array (LignNumber-1 downto 0) of std_logic_vector(2 downto 0);
-  type t_ARRAY8bits_ctrl is array ((ColNumber/2)-1 downto 0) of std_logic_vector(7 downto 0);
+  type t_ARRAY8bits is array (pkg_LINE_NUMBER-1 downto 0) of std_logic_vector(7 downto 0);
+  type t_ARRAY3bits is array (pkg_LINE_NUMBER-1 downto 0) of std_logic_vector(2 downto 0);
+  type t_ARRAY8bits_ctrl is array ((pkg_COL_NUMBER/2)-1 downto 0) of std_logic_vector(7 downto 0);
   type t_ARRAY96bits is array (natural range <>) of std_logic_vector(95 downto 0);
   type t_ARRAY128bits is array (natural range <>) of std_logic_vector(127 downto 0);
 

@@ -66,31 +66,31 @@ entity fmc_to_usb is
     led   : out std_logic_vector(3 downto 0);  -- Opal Kelly LEDs
 
 
-    ddr3_dq      : inout std_logic_vector (DQ_WIDTH-1 downto 0);  -- inout  wire [DQ_WIDTH-1:0]                 ddr3_dq,  //16
-    ddr3_addr    : out   std_logic_vector (ROW_WIDTH-1 downto 0);  -- output wire [ROW_WIDTH-1:0]                ddr3_addr,  //15
-    ddr3_ba      : out   std_logic_vector (BANK_WIDTH-1 downto 0);  -- output wire [BANK_WIDTH-1:0]               ddr3_ba,    //3
-    ddr3_ck_p    : out   std_logic_vector (CK_WIDTH-1 downto 0);  -- output wire [CK_WIDTH-1:0]                 ddr3_ck_p,  //1
-    ddr3_ck_n    : out   std_logic_vector (CK_WIDTH-1 downto 0);  -- output wire [CK_WIDTH-1:0]                 ddr3_ck_n,
-    ddr3_cke     : out   std_logic_vector (CKE_WIDTH-1 downto 0);  -- output wire [CKE_WIDTH-1:0]                ddr3_cke,  //1
-    ddr3_cs_n    : out   std_logic_vector ((CS_WIDTH*nCS_PER_RANK)-1 downto 0);  -- output wire [(CS_WIDTH*nCS_PER_RANK)-1:0]  ddr3_cs_n,
+    ddr3_dq      : inout std_logic_vector (pkg_DQ_WIDTH-1 downto 0);  -- inout  wire [DQ_WIDTH-1:0]                 ddr3_dq,  //16
+    ddr3_addr    : out   std_logic_vector (pkg_ROW_WIDTH-1 downto 0);  -- output wire [ROW_WIDTH-1:0]                ddr3_addr,  //15
+    ddr3_ba      : out   std_logic_vector (pkg_BANK_WIDTH-1 downto 0);  -- output wire [BANK_WIDTH-1:0]               ddr3_ba,    //3
+    ddr3_ck_p    : out   std_logic_vector (pkg_CK_WIDTH-1 downto 0);  -- output wire [CK_WIDTH-1:0]                 ddr3_ck_p,  //1
+    ddr3_ck_n    : out   std_logic_vector (pkg_CK_WIDTH-1 downto 0);  -- output wire [CK_WIDTH-1:0]                 ddr3_ck_n,
+    ddr3_cke     : out   std_logic_vector (pkg_CKE_WIDTH-1 downto 0);  -- output wire [CKE_WIDTH-1:0]                ddr3_cke,  //1
+    ddr3_cs_n    : out   std_logic_vector ((pkg_CS_WIDTH*pkg_nCS_PER_RANK)-1 downto 0);  -- output wire [(CS_WIDTH*nCS_PER_RANK)-1:0]  ddr3_cs_n,
     ddr3_cas_n   : out   std_logic;  -- output wire                                ddr3_cas_n,
     ddr3_ras_n   : out   std_logic;  -- output wire                                ddr3_ras_n,
     ddr3_we_n    : out   std_logic;  -- output wire                                ddr3_we_n,
-    ddr3_odt     : out   std_logic_vector ((CS_WIDTH*nCS_PER_RANK)-1 downto 0);  -- output wire [(CS_WIDTH*nCS_PER_RANK)-1:0]  ddr3_odt,
-    ddr3_dm      : out   std_logic_vector (DM_WIDTH-1 downto 0);  -- output wire [DM_WIDTH-1:0]                 ddr3_dm,  //2
-    ddr3_dqs_p   : inout std_logic_vector (DQS_WIDTH-1 downto 0);  -- inout  wire [DQS_WIDTH-1:0]                ddr3_dqs_p,  //2
-    ddr3_dqs_n   : inout std_logic_vector (DQS_WIDTH-1 downto 0);  -- inout  wire [DQS_WIDTH-1:0]                ddr3_dqs_n,
+    ddr3_odt     : out   std_logic_vector ((pkg_CS_WIDTH*pkg_nCS_PER_RANK)-1 downto 0);  -- output wire [(CS_WIDTH*nCS_PER_RANK)-1:0]  ddr3_odt,
+    ddr3_dm      : out   std_logic_vector (pkg_DM_WIDTH-1 downto 0);  -- output wire [DM_WIDTH-1:0]                 ddr3_dm,  //2
+    ddr3_dqs_p   : inout std_logic_vector (pkg_DQS_WIDTH-1 downto 0);  -- inout  wire [DQS_WIDTH-1:0]                ddr3_dqs_p,  //2
+    ddr3_dqs_n   : inout std_logic_vector (pkg_DQS_WIDTH-1 downto 0);  -- inout  wire [DQS_WIDTH-1:0]                ddr3_dqs_n,
     ddr3_reset_n : out   std_logic;  -- output wire                                ddr3_reset_n
 
     --  from DEMUX
-    i_clk_science_p : in std_logic_vector(LinkNumber-1 downto 0);
-    i_clk_science_n : in std_logic_vector(LinkNumber-1 downto 0);
+    i_clk_science_p : in std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
+    i_clk_science_n : in std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
-    i_science_ctrl_p : in std_logic_vector(LinkNumber-1 downto 0);
-    i_science_ctrl_n : in std_logic_vector(LinkNumber-1 downto 0);
+    i_science_ctrl_p : in std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
+    i_science_ctrl_n : in std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
-    i_science_data_p : in std_logic_vector(LignNumber-1 downto 0);
-    i_science_data_n : in std_logic_vector(LignNumber-1 downto 0);
+    i_science_data_p : in std_logic_vector(pkg_LINE_NUMBER-1 downto 0);
+    i_science_data_n : in std_logic_vector(pkg_LINE_NUMBER-1 downto 0);
 
 -- Le chip select passe sur 2 bits
 -- Le chip select est renomm� en cs_n dans tout le code car il est actif � l'�tat bas.
@@ -139,21 +139,21 @@ architecture RTL of fmc_to_usb is
 
 
   --  okPipeIn_fifo
-  signal pi0_ep_write     : std_logic;
-  signal pi0_ep_dataout   : std_logic_vector(31 downto 0);
-  signal pipe_in_read     : std_logic;
-  signal pipe_in_data     : std_logic_vector(31 downto 0);
-  signal pipe_in_empty    : std_logic;
+  signal pi0_ep_write   : std_logic;
+  signal pi0_ep_dataout : std_logic_vector(31 downto 0);
+  signal pipe_in_read   : std_logic;
+  signal pipe_in_data   : std_logic_vector(31 downto 0);
+  signal pipe_in_empty  : std_logic;
 
   --  okPipeOut_fifo
-  signal po0_ep_read       : std_logic;
-  signal po0_ep_datain     : std_logic_vector(31 downto 0);
-  signal pipe_out_write    : std_logic;
-  signal pipe_out_data     : std_logic_vector(127 downto 0);
-  signal pipe_out_full     : std_logic;
-  signal empty             : std_logic;
-  signal wr_data_count     : std_logic_vector(14 downto 0);
-  signal rd_data_count     : std_logic_vector(16 downto 0);
+  signal po0_ep_read    : std_logic;
+  signal po0_ep_datain  : std_logic_vector(31 downto 0);
+  signal pipe_out_write : std_logic;
+  signal pipe_out_data  : std_logic_vector(127 downto 0);
+  signal pipe_out_full  : std_logic;
+  signal empty          : std_logic;
+  signal wr_data_count  : std_logic_vector(14 downto 0);
+  signal rd_data_count  : std_logic_vector(16 downto 0);
 
   --  wire
   signal ep00wire : std_logic_vector(31 downto 0);
@@ -193,17 +193,17 @@ architecture RTL of fmc_to_usb is
   signal sys_rst                  : std_logic;
   signal rst_cnt                  : unsigned(4 downto 0) := (others => '0');
 
-  signal app_addr             : std_logic_vector (ADDR_WIDTH-1 downto 0);
-  signal app_cmd              : std_logic_vector (2 downto 0);
-  signal app_en               : std_logic;
-  signal app_rdy              : std_logic;
-  signal app_rd_data          : std_logic_vector (APP_DATA_WIDTH-1 downto 0);
-  signal app_rd_data_valid    : std_logic;
-  signal app_wdf_data         : std_logic_vector (APP_DATA_WIDTH-1 downto 0);
-  signal app_wdf_end          : std_logic;
-  signal app_wdf_mask         : std_logic_vector (APP_MASK_WIDTH-1 downto 0);
-  signal app_wdf_rdy          : std_logic;
-  signal app_wdf_wren         : std_logic;
+  signal app_addr          : std_logic_vector (pkg_ADDR_WIDTH-1 downto 0);
+  signal app_cmd           : std_logic_vector (2 downto 0);
+  signal app_en            : std_logic;
+  signal app_rdy           : std_logic;
+  signal app_rd_data       : std_logic_vector (pkg_APP_DATA_WIDTH-1 downto 0);
+  signal app_rd_data_valid : std_logic;
+  signal app_wdf_data      : std_logic_vector (pkg_APP_DATA_WIDTH-1 downto 0);
+  signal app_wdf_end       : std_logic;
+  signal app_wdf_mask      : std_logic_vector (pkg_APP_MASK_WIDTH-1 downto 0);
+  signal app_wdf_rdy       : std_logic;
+  signal app_wdf_wren      : std_logic;
 
   --  led
   signal cpt0        : integer;
@@ -219,7 +219,7 @@ architecture RTL of fmc_to_usb is
   --  HK
   signal pipe_out_data_hk  : std_logic_vector(31 downto 0);
   signal pipe_out_write_hk : std_logic;
- 
+
   signal po0_ep_read_hk   : std_logic;
   signal po0_ep_datain_hk : std_logic_vector(31 downto 0);
   signal rd_data_count_hk : std_logic_vector(9 downto 0);
@@ -229,11 +229,11 @@ architecture RTL of fmc_to_usb is
   signal data_rate_enable : std_logic;
 
   -- Paul Part --
-  signal science_ctrl : std_logic_vector(LinkNumber - 1 downto 0);
+  signal science_ctrl : std_logic_vector(pkg_LINK_NUMBER - 1 downto 0);
 
-  signal clk_science    : std_logic_vector(LinkNumber - 1 downto 0);
-  signal science_data   : std_logic_vector(LignNumber - 1 downto 0);
-  signal start_detected : std_logic_vector(LinkNumber-1 downto 0);
+  signal clk_science    : std_logic_vector(pkg_LINK_NUMBER - 1 downto 0);
+  signal science_data   : std_logic_vector(pkg_LINE_NUMBER - 1 downto 0);
+  signal start_detected : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
   signal pipe_in_data_big_endian : std_logic_vector(31 downto 0);
   signal sync_n                  : std_logic;
@@ -264,7 +264,7 @@ architecture RTL of fmc_to_usb is
 
 begin
 
-  gen_IBUFDS_science_data : for i in 0 to LignNumber - 1 generate
+  gen_IBUFDS_science_data : for i in 0 to pkg_LINE_NUMBER - 1 generate
     IBUFDS_i : IBUFDS
       generic map (
         DIFF_TERM    => true,           -- Differential Termination
@@ -277,7 +277,7 @@ begin
         );
   end generate;
 
-  gen_IBUFDS_science_ctrl : for i in 0 to LinkNumber - 1 generate
+  gen_IBUFDS_science_ctrl : for i in 0 to pkg_LINK_NUMBER - 1 generate
     IBUFDS_science_ctrl : IBUFDS
       generic map (
         DIFF_TERM    => true,           -- Differential Termination
@@ -290,7 +290,7 @@ begin
         );
   end generate;
 
-  gen_IBUFDS_clk_science : for i in 0 to LinkNumber - 1 generate
+  gen_IBUFDS_clk_science : for i in 0 to pkg_LINK_NUMBER - 1 generate
     IBUFDS_clk_science : IBUFDS
       generic map (
         DIFF_TERM    => true,           -- Differential Termination
@@ -514,15 +514,15 @@ begin
 
       calib_done => init_calib_complete,
 
-      pipe_in_read     => read_instrument,
-      pipe_in_data     => data_instrument,
+      pipe_in_read => read_instrument,
+      pipe_in_data => data_instrument,
 
-      pipe_in_valid    => valid_fifo_instrument,
-      pipe_in_empty    => empty_fifo_instrument,
+      pipe_in_valid => valid_fifo_instrument,
+      pipe_in_empty => empty_fifo_instrument,
 
-      pipe_out_write    => pipe_out_write,
-      pipe_out_data     => pipe_out_data,
-      pipe_out_full     => pipe_out_full,
+      pipe_out_write => pipe_out_write,
+      pipe_out_data  => pipe_out_data,
+      pipe_out_full  => pipe_out_full,
 
       app_rdy  => app_rdy,              --: STD_LOGIC;
       app_en   => app_en,               --: STD_LOGIC
@@ -677,7 +677,7 @@ begin
   p_pipe : process (okClk)
   begin
     if rising_edge(okClk)then
-      sel_main_n         <= ep02wire(0);
+      sel_main_n <= ep02wire(0);
     end if;
   end process p_pipe;
 
@@ -818,7 +818,7 @@ begin
 --  ok wire firmware_id
 ----------------------------------------------------
 -- Ajout de la gestion du firmware id
-  ep3Fwire <= std_logic_vector(to_unsigned(16#11#,ep3Fwire'length)); -- 0x11
+  ep3Fwire <= std_logic_vector(to_unsigned(16#11#, ep3Fwire'length));  -- 0x11
 
   inst_okWireOut_fw_id : okWireOut
     port map (
@@ -860,8 +860,8 @@ begin
   p_status_fifo : process (clk, ddr_rst)
   begin
     if ddr_rst = '1' then
-      ep22wire     <= (others => '0');
-  
+      ep22wire <= (others => '0');
+
     else
 
       if rising_edge (clk) then
@@ -876,7 +876,7 @@ begin
         ep22wire(6) <= '0';
 
         --  detect error
-        if pipe_out_full = '1' and full_fifo_instrument_2 = '0'  then
+        if pipe_out_full = '1' and full_fifo_instrument_2 = '0' then
           ep22wire(0) <= '1';
         else
           if pipe_out_full = '0' and full_fifo_instrument_2 = '1' then

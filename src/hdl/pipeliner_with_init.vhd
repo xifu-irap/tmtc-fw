@@ -35,9 +35,9 @@ use ieee.std_logic_1164.all;
 
 entity pipeliner_with_init is
   generic(
-    g_INIT       : std_logic:= '0';
-    g_NB_PIPES   : natural  := 1;  -- number of consecutives registers. Possibles values: [0, integer max value[
-    g_DATA_WIDTH : positive := 1  -- width of the input/output data.  Possibles values: [1, integer max value[
+    g_INIT       : std_logic := '0';
+    g_NB_PIPES   : natural   := 1;  -- number of consecutives registers. Possibles values: [0, integer max value[
+    g_DATA_WIDTH : positive  := 1  -- width of the input/output data.  Possibles values: [1, integer max value[
     );
   port(
     i_clk  : in  std_logic;             -- clock signal
@@ -49,7 +49,7 @@ end entity pipeliner_with_init;
 architecture RTL of pipeliner_with_init is
 
   -- delayed data
-  signal data_r   : std_logic_vector(i_data'range) := (others => g_INIT);
+  signal data_r1  : std_logic_vector(i_data'range) := (others => g_INIT);
   -- output data
   signal sync_tmp : std_logic_vector(i_data'range) := (others => g_INIT);
 
@@ -64,16 +64,16 @@ begin
   -- add 1 register on the data path
   gen_one_pipeline : if g_NB_PIPES = 1 generate
   begin
-     ---------------------------------------------------------------------
+    ---------------------------------------------------------------------
     -- delayed the input data
     ---------------------------------------------------------------------
-     p_pipe_data: process(i_clk)
+    p_pipe_data : process(i_clk)
     begin
       if rising_edge(i_clk) then
-        data_r <= i_data;
+        data_r1 <= i_data;
       end if;
-    end process p_pipe_data ;
-    sync_tmp <= data_r;
+    end process p_pipe_data;
+    sync_tmp <= data_r1;
   end generate gen_one_pipeline;
 
   -- add 2 or more registers on the data path
@@ -81,20 +81,20 @@ begin
     -- define an array of registers
     type t_pipeline is array (g_NB_PIPES - 1 downto 0) of std_logic_vector(i_data'range);
     -- pipe of registers
-    signal data_pipe_r : t_pipeline := (others => (others => g_INIT));
+    signal data_pipe_rx : t_pipeline := (others => (others => g_INIT));
   begin
 
     ---------------------------------------------------------------------
     -- shift the input data to the left
     ---------------------------------------------------------------------
-    p_shift_data: process(i_clk)
+    p_shift_data : process(i_clk)
     begin
       if rising_edge(i_clk) then
-        data_pipe_r <= data_pipe_r(data_pipe_r'high - 1 downto 0) & i_data;
+        data_pipe_rx <= data_pipe_rx(data_pipe_rx'high - 1 downto 0) & i_data;
       end if;
     end process p_shift_data;
 
-    sync_tmp <= data_pipe_r(data_pipe_r'high);
+    sync_tmp <= data_pipe_rx(data_pipe_rx'high);
   end generate gen_multiple_pipeline;
 
   ---------------------------------------------------------------------
