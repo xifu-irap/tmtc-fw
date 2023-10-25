@@ -36,14 +36,14 @@ use ieee.std_logic_1164.all;
 entity manage_pipe_out is
   port(
     --  global
-    okClk : in std_logic;
-    reset : in std_logic;
+    i_okClk : in std_logic;
+    i_rst   : in std_logic;
 
     --  fifo interface
-    rd_data_count : in std_logic_vector(16 downto 0);
+    i_rd_data_count : in std_logic_vector(16 downto 0);
 
     --  ctrl interface
-    ep20wire : out std_logic_vector(31 downto 0)
+    o_result : out std_logic_vector(31 downto 0)
 
     );
 end entity;
@@ -53,14 +53,14 @@ architecture RTL of manage_pipe_out is
 
 begin
 
-  p_reshape : process (okClk, reset)
+  p_reshape : process (i_okClk, i_rst)
   begin
-    if reset = '1' then
-      ep20wire <= (others => '0');
+    if i_rst = '1' then
+      o_result <= (others => '0');
     else
 
-      if rising_edge(okClk) then
-        ep20wire <= x"0000" & '0' & (rd_data_count(16 downto 2));
+      if rising_edge(i_okClk) then
+        o_result <= x"0000" & '0' & (i_rd_data_count(16 downto 2));
       end if;
     end if;
   end process p_reshape;

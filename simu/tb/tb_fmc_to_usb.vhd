@@ -62,14 +62,15 @@ architecture Simulation of tb_fmc_to_usb is
   constant NUM_COMP     : integer := DQ_WIDTH/MEMORY_WIDTH;
 
   --  global
-  signal okUH             : std_logic_vector(4 downto 0);
-  signal okHU             : std_logic_vector(2 downto 0);
-  signal okUHU            : std_logic_vector(31 downto 0);
-  signal okAA             : std_logic;
-  signal sys_clkp         : std_logic;
-  signal sys_clkn         : std_logic;
+  signal i_okUH           : std_logic_vector(4 downto 0);
+  signal o_okHU           : std_logic_vector(2 downto 0);
+  signal b_okUHU          : std_logic_vector(31 downto 0);
+  signal b_okAA           : std_logic;
+  signal i_sys_clkp       : std_logic;
+  signal i_sys_clkn       : std_logic;
   --sys_clk           : in    STD_LOGIC;
-  signal led              : std_logic_vector(3 downto 0);
+  signal o_leds_fmc       : std_logic_vector(3 downto 0);
+  signal o_leds           : std_logic_vector(3 downto 0);
   signal ddr3_dq          : std_logic_vector (DQ_WIDTH-1 downto 0);
   signal ddr3_addr        : std_logic_vector (ROW_WIDTH-1 downto 0);
   signal ddr3_ba          : std_logic_vector (BANK_WIDTH-1 downto 0);
@@ -87,8 +88,8 @@ architecture Simulation of tb_fmc_to_usb is
   signal tdqs_n           : std_logic_vector (DQS_WIDTH-1 downto 0);  -- not used
   signal ddr3_reset_n     : std_logic;
   --  from NG-LARGE
-  signal clk_science_p    : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
-  signal clk_science_n    : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
+  signal i_clk_science_p  : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
+  signal i_clk_science_n  : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
   signal i_science_ctrl_p : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
   signal i_science_ctrl_n : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
   signal i_science_data_p : std_logic_vector(pkg_LINE_NUMBER-1 downto 0);
@@ -97,7 +98,8 @@ architecture Simulation of tb_fmc_to_usb is
   signal i_miso           : std_logic;
   signal o_mosi           : std_logic;
   signal o_sclk           : std_logic;
-  signal o_sync_n         : std_logic;
+  signal o_cs_n           : std_logic_vector(1 downto 0);
+  signal o_sel_main_n     : std_logic;
 
 
   ---------------------------------------------------------------------
@@ -129,8 +131,8 @@ begin
     wait for c_CLK_PERIOD0 / 2;
   end process p_clk0_gen;
 
-  sys_clkp <= sys_clk;
-  sys_clkn <= not(sys_clk);
+  i_sys_clkp <= sys_clk;
+  i_sys_clkn <= not(sys_clk);
 
 
   -- science clock
@@ -142,11 +144,11 @@ begin
     wait for c_CLK_PERIOD1 / 2;
   end process p_clk1_gen;
 
-  clk_science_p(0) <= clk_science;
-  clk_science_n(0) <= not(clk_science);
+  i_clk_science_p(0) <= clk_science;
+  i_clk_science_n(0) <= not(clk_science);
 
-  clk_science_p(1) <= clk_science;
-  clk_science_n(1) <= not(clk_science);
+  i_clk_science_p(1) <= clk_science;
+  i_clk_science_n(1) <= not(clk_science);
 
   -- usb clock
   p_clk2_gen : process is
@@ -189,19 +191,21 @@ begin
 -- DUT
 ---------------------------------------------------------------------
 
-  okUH(0) <= usb_clk;
+  i_okUH(0) <= usb_clk;
 
   inst_fmc_to_usb : entity work.fmc_to_usb
     port map(
       --  global
-      okUH             => okUH,
-      okHU             => okHU,
-      okUHU            => okUHU,
-      okAA             => okAA,
-      sys_clkp         => sys_clkp,
-      sys_clkn         => sys_clkn,
+      i_okUH     => i_okUH,
+      o_okHU     => o_okHU,
+      b_okUHU    => b_okUHU,
+      b_okAA     => b_okAA,
+      i_sys_clkp => i_sys_clkp,
+      i_sys_clkn => i_sys_clkn,
       --sys_clk           : in    STD_LOGIC;
-      led              => led,
+      o_leds_fmc => o_leds_fmc,
+      o_leds     => o_leds,
+
       ddr3_dq          => ddr3_dq,
       ddr3_addr        => ddr3_addr,
       ddr3_ba          => ddr3_ba,
@@ -218,8 +222,8 @@ begin
       ddr3_dqs_n       => ddr3_dqs_n,
       ddr3_reset_n     => ddr3_reset_n,
       --  from NG-LARGE
-      clk_science_p    => clk_science_p,
-      clk_science_n    => clk_science_n,
+      i_clk_science_p  => i_clk_science_p,
+      i_clk_science_n  => i_clk_science_n,
       i_science_ctrl_p => i_science_ctrl_p,
       i_science_ctrl_n => i_science_ctrl_n,
       i_science_data_p => i_science_data_p,
@@ -228,7 +232,8 @@ begin
       i_miso           => i_miso,
       o_mosi           => o_mosi,
       o_sclk           => o_sclk,
-      o_sync_n         => o_sync_n
+      o_cs_n           => o_cs_n,
+      o_sel_main_n     => o_sel_main_n
       );
 
 

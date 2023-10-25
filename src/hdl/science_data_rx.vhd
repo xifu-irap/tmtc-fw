@@ -37,20 +37,20 @@ use work.science_data_rx_package.all;
 
 entity science_data_rx is
   port (
-    reset_n       : in std_logic;
+    i_rst_n       : in std_logic;
     i_clk_science : in std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
     -- test signal --
-    start_detected : out std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
+    o_start_detected : out std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
     -- Link
-    i_science_ctrl   : in std_logic_vector((pkg_COL_NUMBER/2)-1 downto 0);
-    i_science_data   : in std_logic_vector(pkg_LINE_NUMBER-1 downto 0);
-    data_rate_enable : in std_logic;
+    i_science_ctrl : in std_logic_vector((pkg_COL_NUMBER/2)-1 downto 0);
+    i_science_data : in std_logic_vector(pkg_LINE_NUMBER-1 downto 0);
+    i_data_rate_en : in std_logic;
 
     --  fifo
-    dataout_instrument : out std_logic_vector(127 downto 0);
-    write_instrument   : out std_logic
+    o_data_instrument : out std_logic_vector(127 downto 0);
+    o_wr_instrument   : out std_logic
 
     );
 
@@ -98,18 +98,18 @@ begin
         port map (
 
           -- global
-          reset_n          => reset_n,
-          i_clk_science    => i_clk_science(I),
-          data_rate_enable => data_rate_enable,
+          i_rst_n        => i_rst_n,
+          i_clk_science  => i_clk_science(I),
+          i_data_rate_en => i_data_rate_en,
 
           -- Link
           i_science_ctrl => i_science_ctrl(I),
           i_science_data => i_science_data(4*I+N),
 
           -- deserialize
-          CTRL       => open,
-          data_out   => data_out(4*I+N),
-          data_ready => open
+          o_ctrl       => open,
+          o_data       => data_out(4*I+N),
+          o_data_ready => open
           );
     end generate gen_science_data_rx_fsm_link;
   end generate gen_science_data_rx_fsm;
@@ -121,17 +121,17 @@ begin
     inst_ctrl_rx_fsm : entity work.ctrl_rx_fsm
       port map (
         -- global
-        reset_n          => reset_n,
-        i_clk_science    => i_clk_science(N),
-        data_rate_enable => data_rate_enable,
+        i_rst_n        => i_rst_n,
+        i_clk_science  => i_clk_science(N),
+        i_data_rate_en => i_data_rate_en,
 
         -- Link
         i_science_ctrl => i_science_ctrl(N),
 
         -- deserialize
-        start_detected => start_detected(N),
-        CTRL           => CTRL(N),
-        data_ready     => data_ready(N)
+        o_start_detected => o_start_detected(N),
+        o_ctrl           => CTRL(N),
+        o_data_ready     => data_ready(N)
         );
   end generate gen_science_ctrl_rx_fsm;
 
@@ -139,9 +139,9 @@ begin
   --   Register to maintain the value
   -- ------------------------------------------------------------------------------------------------------
   gen_reg : for N in pkg_LINK_NUMBER-1 downto 0 generate
-    p_ctrl_register : process (reset_n, i_clk_science(N))
+    p_ctrl_register : process (i_rst_n, i_clk_science(N))
     begin
-      if reset_n = '0' then
+      if i_rst_n = '0' then
         ctrl_r1(N)         <= (others => '0');
         data_ready_r1(N)   <= '0';
         data_out_r1(4*N)   <= (others => '0');
@@ -166,9 +166,9 @@ begin
   -- ------------------------------------------------------------------------------------------------------
   --   Resynchro
   -- ------------------------------------------------------------------------------------------------------
-  p_sync_link : process (reset_n, i_clk_science(0))
+  p_sync_link : process (i_rst_n, i_clk_science(0))
   begin
-    if reset_n = '0' then
+    if i_rst_n = '0' then
       reg_ctrl_r2     <= (others => (others => '0'));
       reg_ctrl_r3     <= (others => (others => '0'));
       reg_data_out_r2 <= (others => (others => '0'));
@@ -191,16 +191,16 @@ begin
     end if;
   end process p_sync_link;
 
-  p_frame_build : process(reset_n, i_clk_science(0))
+  p_frame_build : process(i_rst_n, i_clk_science(0))
   begin
-    if reset_n = '0' then
-      frame_r4           <= (others => (others => '0'));
-      frame_fifo_r5      <= (others => (others => '0'));
-      dataout_instrument <= (others => '0');
-      write_instrument   <= '0';
-      write_data_r1      <= '0';
-      cpt_frame_r1       <= 0;
-      cpt_fifo_r1        <= 0;
+    if i_rst_n = '0' then
+      frame_r4          <= (others => (others => '0'));
+      frame_fifo_r5     <= (others => (others => '0'));
+      o_data_instrument <= (others => '0');
+      o_wr_instrument   <= '0';
+      write_data_r1     <= '0';
+      cpt_frame_r1      <= 0;
+      cpt_fifo_r1       <= 0;
     elsif rising_edge(i_clk_science(0)) then
       if start_maker_r1 = '1' then
         cpt_frame_r1           <= cpt_frame_r1 + 1;
@@ -214,14 +214,14 @@ begin
         write_data_r1    <= '1';
       end if;
       if write_data_r1 = '1' and cpt_fifo_r1 < 3 then
-        cpt_fifo_r1        <= cpt_fifo_r1 + 1;
-        dataout_instrument <= frame_fifo_r5(cpt_fifo_r1);
-        write_instrument   <= '1';
+        cpt_fifo_r1       <= cpt_fifo_r1 + 1;
+        o_data_instrument <= frame_fifo_r5(cpt_fifo_r1);
+        o_wr_instrument   <= '1';
       end if;
       if cpt_fifo_r1 = 3 then
-        write_data_r1    <= '0';
-        cpt_fifo_r1      <= 0;
-        write_instrument <= '0';
+        write_data_r1   <= '0';
+        cpt_fifo_r1     <= 0;
+        o_wr_instrument <= '0';
       end if;
     end if;
   end process p_frame_build;

@@ -38,7 +38,7 @@
 # usb @100.8 MHz
 ###############################################################################################################
 # 100.8 MHz
-create_clock -period 9.920 -name usb_clk_in [get_ports {okUH[0]}];
+create_clock -period 9.920 -name usb_clk_in [get_ports {i_okUH[0]}];
 create_clock -name virt_usb_clk_in -period 9.920;
 
  # 62.5 MHz
@@ -107,7 +107,7 @@ set input_clock         virt_usb_clk_in;      # Name of input clock
 set input_clock_period  9.92;    # Period of input clock
 set dv_bre              1.920;             # Data valid before the rising clock edge
 set dv_are              0.000;             # Data valid after the rising clock edge
-set input_ports         {okUH[*]};     # List of input ports
+set input_ports         {i_okUH[*]};     # List of input ports
 
 # Input Delay Constraint
 set_input_delay -clock $input_clock -max [expr $input_clock_period - $dv_bre] [get_ports $input_ports] -add_delay;
@@ -134,7 +134,7 @@ set input_clock         virt_usb_clk_in;      # Name of input clock
 set input_clock_period  9.92;    # Period of input clock
 set dv_bre              1.920;             # Data valid before the rising clock edge
 set dv_are              0.000;             # Data valid after the rising clock edge
-set input_ports         {okUHU[*] okAA};     # List of input ports
+set input_ports         {b_okUHU[*] b_okAA};     # List of input ports
 
 # Input Delay Constraint
 set_input_delay -clock $input_clock -max [expr $input_clock_period - $dv_bre] [get_ports $input_ports] -add_delay;
@@ -169,7 +169,7 @@ set tsu          2.000;            # destination device setup time requirement
 set thd          0.500;            # destination device hold time requirement
 set trce_dly_max 0.000;            # maximum board trace delay
 set trce_dly_min 0.000;            # minimum board trace delay
-set output_ports {okHU[*] okUHU[*] okAA};   # list of output ports
+set output_ports {o_okHU[*] b_okUHU[*] b_okAA};   # list of output ports
 
 # Output Delay Constraints
 set_output_delay -clock $fwclk -max [expr $trce_dly_max + $tsu] [get_ports $output_ports] -add_delay;
@@ -358,8 +358,8 @@ set_false_path -hold   -fall_from [get_clocks virtual_ddr_clk] -rise_to [get_clo
 ##################################################################################
 # others (input ports): asynchronuous ports
 ##################################################################################
-set_false_path -to   [get_ports "led*"];
-set_false_path -to   [get_ports "o_led*"];
+set_false_path -to   [get_ports "o_leds*"];
+set_false_path -to   [get_ports "o_leds_fmc*"];
 set_false_path -to   [get_ports "o_sel_main_n"];
 
 ##################################################################################

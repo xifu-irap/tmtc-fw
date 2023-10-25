@@ -52,18 +52,16 @@ entity fmc_to_usb is
 
   port(
 
-    --  global
+    i_okUH  : in    std_logic_vector(4 downto 0);
+    o_okHU  : out   std_logic_vector(2 downto 0);
+    b_okUHU : inout std_logic_vector(31 downto 0);
+    b_okAA  : inout std_logic;
 
-    okUH  : in    std_logic_vector(4 downto 0);
-    okHU  : out   std_logic_vector(2 downto 0);
-    okUHU : inout std_logic_vector(31 downto 0);
-    okAA  : inout std_logic;
+    i_sys_clkp : in std_logic;          -- input    wire         sys_clkp,
+    i_sys_clkn : in std_logic;          -- input  wire         sys_clkn,
 
-    sys_clkp : in std_logic;            -- input    wire         sys_clkp,
-    sys_clkn : in std_logic;            -- input  wire         sys_clkn,
-
-    o_led : out std_logic_vector(3 downto 0);  -- FMC 105 LEDS
-    led   : out std_logic_vector(3 downto 0);  -- Opal Kelly LEDs
+    o_leds_fmc : out std_logic_vector(3 downto 0);  -- FMC 105 LEDS
+    o_leds     : out std_logic_vector(3 downto 0);  -- Opal Kelly LEDs
 
 
     ddr3_dq      : inout std_logic_vector (pkg_DQ_WIDTH-1 downto 0);  -- inout  wire [DQ_WIDTH-1:0]                 ddr3_dq,  //16
@@ -393,8 +391,8 @@ begin
   end process;
 
   -- leds
-  led(0) <= not('1');
-  led(1) <= led_temp;
+  o_leds(0) <= not('1');
+  o_leds(1) <= led_temp;
 
 
   p_blink : process (clk) is
@@ -406,12 +404,12 @@ begin
 
   trig <= cnt_r1(cnt_r1'high);
 
-  led(2)  <= not(init_calib_complete);
-  led(3)  <= trig;
+  o_leds(2) <= not(init_calib_complete);
+  o_leds(3) <= trig;
 ----------------------------------------------------
 --  RESET
 ----------------------------------------------------
-  usb_rst <= ep00wire(0);
+  usb_rst   <= ep00wire(0);
 
 -- Sortie des chip select sur 2 leds
 
@@ -421,15 +419,15 @@ begin
   p_leds : process (okClk, usb_rst)
   begin
     if usb_rst = '1' then
-      o_led(0) <= '0';
-      o_led(1) <= '0';
-      o_led(2) <= '0';
-      o_led(3) <= '0';
+      o_leds_fmc(0) <= '0';
+      o_leds_fmc(1) <= '0';
+      o_leds_fmc(2) <= '0';
+      o_leds_fmc(3) <= '0';
     elsif rising_edge(okClk)then
-      o_led(0) <= '1';
-      o_led(1) <= cs_n(0);
-      o_led(2) <= cs_n(1);
-      o_led(3) <= sel_main_n;
+      o_leds_fmc(0) <= '1';
+      o_leds_fmc(1) <= cs_n(0);
+      o_leds_fmc(2) <= cs_n(1);
+      o_leds_fmc(3) <= sel_main_n;
     end if;
   end process;
 
@@ -481,8 +479,8 @@ begin
       app_wdf_mask => app_wdf_mask,
 
 --// System Clock Ports
-      sys_clk_p => sys_clkp,
-      sys_clk_n => sys_clkn,
+      sys_clk_p => i_sys_clkp,
+      sys_clk_n => i_sys_clkn,
 
       sys_rst => sys_rst
       );
@@ -509,40 +507,40 @@ begin
   inst_drive_interface_ddr3_ctrl : entity work.drive_interface_ddr3_ctrl
     port map (
 
-      clk   => clk,
-      reset => ddr_rst,
+      i_clk => clk,
+      i_rst => ddr_rst,
 
-      calib_done => init_calib_complete,
+      i_calib_done => init_calib_complete,
 
-      pipe_in_read => read_instrument,
-      pipe_in_data => data_instrument,
+      o_pipe_in_read => read_instrument,
+      i_pipe_in_data => data_instrument,
 
-      pipe_in_valid => valid_fifo_instrument,
-      pipe_in_empty => empty_fifo_instrument,
+      i_pipe_in_valid => valid_fifo_instrument,
+      i_pipe_in_empty => empty_fifo_instrument,
 
-      pipe_out_write => pipe_out_write,
-      pipe_out_data  => pipe_out_data,
-      pipe_out_full  => pipe_out_full,
+      o_pipe_out_write => pipe_out_write,
+      o_pipe_out_data  => pipe_out_data,
+      i_pipe_out_full  => pipe_out_full,
 
-      app_rdy  => app_rdy,              --: STD_LOGIC;
-      app_en   => app_en,               --: STD_LOGIC
-      app_cmd  => app_cmd,              --: STD_LOGIC_VECTOR  (2 downto 0);
-      app_addr => app_addr,  --: STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0); --ADDR_WIDTH            : integer := 29;
+      i_app_rdy  => app_rdy,            --: STD_LOGIC;
+      o_app_en   => app_en,             --: STD_LOGIC
+      o_app_cmd  => app_cmd,            --: STD_LOGIC_VECTOR  (2 downto 0);
+      o_app_addr => app_addr,  --: STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0); --ADDR_WIDTH            : integer := 29;
 
-      app_rd_data       => app_rd_data,  --: STD_LOGIC_VECTOR  (APP_DATA_WIDTH-1 downto 0);  --constant APP_DATA_WIDTH        :  integer := 128;
-      app_rd_data_valid => app_rd_data_valid,  --: STD_LOGIC;
+      i_app_rd_data       => app_rd_data,  --: STD_LOGIC_VECTOR  (APP_DATA_WIDTH-1 downto 0);  --constant APP_DATA_WIDTH        :  integer := 128;
+      i_app_rd_data_valid => app_rd_data_valid,  --: STD_LOGIC;
 
-      app_wdf_rdy  => app_wdf_rdy,      --: STD_LOGIC;
-      app_wdf_wren => app_wdf_wren,     --: STD_LOGIC;
-      app_wdf_data => app_wdf_data,  --: STD_LOGIC_VECTOR  (APP_DATA_WIDTH-1 downto 0);  --constant APP_DATA_WIDTH        :  integer := 128;
-      app_wdf_end  => app_wdf_end,      --: STD_LOGIC;
-      app_wdf_mask => app_wdf_mask,  --: STD_LOGIC_VECTOR  (APP_MASK_WIDTH-1 downto 0);  --constant APP_DATA_WIDTH        :  integer := 128;
+      i_app_wdf_rdy  => app_wdf_rdy,    --: STD_LOGIC;
+      o_app_wdf_wren => app_wdf_wren,   --: STD_LOGIC;
+      o_app_wdf_data => app_wdf_data,  --: STD_LOGIC_VECTOR  (APP_DATA_WIDTH-1 downto 0);  --constant APP_DATA_WIDTH        :  integer := 128;
+      o_app_wdf_end  => app_wdf_end,    --: STD_LOGIC;
+      o_app_wdf_mask => app_wdf_mask,  --: STD_LOGIC_VECTOR  (APP_MASK_WIDTH-1 downto 0);  --constant APP_DATA_WIDTH        :  integer := 128;
 
-      prog_empty => prog_empty,
+      i_prog_empty => prog_empty,
 
 
-      buffer_new_cmd_byte_addr_wr => buffer_new_cmd_byte_addr_wr,
-      buffer_new_cmd_byte_addr_rd => buffer_new_cmd_byte_addr_rd
+      o_buffer_new_cmd_byte_addr_wr => buffer_new_cmd_byte_addr_wr,
+      o_buffer_new_cmd_byte_addr_rd => buffer_new_cmd_byte_addr_rd
 
       );
 
@@ -553,15 +551,15 @@ begin
     port map (
 
       --  global
-      clk   => clk,
-      reset => ddr_rst,
+      i_clk => clk,
+      i_rst => ddr_rst,
 
       --  input
-      buffer_new_cmd_byte_addr_wr => buffer_new_cmd_byte_addr_wr,
-      buffer_new_cmd_byte_addr_rd => buffer_new_cmd_byte_addr_rd,
+      i_buffer_new_cmd_byte_addr_wr => buffer_new_cmd_byte_addr_wr,
+      i_buffer_new_cmd_byte_addr_rd => buffer_new_cmd_byte_addr_rd,
 
       --  output
-      Subtraction_addr_wr_addr_rd => Subtraction_addr_wr_addr_rd
+      o_sub_addr_wr_addr_rd => Subtraction_addr_wr_addr_rd
       );
 
   ep23wire <= Subtraction_addr_wr_addr_rd (31 downto 0);
@@ -572,15 +570,15 @@ begin
   inst_manaage_pipe_out : entity work.manage_pipe_out
     port map (
       --  global
-      okClk => okClk,
-      reset => usb_rst,
+      i_okClk => okClk,
+      i_rst   => usb_rst,
 
       --  fifo interface
-      rd_data_count => rd_data_count,
+      i_rd_data_count => rd_data_count,
 
       --  ctrl interface
 
-      ep20wire => ep20wire
+      o_result => ep20wire
 
       );
 
@@ -627,10 +625,10 @@ begin
   inst_okHost : okHost
     port map(
 
-      okUH  => okUH,
-      okHU  => okHU,
-      okUHU => okUHU,
-      okAA  => okAA,   --//temp removed for SIMULATION replace Core
+      okUH  => i_okUH,
+      okHU  => o_okHU,
+      okUHU => b_okUHU,
+      okAA  => b_okAA,  --//temp removed for SIMULATION replace Core
       okClk => okClk,                   --out
       okHE  => okHE,
       okEH  => okEH
@@ -945,20 +943,20 @@ begin
   inst_science_data_rx : entity work.science_data_rx port map
     (
 
-      reset_n       => rst_science0_n,
+      i_rst_n       => rst_science0_n,
       i_clk_science => clk_science,
 
       -- Link
 
-      start_detected => start_detected,
+      o_start_detected => start_detected,
 
-      i_science_ctrl   => science_ctrl,
-      i_science_data   => science_data,
-      data_rate_enable => data_rate_enable,
+      i_science_ctrl => science_ctrl,
+      i_science_data => science_data,
+      i_data_rate_en => data_rate_enable,
 
       --  fifo
-      dataout_instrument => dataout_instrument,
-      write_instrument   => write_instrument
+      o_data_instrument => dataout_instrument,
+      o_wr_instrument   => write_instrument
 
       );
 
@@ -1007,12 +1005,12 @@ begin
   inst_hk_pattern : entity work.hk_pattern
     port map (
 
-      okClk => okClk,
-      reset => usb_rst,
+      i_okClk => okClk,
+      i_rst   => usb_rst,
 
-      rd_data_count_hk => rd_data_count_hk,
+      i_rd_data_count_hk => rd_data_count_hk,
 
-      ep26wire => ep26wire
+      o_result => ep26wire
 
       );
 

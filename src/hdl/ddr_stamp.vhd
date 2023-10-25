@@ -39,15 +39,15 @@ entity ddr_stamp is
   port(
 
     --  global
-    clk   : in std_logic;
-    reset : in std_logic;
+    i_clk : in std_logic;
+    i_rst : in std_logic;
 
     --  input
-    buffer_new_cmd_byte_addr_wr : in std_logic_vector(54 downto 0);
-    buffer_new_cmd_byte_addr_rd : in std_logic_vector(54 downto 0);
+    i_buffer_new_cmd_byte_addr_wr : in std_logic_vector(54 downto 0);
+    i_buffer_new_cmd_byte_addr_rd : in std_logic_vector(54 downto 0);
 
     --  output
-    Subtraction_addr_wr_addr_rd : out std_logic_vector(54 downto 0)
+    o_sub_addr_wr_addr_rd : out std_logic_vector(54 downto 0)
 
     );
 end entity;
@@ -60,13 +60,13 @@ begin
 -- ----------------------------------------------------
 --
 -- ----------------------------------------------------
-  p_compute : process (clk, reset)
+  p_compute : process (i_clk, i_rst)
   begin
-    if reset = '1' then
-      Subtraction_addr_wr_addr_rd <= (others => '0');
+    if i_rst = '1' then
+      o_sub_addr_wr_addr_rd <= (others => '0');
     else
-      if rising_edge (clk) then
-        Subtraction_addr_wr_addr_rd <= buffer_new_cmd_byte_addr_wr - buffer_new_cmd_byte_addr_rd;
+      if rising_edge (i_clk) then
+        o_sub_addr_wr_addr_rd <= i_buffer_new_cmd_byte_addr_wr - i_buffer_new_cmd_byte_addr_rd;
       end if;
     end if;
   end process p_compute;

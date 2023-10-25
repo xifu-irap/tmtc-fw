@@ -36,17 +36,17 @@ use ieee.numeric_std.all;
 entity ctrl_rx_fsm is
   port (
     -- global
-    reset_n          : in std_logic;
-    i_clk_science    : in std_logic;
-    data_rate_enable : in std_logic;
+    i_rst_n        : in std_logic;
+    i_clk_science  : in std_logic;
+    i_data_rate_en : in std_logic;
 
     -- Link
     i_science_ctrl : in std_logic;
 
     -- decode
-    start_detected : out std_logic;
-    CTRL           : out std_logic_vector(7 downto 0);
-    data_ready     : out std_logic
+    o_start_detected : out std_logic;
+    o_ctrl           : out std_logic_vector(7 downto 0);
+    o_data_ready     : out std_logic
 
     );
 
@@ -72,9 +72,9 @@ begin
 -------------------------------------------------------------------------------------------------
 -- Metastability protect on CTRL
 -------------------------------------------------------------------------------------------------
-  p_meta_ctrl : process(reset_n, i_clk_science)
+  p_meta_ctrl : process(i_rst_n, i_clk_science)
   begin
-    if reset_n = '0' then
+    if i_rst_n = '0' then
       science_ctrl_r1 <= '0';
       science_ctrl_r2 <= '0';
     else
@@ -88,13 +88,13 @@ begin
 -------------------------------------------------------------------------------------------------
 -- Data rate protect on DATA
 -------------------------------------------------------------------------------------------------
-  p_data_rate : process(reset_n, i_clk_science)
+  p_data_rate : process(i_rst_n, i_clk_science)
   begin
-    if reset_n = '0' then
+    if i_rst_n = '0' then
       science_ctrl_r3 <= '0';
     else
       if i_clk_science = '1' and i_clk_science'event then
-        if data_rate_enable = '1' then
+        if i_data_rate_en = '1' then
           science_ctrl_r3 <= science_ctrl_r2;
         end if;
       end if;
@@ -105,20 +105,20 @@ begin
 -------------------------------------------------------------------------------------------------
 -- Decode characters
 -------------------------------------------------------------------------------------------------
-  p_FSM : process(reset_n, i_clk_science)
+  p_FSM : process(i_rst_n, i_clk_science)
 
   begin
 
-    if reset_n = '0' then
-      sm_state_rx_r1 <= E_WAIT1_START;
-      N_r1           <= 0;
-      start_detected <= '0';
-      data_ready     <= '0';
-      CTRL           <= (others => '0');
+    if i_rst_n = '0' then
+      sm_state_rx_r1   <= E_WAIT1_START;
+      N_r1             <= 0;
+      o_start_detected <= '0';
+      o_data_ready     <= '0';
+      o_ctrl           <= (others => '0');
     else
 
       if i_clk_science = '1' and i_clk_science'event then
-        data_ready <= '0';
+        o_data_ready <= '0';
 
         case sm_state_rx_r1 is
 
@@ -132,34 +132,34 @@ begin
           when E_WAIT2_START =>
             if science_ctrl_r3 = '1' then
               sm_state_rx_r1 <= E_WAIT3_START;
-              CTRL(7)        <= science_ctrl_r3;
+              o_ctrl(7)      <= science_ctrl_r3;
             else
               sm_state_rx_r1 <= E_WAIT2_START;
             end if;
 
           when E_WAIT3_START =>
             if science_ctrl_r3 = '1' then
-              sm_state_rx_r1 <= E_DECODE;
-              CTRL(6)        <= science_ctrl_r3;
-              N_r1           <= 5;
-              start_detected <= '1';
+              sm_state_rx_r1   <= E_DECODE;
+              o_ctrl(6)        <= science_ctrl_r3;
+              N_r1             <= 5;
+              o_start_detected <= '1';
             else
               sm_state_rx_r1 <= E_WAIT2_START;
             end if;
 
           when E_DECODE =>
             if N_r1 = 0 then
-              start_detected <= '0';
-              data_ready     <= '1';
-              CTRL(N_r1)     <= science_ctrl_r3;
+              o_start_detected <= '0';
+              o_data_ready     <= '1';
+              o_ctrl(N_r1)     <= science_ctrl_r3;
               if science_ctrl_r3 = '0' then
                 sm_state_rx_r1 <= E_WAIT2_START;
               else
                 sm_state_rx_r1 <= E_WAIT1_START;
               end if;
             else
-              CTRL(N_r1) <= science_ctrl_r3;
-              N_r1       <= N_r1-1;
+              o_ctrl(N_r1) <= science_ctrl_r3;
+              N_r1         <= N_r1-1;
             end if;
 
           when others =>
