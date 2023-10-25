@@ -108,7 +108,7 @@ end entity;
 
 architecture RTL of fmc_to_usb is
 
-  signal Clk            : std_logic;
+  signal clk            : std_logic;
   signal rst            : std_logic;
   signal usb_rst        : std_logic;
   signal ddr_rst        : std_logic;
@@ -285,6 +285,9 @@ architecture RTL of fmc_to_usb is
     std_logic_vector(to_unsigned(c_DAC_SPI_SER_WD_S, c_SPI_SER_WD_S_V_S));  --! DAC SPI: Serial word size vector
   signal pipe_in_data_big_endian : std_logic_vector(31 downto 0);
   signal sync_n                  : std_logic;
+  signal miso                    : std_logic;
+  signal mosi                    : std_logic;
+  signal sclk                    : std_logic;
   signal cs_n                    : std_logic_vector(o_cs_n'range);
 
   signal sel_main_n : std_logic;
@@ -361,14 +364,14 @@ begin
       i_rst         => ddr_rst,
       i_clk         => clk,
       i_spi_data_tx => pipe_in_data_big_endian,
-      i_miso        => i_miso,
+      i_miso        => miso,
       i_fifo_empty  => pipe_in_empty,
 
       o_read_en    => pipe_in_read,
       o_data_ready => pipe_out_write_hk,
       o_data       => pipe_out_data_hk,
-      o_mosi       => o_mosi,
-      o_sclk       => o_sclk,
+      o_mosi       => mosi,
+      o_sclk       => sclk,
       o_sync_n     => sync_n
       );
 
@@ -376,10 +379,39 @@ begin
   cs_n(1) <= sync_n when spi_chipselect_ras = '0' else '1';  -- Chip select _n for DEMUX (in the future, maybe there will be more DEMUX)
 
   -- output
-  o_cs_n <= cs_n;
+  --o_cs_n <= cs_n;
 
   -- endianess: swap bytes
   pipe_in_data_big_endian <= pipe_in_data(7 downto 0) & pipe_in_data(15 downto 8) & pipe_in_data(23 downto 16) & pipe_in_data(31 downto 24);
+
+  ---------------------------------------------------------------------
+  -- SPI_IO
+  ---------------------------------------------------------------------
+  inst_io_spi : entity work.io_spi
+    generic map(
+      g_SPI_CS_N_WIDTH => cs_n'length
+      )
+    port map(
+      ---------------------------------------------------------------------
+      -- from/to FPGA io: spi @i_sys_spi_clk
+      ---------------------------------------------------------------------
+      i_sys_spi_clk => clk,             -- system spi clock
+      -- SPI --
+      i_spi_miso    => i_miso,          -- Shared SPI MISO
+      o_spi_mosi    => o_mosi,          -- Shared SPI MOSI
+      o_spi_sclk    => o_sclk,          -- Shared SPI clock line
+      o_spi_cs_n    => o_cs_n,          -- SPI chip select
+      ---------------------------------------------------------------------
+      -- to user: spi interface @i_sys_spi_clk
+      ---------------------------------------------------------------------
+      -- SPI --
+      o_ui_spi_miso => miso,            -- Shared SPI MISO
+      i_ui_spi_mosi => mosi,            -- Shared SPI MOSI
+      i_ui_spi_sclk => sclk,            -- Shared SPI clock line
+      i_ui_spi_cs_n => cs_n             -- SPI chip select
+      );
+
+
 
 ----------------------------------------------------
 --  OPAL KELLY LEDs
@@ -390,7 +422,7 @@ begin
   p_clock_science_link0 : process (clk_science(0), rst_science0)
   begin
     if rst_science0 = '1' then
-      cpt0        <= 0;
+      cpt0     <= 0;
       led_temp <= '1';
     elsif rising_edge(clk_science(0)) then
       cpt0 <= cpt0 + 1;
@@ -403,7 +435,7 @@ begin
         else
           led_temp <= '1';
         end if;
-        cpt0        <= 0;
+        cpt0 <= 0;
       end if;
     end if;
   end process;
@@ -998,7 +1030,7 @@ begin
   isnt_okPipeOut_fifo_hk : entity work.fifo_r32_256_w32_256_hk
     port map (
       rst           => ddr_rst,
-      wr_clk        => Clk,
+      wr_clk        => clk,
       rd_clk        => okClk,
       din           => pipe_out_data_hk,  --// Bus [127 : 0]
       wr_en         => pipe_out_write_hk,
@@ -1052,7 +1084,7 @@ begin
     port map (
       rst    => usb_rst,
       wr_clk => okClk,
-      rd_clk => Clk,
+      rd_clk => clk,
       din    => pi0_ep_dataout,         --// Bus [31 : 0]
       wr_en  => pi0_ep_write,
       rd_en  => pipe_in_read,

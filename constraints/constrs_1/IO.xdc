@@ -72,7 +72,8 @@ create_generated_clock -name ddr_user_clk  -source $ddr_clk_in_pin $ddr_clk_user
 ###############################################################################################################
 # ODDR : forward clock
 ###############################################################################################################
-create_generated_clock -name gen_spi_clk -multiply_by 1 -source [get_pins inst_spi_mgt/inst_dac_spi_master/o_sclk*/C] [get_ports {o_sclk}]
+# create_generated_clock -name gen_spi_clk -multiply_by 1 -source [get_pins inst_spi_mgt/inst_dac_spi_master/o_sclk*/C] [get_ports {o_sclk}]
+create_generated_clock -name gen_spi_clk -multiply_by 1 -source [get_pins inst_io_spi/gen_user_to_pads_clk.inst_oddr/C] [get_ports {o_sclk}]
 
 
 ###############################################################################################################
