@@ -1,7 +1,6 @@
 -- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --                            Copyright (C) 2021-2030 Paul Marbeau, IRAP Toulouse.
 -- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---                            This file is part of the ATHENA X-IFU DRE Telemetry and Telecommand Firmware.
 --
 --                            tmtc-fw is free software: you can redistribute it and/or modify
 --                            it under the terms of the GNU General Public License as published by
@@ -733,12 +732,35 @@ begin
   p_pipe : process (okClk)
   begin
     if rising_edge(okClk)then
-      spi_chipselect_ras <= ep01wire(0);
       sel_main_n         <= ep02wire(0);
     end if;
   end process p_pipe;
 
   o_sel_main_n <= sel_main_n;
+
+  ---------------------------------------------------------------------
+  -- resynchronize shi
+  ---------------------------------------------------------------------
+  gen_spi_chipselect_ras : if true generate
+    signal data_tmp0 : std_logic_vector(0 downto 0);
+    signal data_tmp1 : std_logic_vector(0 downto 0);
+  begin
+    data_tmp0(0) <= ep01wire(0);
+    inst_synchronizer_spi_chipselect_ras : entity work.synchronizer
+      generic map(
+        g_INIT            => '0',  -- Initial value of synchronizer registers upon startup, 1'b0 or 1'b1.
+        g_SYNC_STAGES     => 2,  -- Integer value for number of synchronizing registers, must be 2 or higher
+        g_PIPELINE_STAGES => 1,  -- Integer value for number of registers on the output of the synchronizer for the purpose of improving performance. Possible values: [1; integer max value [
+        g_DATA_WIDTH      => data_tmp0'length  -- data width expressed in bits
+        )
+      port map(
+        i_clk        => clk,            -- clock signal
+        i_async_data => data_tmp0,      -- async input
+        o_data       => data_tmp1       -- output data with/without delay
+        );
+    spi_chipselect_ras <= data_tmp1(0);
+  end generate gen_spi_chipselect_ras;
+
 
 ----------------------------------------------------
 --  ok wire out
