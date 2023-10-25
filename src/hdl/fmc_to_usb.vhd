@@ -29,7 +29,6 @@
 --
 -- -------------------------------------------------------------------------------------------------------------
 
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -49,7 +48,9 @@ library xpm;
 use xpm.vcomponents.all;
 
 entity fmc_to_usb is
-
+  generic (
+    g_DEBUG : boolean := true
+    );
   port(
 
     i_okUH  : in    std_logic_vector(4 downto 0);
@@ -91,7 +92,7 @@ entity fmc_to_usb is
     i_science_data_n : in std_logic_vector(pkg_LINE_NUMBER-1 downto 0);
 
 -- Le chip select passe sur 2 bits
--- Le chip select est renomm� en cs_n dans tout le code car il est actif � l'�tat bas.
+-- Le chip select est renomme en cs_n dans tout le code car il est actif a l'etat bas.
     -- SPI --
     i_miso : in  std_logic;
     o_mosi : out std_logic;
@@ -125,9 +126,9 @@ architecture RTL of fmc_to_usb is
   signal read_instrument       : std_logic;
   signal empty_fifo_instrument : std_logic;
 
-  signal full_fifo_instrument   : std_logic;
-  signal full_fifo_instrument_1 : std_logic;
-  signal full_fifo_instrument_2 : std_logic;
+  signal full_fifo_instrument    : std_logic;
+  signal full_fifo_instrument_r1 : std_logic;
+  signal full_fifo_instrument_r2 : std_logic;
 
   signal valid_fifo_instrument : std_logic;
   signal dataout_instrument    : std_logic_vector(127 downto 0);
@@ -166,14 +167,14 @@ architecture RTL of fmc_to_usb is
   signal ep3Ewire : std_logic_vector(31 downto 0);
   signal ep3Fwire : std_logic_vector(31 downto 0);
 
-  signal ep23wire_one : std_logic_vector(31 downto 0);
-  signal ep23wire_two : std_logic_vector(31 downto 0);
-  signal ep22wire_one : std_logic_vector(31 downto 0);
-  signal ep22wire_two : std_logic_vector(31 downto 0);
-  signal ep25wire_one : std_logic_vector(31 downto 0);
-  signal ep25wire_two : std_logic_vector(31 downto 0);
-  signal ep27wire_one : std_logic_vector(31 downto 0);
-  signal ep27wire_two : std_logic_vector(31 downto 0);
+  signal ep23wire_r1 : std_logic_vector(31 downto 0);
+  signal ep23wire_r2 : std_logic_vector(31 downto 0);
+  signal ep22wire_r1 : std_logic_vector(31 downto 0);
+  signal ep22wire_r2 : std_logic_vector(31 downto 0);
+  signal ep25wire_r1 : std_logic_vector(31 downto 0);
+  signal ep25wire_r2 : std_logic_vector(31 downto 0);
+  signal ep27wire_r1 : std_logic_vector(31 downto 0);
+  signal ep27wire_r2 : std_logic_vector(31 downto 0);
 
   --  ddr3 stamp
   signal buffer_new_cmd_byte_addr_rd : std_logic_vector(54 downto 0);
@@ -181,15 +182,15 @@ architecture RTL of fmc_to_usb is
   signal Subtraction_addr_wr_addr_rd : std_logic_vector(54 downto 0);
 
 
--- Ajout d'un signal spi_chipselect_ras qui vient du XIFU Studio par l'USB pour d�finir
+-- Ajout d'un signal spi_chipselect_ras qui vient du XIFU Studio par l'USB pour definir
 -- la valeur des chip select DEMUX et RAS de la prochaine commande SPI.
   signal spi_chipselect_ras : std_logic;
 
   --  ddr3 interconnect
   signal init_calib_complete      : std_logic;
   signal init_calib_complete_sync : std_logic;
-  signal sys_rst                  : std_logic;
-  signal rst_cnt                  : unsigned(4 downto 0) := (others => '0');
+  signal sys_rst_r1               : std_logic;
+  signal rst_cnt_r1               : unsigned(4 downto 0) := (others => '0');
 
   signal app_addr          : std_logic_vector (pkg_ADDR_WIDTH-1 downto 0);
   signal app_cmd           : std_logic_vector (2 downto 0);
@@ -204,15 +205,15 @@ architecture RTL of fmc_to_usb is
   signal app_wdf_wren      : std_logic;
 
   --  led
-  signal cpt0        : integer;
-  signal start_temp0 : unsigned(3 downto 0);
-  signal led_temp    : std_logic;
+  signal cpt0_r1  : integer;
+  signal start_r1 : unsigned(3 downto 0);
+  signal led_r1   : std_logic;
 
 
   -- manage ep20wire
   signal prog_empty : std_logic;
 
-  signal signal_read_piper_out : unsigned(31 downto 0);
+  signal rd_piper_out_r1 : unsigned(31 downto 0);
 
   --  HK
   signal pipe_out_data_hk  : std_logic_vector(31 downto 0);
@@ -240,21 +241,21 @@ architecture RTL of fmc_to_usb is
   signal sclk                    : std_logic;
   signal cs_n                    : std_logic_vector(o_cs_n'range);
 
-  signal sel_main_n : std_logic;
+  signal sel_main_n_r1 : std_logic;
 
 
-  attribute ASYNC_REG                 : string;
-  attribute ASYNC_REG of ep23wire_one : signal is "TRUE";
-  attribute ASYNC_REG of ep23wire_two : signal is "TRUE";
+  attribute ASYNC_REG                : string;
+  attribute ASYNC_REG of ep23wire_r1 : signal is "TRUE";
+  attribute ASYNC_REG of ep23wire_r2 : signal is "TRUE";
 
-  attribute ASYNC_REG of ep22wire_one : signal is "TRUE";
-  attribute ASYNC_REG of ep22wire_two : signal is "TRUE";
+  attribute ASYNC_REG of ep22wire_r1 : signal is "TRUE";
+  attribute ASYNC_REG of ep22wire_r2 : signal is "TRUE";
 
-  attribute ASYNC_REG of ep25wire_one : signal is "TRUE";
-  attribute ASYNC_REG of ep25wire_two : signal is "TRUE";
+  attribute ASYNC_REG of ep25wire_r1 : signal is "TRUE";
+  attribute ASYNC_REG of ep25wire_r2 : signal is "TRUE";
 
-  attribute ASYNC_REG of ep27wire_one : signal is "TRUE";
-  attribute ASYNC_REG of ep27wire_two : signal is "TRUE";
+  attribute ASYNC_REG of ep27wire_r1 : signal is "TRUE";
+  attribute ASYNC_REG of ep27wire_r2 : signal is "TRUE";
 
 
   signal cnt_r1 : unsigned(26 downto 0) := (others => '0');
@@ -302,8 +303,8 @@ begin
   end generate;
 
 -- Gestion de o_cs_n sur 2 bits
--- le spi_chipselect_ras est utilis� pour "orienter" le o_sync_n vers le DEMUX ou le RAS
--- si spi_chipselect_ras = 1 on s�lectionne le RAS
+-- le spi_chipselect_ras est utilise pour "orienter" le o_sync_n vers le DEMUX ou le RAS
+-- si spi_chipselect_ras = 1 on selectionne le RAS
 
 ----------------------------------------------------
 --  SPI
@@ -327,9 +328,6 @@ begin
 
   cs_n(0) <= sync_n when spi_chipselect_ras = '1' else '1';  -- Chip select _n for RAS
   cs_n(1) <= sync_n when spi_chipselect_ras = '0' else '1';  -- Chip select _n for DEMUX (in the future, maybe there will be more DEMUX)
-
-  -- output
-  --o_cs_n <= cs_n;
 
   -- endianess: swap bytes
   pipe_in_data_big_endian <= pipe_in_data(7 downto 0) & pipe_in_data(15 downto 8) & pipe_in_data(23 downto 16) & pipe_in_data(31 downto 24);
@@ -361,8 +359,6 @@ begin
       i_ui_spi_cs_n => cs_n             -- SPI chip select
       );
 
-
-
 ----------------------------------------------------
 --  OPAL KELLY LEDs
 --    inversed logical:
@@ -372,27 +368,27 @@ begin
   p_clock_science_link0 : process (clk_science(0), rst_science0)
   begin
     if rst_science0 = '1' then
-      cpt0     <= 0;
-      led_temp <= '1';
+      cpt0_r1 <= 0;
+      led_r1  <= '1';
     elsif rising_edge(clk_science(0)) then
-      cpt0 <= cpt0 + 1;
+      cpt0_r1 <= cpt0_r1 + 1;
       if start_detected(0) = '1' then
-        start_temp0 <= start_temp0 + 1;
+        start_r1 <= start_r1 + 1;
       end if;
-      if cpt0 = 1000000 then
-        if start_temp0 = "0000" then
-          led_temp <= '0';
+      if cpt0_r1 = 1000000 then
+        if start_r1 = "0000" then
+          led_r1 <= '0';
         else
-          led_temp <= '1';
+          led_r1 <= '1';
         end if;
-        cpt0 <= 0;
+        cpt0_r1 <= 0;
       end if;
     end if;
   end process;
 
   -- leds
   o_leds(0) <= not('1');
-  o_leds(1) <= led_temp;
+  o_leds(1) <= led_r1;
 
 
   p_blink : process (clk) is
@@ -411,8 +407,6 @@ begin
 ----------------------------------------------------
   usb_rst   <= ep00wire(0);
 
--- Sortie des chip select sur 2 leds
-
 ----------------------------------------------------
 --  FMC 105 LEDs
 ----------------------------------------------------
@@ -427,10 +421,9 @@ begin
       o_leds_fmc(0) <= '1';
       o_leds_fmc(1) <= cs_n(0);
       o_leds_fmc(2) <= cs_n(1);
-      o_leds_fmc(3) <= sel_main_n;
+      o_leds_fmc(3) <= sel_main_n_r1;
     end if;
   end process;
-
 
 ----------------------------------------------------
 --  Controller DDR3
@@ -482,21 +475,24 @@ begin
       sys_clk_p => i_sys_clkp,
       sys_clk_n => i_sys_clkn,
 
-      sys_rst => sys_rst
+      device_temp => open,
+
+      sys_rst => sys_rst_r1
+
       );
 
   --//MIG Infrastructure Reset
   p_reset_mig : process (okClk, usb_rst)
   begin
     if usb_rst = '1' then
-      rst_cnt <= (others => '0');
-      sys_rst <= '1';
+      rst_cnt_r1 <= (others => '0');
+      sys_rst_r1 <= '1';
     elsif rising_edge(okClk) then
-      if(rst_cnt < "1000") then
-        rst_cnt <= rst_cnt + 1;
-        sys_rst <= '1';
+      if(rst_cnt_r1 < "1000") then
+        rst_cnt_r1 <= rst_cnt_r1 + 1;
+        sys_rst_r1 <= '1';
       else
-        sys_rst <= '0';
+        sys_rst_r1 <= '0';
       end if;
     end if;
   end process p_reset_mig;
@@ -590,30 +586,30 @@ begin
   begin
     if usb_rst = '1' then
 
-      ep23wire_one <= (others => '0');
-      ep23wire_two <= (others => '0');
-      ep22wire_one <= (others => '0');
-      ep22wire_two <= (others => '0');
+      ep23wire_r1 <= (others => '0');
+      ep23wire_r2 <= (others => '0');
+      ep22wire_r1 <= (others => '0');
+      ep22wire_r2 <= (others => '0');
 
-      ep25wire_one <= (others => '0');
-      ep25wire_two <= (others => '0');
-      ep27wire_one <= (others => '0');
-      ep27wire_two <= (others => '0');
+      ep25wire_r1 <= (others => '0');
+      ep25wire_r2 <= (others => '0');
+      ep27wire_r1 <= (others => '0');
+      ep27wire_r2 <= (others => '0');
 
     else
       if rising_edge (okClk) then
 
-        ep23wire_one <= ep23wire;
-        ep23wire_two <= ep23wire_one;
+        ep23wire_r1 <= ep23wire;
+        ep23wire_r2 <= ep23wire_r1;
 
-        ep22wire_one <= ep22wire;
-        ep22wire_two <= ep22wire_one;
+        ep22wire_r1 <= ep22wire;
+        ep22wire_r2 <= ep22wire_r1;
 
-        ep25wire_one <= ep25wire;
-        ep25wire_two <= ep25wire_one;
+        ep25wire_r1 <= ep25wire;
+        ep25wire_r2 <= ep25wire_r1;
 
-        ep27wire_one <= ep27wire;
-        ep27wire_two <= ep27wire_one;
+        ep27wire_r1 <= ep27wire;
+        ep27wire_r2 <= ep27wire_r1;
 
       end if;
     end if;
@@ -655,8 +651,8 @@ begin
       );
 
 
--- Le signal spi_chipselect_ras est re�u sur le wire x"01"
--- La valeur au reset est fix�e �: spi_chipselect_ras = '1'
+-- Le signal spi_chipselect_ras est recu sur le wire x"01"
+-- La valeur au reset est fixee a: spi_chipselect_ras = '1'
 -- Relecture du spi_chipselect_ras sur le wire x"24"
   label_okWireIn_chipselect : okWireIn
     port map (
@@ -675,11 +671,11 @@ begin
   p_pipe : process (okClk)
   begin
     if rising_edge(okClk)then
-      sel_main_n <= ep02wire(0);
+      sel_main_n_r1 <= ep02wire(0);
     end if;
   end process p_pipe;
 
-  o_sel_main_n <= sel_main_n;
+  o_sel_main_n <= sel_main_n_r1;
 
   ---------------------------------------------------------------------
   -- resynchronize shi
@@ -697,8 +693,8 @@ begin
         g_DATA_WIDTH      => data_tmp0'length  -- data width expressed in bits
         )
       port map(
-        i_clk        => clk,            -- clock signal
         i_async_data => data_tmp0,      -- async input
+        i_clk        => clk,            -- output clock signal
         o_data       => data_tmp1       -- output data with/without delay
         );
     spi_chipselect_ras <= data_tmp1(0);
@@ -739,7 +735,7 @@ begin
       okHE      => okHE,
       okEH      => okEHx(3*65-1 downto 2*65),
       ep_addr   => x"22",
-      ep_datain => ep22wire_two
+      ep_datain => ep22wire_r2
       );
 
 ----------------------------------------------------
@@ -750,7 +746,7 @@ begin
       okHE      => okHE,
       okEH      => okEHx(4*65-1 downto 3*65),
       ep_addr   => x"23",
-      ep_datain => ep23wire_two
+      ep_datain => ep23wire_r2
       );
 
 ----------------------------------------------------
@@ -772,7 +768,7 @@ begin
       okHE      => okHE,
       okEH      => okEHx(6*65-1 downto 5*65),
       ep_addr   => x"25",
-      ep_datain => ep25wire_two
+      ep_datain => ep25wire_r2
       );
 
 ----------------------------------------------------
@@ -794,7 +790,7 @@ begin
       okHE      => okHE,
       okEH      => okEHx(8*65-1 downto 7*65),
       ep_addr   => x"27",
-      ep_datain => ep27wire_two
+      ep_datain => ep27wire_r2
       );
 
 ----------------------------------------------------
@@ -864,8 +860,8 @@ begin
 
       if rising_edge (clk) then
         --  meta
-        full_fifo_instrument_1 <= full_fifo_instrument;
-        full_fifo_instrument_2 <= full_fifo_instrument_1;
+        full_fifo_instrument_r1 <= full_fifo_instrument;
+        full_fifo_instrument_r2 <= full_fifo_instrument_r1;
 
         ep22wire(2) <= '0';
         ep22wire(3) <= '0';
@@ -874,13 +870,13 @@ begin
         ep22wire(6) <= '0';
 
         --  detect error
-        if pipe_out_full = '1' and full_fifo_instrument_2 = '0' then
+        if pipe_out_full = '1' and full_fifo_instrument_r2 = '0' then
           ep22wire(0) <= '1';
         else
-          if pipe_out_full = '0' and full_fifo_instrument_2 = '1' then
+          if pipe_out_full = '0' and full_fifo_instrument_r2 = '1' then
             ep22wire(1) <= '1';
           else
-            if pipe_out_full = '1' and full_fifo_instrument_2 = '1' then
+            if pipe_out_full = '1' and full_fifo_instrument_r2 = '1' then
               ep22wire(1) <= '1';
               ep22wire(0) <= '1';
             end if;
@@ -999,7 +995,9 @@ begin
       dout          => po0_ep_datain_hk,  --// Bus [31 : 0]
       full          => open,
       empty         => open,
-      rd_data_count => rd_data_count_hk   --// Bus [9 : 0]
+      rd_data_count => rd_data_count_hk,  --// Bus [9 : 0]
+      wr_rst_busy   => open,
+      rd_rst_busy   => open
       );
 
   inst_hk_pattern : entity work.hk_pattern
@@ -1021,17 +1019,17 @@ begin
   p_nb_science_read_word : process (okClk, usb_rst)
   begin
     if usb_rst = '1' then
-      ep25wire              <= (others => '0');
-      signal_read_piper_out <= (others => '0');
+      ep25wire        <= (others => '0');
+      rd_piper_out_r1 <= (others => '0');
     else
       if rising_edge (okClk) then
         if po0_ep_read = '1' then
-          signal_read_piper_out <= signal_read_piper_out + 1;
-          ep25wire              <= std_logic_vector(signal_read_piper_out);
+          rd_piper_out_r1 <= rd_piper_out_r1 + 1;
+          ep25wire        <= std_logic_vector(rd_piper_out_r1);
         else
           if empty = '1' then
-            ep25wire              <= (others => '0');
-            signal_read_piper_out <= (others => '0');
+            ep25wire        <= (others => '0');
+            rd_piper_out_r1 <= (others => '0');
           end if;
         end if;
       end if;
@@ -1043,16 +1041,42 @@ begin
 ---------------------------------------------------------------
   inst_okPipein_fifo : entity work.fifo_r32_256_w32_256
     port map (
-      rst    => usb_rst,
-      wr_clk => okClk,
-      rd_clk => clk,
-      din    => pi0_ep_dataout,         --// Bus [31 : 0]
-      wr_en  => pi0_ep_write,
-      rd_en  => pipe_in_read,
-      dout   => pipe_in_data,           --// Bus [127 : 0]
-      full   => open,
-      empty  => pipe_in_empty,
-      valid  => open
+      rst         => usb_rst,
+      wr_clk      => okClk,
+      rd_clk      => clk,
+      din         => pi0_ep_dataout,    --// Bus [31 : 0]
+      wr_en       => pi0_ep_write,
+      rd_en       => pipe_in_read,
+      dout        => pipe_in_data,      --// Bus [127 : 0]
+      full        => open,
+      empty       => pipe_in_empty,
+      valid       => open,
+      wr_rst_busy => open,
+      rd_rst_busy => open
       );
 
+---------------------------------------------------------------------
+-- ILA debugging
+---------------------------------------------------------------------
+  gen_ILAs : if g_DEBUG generate
+  begin
+    inst_ila_usb : entity work.ila_usb
+      port map (
+        clk => okClk,
+
+        -- probe3
+        probe2(2) => ep02wire(0),
+        probe2(1) => ep01wire(0),
+        probe2(0) => usb_rst,
+        -- probe1
+        probe1(2) => po0_ep_read,
+        probe1(1) => po0_ep_read_hk,
+        probe1(0) => pi0_ep_write,
+
+        -- probe0
+        probe0(95 downto 64) => po0_ep_datain,
+        probe0(63 downto 32) => po0_ep_datain_hk,
+        probe0(31 downto 0)  => pi0_ep_dataout
+        );
+  end generate gen_ILAs;
 end RTL;
