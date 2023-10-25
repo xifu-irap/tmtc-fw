@@ -1,6 +1,6 @@
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---                            Copyright (C) 2021-2030 Paul Marbeau, IRAP Toulouse.
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
+--                            Copyright (C) 2023-2030 Ken-ji de la Rosa, IRAP Toulouse.
+-- -------------------------------------------------------------------------------------------------------------
 --                            This file is part of the ATHENA X-IFU DRE Telemetry and Telecommand Firmware.
 --
 --                            tmtc-fw is free software: you can redistribute it and/or modify
@@ -15,9 +15,10 @@
 --
 --                            You should have received a copy of the GNU General Public License
 --                            along with this program.  If not, see <https://www.gnu.org/licenses/>.
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---    email                   paul.marbeau@alten.com
+-- -------------------------------------------------------------------------------------------------------------
+--    email                   kenji.delarosa@alten.com
 --!   @file                   ctrl_rx_fsm.vhd
+--    reference design        Paul MARBEAU (IRAP Toulouse)
 -- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --    Automatic Generation    No
 --    Code Rules Reference    SOC of design and VHDL handbook for VLSI development, CNES Edition (v2.1)
@@ -34,9 +35,6 @@ use ieee.numeric_std.all;
 
 entity ctrl_rx_fsm is
   port (
-    -- param
-    wd_timeout : in std_logic_vector(15 downto 0);
-
     -- global
     reset_n          : in std_logic;
     i_clk_science    : in std_logic;

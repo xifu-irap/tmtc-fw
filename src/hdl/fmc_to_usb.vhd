@@ -1,6 +1,7 @@
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---                            Copyright (C) 2021-2030 Paul Marbeau, IRAP Toulouse.
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
+--                            Copyright (C) 2023-2030 Ken-ji de la Rosa, IRAP Toulouse.
+-- -------------------------------------------------------------------------------------------------------------
+--                            This file is part of the ATHENA X-IFU DRE Telemetry and Telecommand Firmware.
 --
 --                            tmtc-fw is free software: you can redistribute it and/or modify
 --                            it under the terms of the GNU General Public License as published by
@@ -14,25 +15,25 @@
 --
 --                            You should have received a copy of the GNU General Public License
 --                            along with this program.  If not, see <https://www.gnu.org/licenses/>.
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---    email                   paul.marbeau@alten.com
+-- -------------------------------------------------------------------------------------------------------------
+--    email                   kenji.delarosa@alten.com
 --!   @file                   fmc_to_usb.vhd
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--    reference design        Paul MARBEAU (IRAP Toulouse)
+-- -------------------------------------------------------------------------------------------------------------
 --    Automatic Generation    No
 --    Code Rules Reference    SOC of design and VHDL handbook for VLSI development, CNES Edition (v2.1)
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 --!   @details
 --
 --            Top of the TMTC firmware.
 --
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library work;
 use work.FRONTPANEL.all;
 use work.science_data_rx_package.all;
 use work.pkg_func_math.all;
@@ -92,7 +93,7 @@ entity fmc_to_usb is
     i_science_data_n : in std_logic_vector(LignNumber-1 downto 0);
 
 -- Le chip select passe sur 2 bits
--- Le chip select est renommé en cs_n dans tout le code car il est actif à l'état bas.
+-- Le chip select est renommï¿½ en cs_n dans tout le code car il est actif ï¿½ l'ï¿½tat bas.
     -- SPI --
     i_miso : in  std_logic;
     o_mosi : out std_logic;
@@ -108,13 +109,10 @@ end entity;
 architecture RTL of fmc_to_usb is
 
   signal clk            : std_logic;
-  signal rst            : std_logic;
   signal usb_rst        : std_logic;
   signal ddr_rst        : std_logic;
   signal rst_science0   : std_logic;
   signal rst_science0_n : std_logic;
-  signal rst_meta       : std_logic;
-  signal rst_a          : std_logic;
 
   --  okHost
   signal okClk : std_logic;
@@ -132,40 +130,27 @@ architecture RTL of fmc_to_usb is
   signal full_fifo_instrument   : std_logic;
   signal full_fifo_instrument_1 : std_logic;
   signal full_fifo_instrument_2 : std_logic;
-  signal enable_debug           : std_logic;
 
   signal valid_fifo_instrument : std_logic;
   signal dataout_instrument    : std_logic_vector(127 downto 0);
   signal write_instrument      : std_logic;
-  signal load_MSB              : std_logic;
 
   signal data_instrument : std_logic_vector(127 downto 0);
 
-  signal din   : std_logic_vector(31 downto 0);
-  signal wr_en : std_logic;
 
   --  okPipeIn_fifo
-  signal read_sended      : std_logic;
   signal pi0_ep_write     : std_logic;
   signal pi0_ep_dataout   : std_logic_vector(31 downto 0);
   signal pipe_in_read     : std_logic;
   signal pipe_in_data     : std_logic_vector(31 downto 0);
-  signal pipe_in_data_use : std_logic_vector(31 downto 0);
-  signal pipe_in_rd_count : std_logic_vector(7 downto 0);
-  signal pipe_in_wr_count : std_logic_vector(9 downto 0);
   signal pipe_in_empty    : std_logic;
-  signal pipe_in_full     : std_logic;
-  signal pipe_in_valid    : std_logic;
 
   --  okPipeOut_fifo
   signal po0_ep_read       : std_logic;
   signal po0_ep_datain     : std_logic_vector(31 downto 0);
   signal pipe_out_write    : std_logic;
   signal pipe_out_data     : std_logic_vector(127 downto 0);
-  signal pipe_out_rd_count : std_logic_vector(9 downto 0);
-  signal pipe_out_wr_count : std_logic_vector(7 downto 0);
   signal pipe_out_full     : std_logic;
-  signal pipe_out_empty    : std_logic;
   signal empty             : std_logic;
   signal wr_data_count     : std_logic_vector(14 downto 0);
   signal rd_data_count     : std_logic_vector(16 downto 0);
@@ -198,7 +183,7 @@ architecture RTL of fmc_to_usb is
   signal Subtraction_addr_wr_addr_rd : std_logic_vector(54 downto 0);
 
 
--- Ajout d'un signal spi_chipselect_ras qui vient du XIFU Studio par l'USB pour définir
+-- Ajout d'un signal spi_chipselect_ras qui vient du XIFU Studio par l'USB pour dï¿½finir
 -- la valeur des chip select DEMUX et RAS de la prochaine commande SPI.
   signal spi_chipselect_ras : std_logic;
 
@@ -208,13 +193,11 @@ architecture RTL of fmc_to_usb is
   signal sys_rst                  : std_logic;
   signal rst_cnt                  : unsigned(4 downto 0) := (others => '0');
 
-  signal app_ecc_multiple_err : std_logic_vector(2*nCK_PER_CLK-1 downto 0);
   signal app_addr             : std_logic_vector (ADDR_WIDTH-1 downto 0);
   signal app_cmd              : std_logic_vector (2 downto 0);
   signal app_en               : std_logic;
   signal app_rdy              : std_logic;
   signal app_rd_data          : std_logic_vector (APP_DATA_WIDTH-1 downto 0);
-  signal app_rd_data_end      : std_logic;
   signal app_rd_data_valid    : std_logic;
   signal app_wdf_data         : std_logic_vector (APP_DATA_WIDTH-1 downto 0);
   signal app_wdf_end          : std_logic;
@@ -224,46 +207,19 @@ architecture RTL of fmc_to_usb is
 
   --  led
   signal cpt0        : integer;
-  signal cpt1        : integer;
   signal start_temp0 : unsigned(3 downto 0);
-  signal start_temp1 : std_logic_vector(3 downto 0);
   signal led_temp    : std_logic;
 
-  --  icon et ila
-  signal CONTROL0 : std_logic_vector(35 downto 0);
-  signal CONTROL1 : std_logic_vector(35 downto 0);
-  signal CONTROL2 : std_logic_vector(35 downto 0);
-
-  signal DATA              : std_logic_vector(1 downto 0);
-  signal SYNC_OUT          : std_logic_vector(31 downto 0);
-  signal SYNC_OUT_one      : std_logic_vector(31 downto 0);
-  signal SYNC_OUT_fast     : std_logic_vector(31 downto 0);
-  signal start_stop_fast   : std_logic;
-  signal start_stop_one    : std_logic;
-  signal SYNC_OUT_3        : std_logic_vector(31 downto 0);
-  signal tREFI_std         : std_logic_vector(31 downto 0);
-  signal counter_tREFI_std : std_logic_vector(31 downto 0);
 
   -- manage ep20wire
-  signal counter_BL_read_DRR3 : std_logic_vector(31 downto 0);
-  signal load_ep_wire         : std_logic;
-  signal fifo_filled          : std_logic;
-
-  signal prog_full  : std_logic;
   signal prog_empty : std_logic;
-
-  --  output
-  signal ack_time_out : std_logic;
-  signal time_out     : std_logic;
 
   signal signal_read_piper_out : unsigned(31 downto 0);
 
   --  HK
   signal pipe_out_data_hk  : std_logic_vector(31 downto 0);
   signal pipe_out_write_hk : std_logic;
-  signal empty_hk          : std_logic;
-  signal pipe_out_full_hk  : std_logic;
-
+ 
   signal po0_ep_read_hk   : std_logic;
   signal po0_ep_datain_hk : std_logic_vector(31 downto 0);
   signal rd_data_count_hk : std_logic_vector(9 downto 0);
@@ -279,9 +235,6 @@ architecture RTL of fmc_to_usb is
   signal science_data   : std_logic_vector(LignNumber - 1 downto 0);
   signal start_detected : std_logic_vector(LinkNumber-1 downto 0);
 
-  constant c_SPI_SER_WD_S_V_S   : integer := log2_ceil(c_DAC_SPI_SER_WD_S + 1);  --! DAC SPI: Serial word size vector bus size
-  constant c_DAC_SPI_SER_WD_S_V : std_logic_vector(c_SPI_SER_WD_S_V_S-1 downto 0) :=
-    std_logic_vector(to_unsigned(c_DAC_SPI_SER_WD_S, c_SPI_SER_WD_S_V_S));  --! DAC SPI: Serial word size vector
   signal pipe_in_data_big_endian : std_logic_vector(31 downto 0);
   signal sync_n                  : std_logic;
   signal miso                    : std_logic;
@@ -351,8 +304,8 @@ begin
   end generate;
 
 -- Gestion de o_cs_n sur 2 bits
--- le spi_chipselect_ras est utilisé pour "orienter" le o_sync_n vers le DEMUX ou le RAS
--- si spi_chipselect_ras = 1 on sélectionne le RAS
+-- le spi_chipselect_ras est utilisï¿½ pour "orienter" le o_sync_n vers le DEMUX ou le RAS
+-- si spi_chipselect_ras = 1 on sï¿½lectionne le RAS
 
 ----------------------------------------------------
 --  SPI
@@ -512,7 +465,7 @@ begin
       app_wdf_end       => app_wdf_end,
       app_wdf_wren      => app_wdf_wren,
       app_rd_data       => app_rd_data,
-      app_rd_data_end   => app_rd_data_end,
+      app_rd_data_end   => open,
       app_rd_data_valid => app_rd_data_valid,
       app_rdy           => app_rdy,
       app_wdf_rdy       => app_wdf_rdy,
@@ -563,13 +516,12 @@ begin
 
       pipe_in_read     => read_instrument,
       pipe_in_data     => data_instrument,
-      pipe_in_rd_count => x"00",
+
       pipe_in_valid    => valid_fifo_instrument,
       pipe_in_empty    => empty_fifo_instrument,
 
       pipe_out_write    => pipe_out_write,
       pipe_out_data     => pipe_out_data,
-      pipe_out_wr_count => pipe_out_wr_count,
       pipe_out_full     => pipe_out_full,
 
       app_rdy  => app_rdy,              --: STD_LOGIC;
@@ -578,7 +530,6 @@ begin
       app_addr => app_addr,  --: STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0); --ADDR_WIDTH            : integer := 29;
 
       app_rd_data       => app_rd_data,  --: STD_LOGIC_VECTOR  (APP_DATA_WIDTH-1 downto 0);  --constant APP_DATA_WIDTH        :  integer := 128;
-      app_rd_data_end   => app_rd_data_end,    --: STD_LOGIC;
       app_rd_data_valid => app_rd_data_valid,  --: STD_LOGIC;
 
       app_wdf_rdy  => app_wdf_rdy,      --: STD_LOGIC;
@@ -589,11 +540,6 @@ begin
 
       prog_empty => prog_empty,
 
-      load_ep_wire         => load_ep_wire,
-      fifo_filled          => fifo_filled,
-      counter_BL_read_DRR3 => counter_BL_read_DRR3,
-
-      SYNC_OUT_3 => SYNC_OUT_3,
 
       buffer_new_cmd_byte_addr_wr => buffer_new_cmd_byte_addr_wr,
       buffer_new_cmd_byte_addr_rd => buffer_new_cmd_byte_addr_rd
@@ -626,7 +572,6 @@ begin
   inst_manaage_pipe_out : entity work.manage_pipe_out
     port map (
       --  global
-      clk   => clk,
       okClk => okClk,
       reset => usb_rst,
 
@@ -712,8 +657,8 @@ begin
       );
 
 
--- Le signal spi_chipselect_ras est reçu sur le wire x"01"
--- La valeur au reset est fixée à: spi_chipselect_ras = '1'
+-- Le signal spi_chipselect_ras est reï¿½u sur le wire x"01"
+-- La valeur au reset est fixï¿½e ï¿½: spi_chipselect_ras = '1'
 -- Relecture du spi_chipselect_ras sur le wire x"24"
   label_okWireIn_chipselect : okWireIn
     port map (
@@ -916,7 +861,7 @@ begin
   begin
     if ddr_rst = '1' then
       ep22wire     <= (others => '0');
-      enable_debug <= '0';
+  
     else
 
       if rising_edge (clk) then
@@ -924,28 +869,24 @@ begin
         full_fifo_instrument_1 <= full_fifo_instrument;
         full_fifo_instrument_2 <= full_fifo_instrument_1;
 
-        ep22wire(2) <= load_ep_wire;
-        ep22wire(3) <= fifo_filled;
+        ep22wire(2) <= '0';
+        ep22wire(3) <= '0';
         ep22wire(4) <= empty;
         ep22wire(5) <= empty_fifo_instrument;
-        ep22wire(6) <= enable_debug;
+        ep22wire(6) <= '0';
 
         --  detect error
-        if pipe_out_full = '1' and full_fifo_instrument_2 = '0' and enable_debug = '1' then
+        if pipe_out_full = '1' and full_fifo_instrument_2 = '0'  then
           ep22wire(0) <= '1';
         else
-          if pipe_out_full = '0' and full_fifo_instrument_2 = '1' and enable_debug = '1' then
+          if pipe_out_full = '0' and full_fifo_instrument_2 = '1' then
             ep22wire(1) <= '1';
           else
-            if pipe_out_full = '1' and full_fifo_instrument_2 = '1' and enable_debug = '1' then
+            if pipe_out_full = '1' and full_fifo_instrument_2 = '1' then
               ep22wire(1) <= '1';
               ep22wire(0) <= '1';
             end if;
           end if;
-        end if;
-
-        if load_ep_wire = '1' then  --  enable full flag after first gse read
-          enable_debug <= '1';
         end if;
 
       end if;
@@ -1058,8 +999,8 @@ begin
       wr_en         => pipe_out_write_hk,
       rd_en         => po0_ep_read_hk,
       dout          => po0_ep_datain_hk,  --// Bus [31 : 0]
-      full          => pipe_out_full_hk,
-      empty         => empty_hk,
+      full          => open,
+      empty         => open,
       rd_data_count => rd_data_count_hk   --// Bus [9 : 0]
       );
 
@@ -1113,7 +1054,7 @@ begin
       dout   => pipe_in_data,           --// Bus [127 : 0]
       full   => open,
       empty  => pipe_in_empty,
-      valid  => pipe_in_valid
+      valid  => open
       );
 
 end RTL;

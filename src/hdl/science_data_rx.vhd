@@ -1,6 +1,6 @@
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---                            Copyright (C) 2021-2030 Paul Marbeau, IRAP Toulouse.
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
+--                            Copyright (C) 2023-2030 Ken-ji de la Rosa, IRAP Toulouse.
+-- -------------------------------------------------------------------------------------------------------------
 --                            This file is part of the ATHENA X-IFU DRE Telemetry and Telecommand Firmware.
 --
 --                            tmtc-fw is free software: you can redistribute it and/or modify
@@ -15,24 +15,24 @@
 --
 --                            You should have received a copy of the GNU General Public License
 --                            along with this program.  If not, see <https://www.gnu.org/licenses/>.
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---    email                   paul.marbeau@alten.com
+-- -------------------------------------------------------------------------------------------------------------
+--    email                   kenji.delarosa@alten.com
 --!   @file                   science_data_rx.vhd
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--    reference design        Paul MARBEAU (IRAP Toulouse)
+-- -------------------------------------------------------------------------------------------------------------
 --    Automatic Generation    No
 --    Code Rules Reference    SOC of design and VHDL handbook for VLSI development, CNES Edition (v2.1)
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 --!   @details
 --
 --             Management of the science link.
 --
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library work;
 use work.science_data_rx_package.all;
 
 entity science_data_rx is
@@ -58,10 +58,6 @@ end science_data_rx;
 
 architecture RTL of science_data_rx is
 
-  signal data_out_wide_process : t_ARRAY16bits(0 to 3);
-  signal ctrl_out_wide         : std_logic_vector(15 downto 0);
-
-  signal cpt        : integer range 0 to 4;
   signal cpt_fifo   : integer;
   signal cpt_frame  : integer;
   signal write_data : std_logic;
@@ -100,8 +96,6 @@ begin
     gen_science_data_rx_fsm_link : for N in (LignNumber/2)-1 downto 0 generate
       inst_science_data_rx_fsm : entity work.science_data_rx_fsm
         port map (
-          -- param
-          wd_timeout => X"FFFF",
 
           -- global
           reset_n          => reset_n,
@@ -113,7 +107,9 @@ begin
           i_science_data => i_science_data(4*I+N),
 
           -- deserialize
-          data_out => data_out(4*I+N)
+          CTRL     => open,
+          data_out => data_out(4*I+N),
+          data_ready => open
           );
     end generate gen_science_data_rx_fsm_link;
   end generate gen_science_data_rx_fsm;
@@ -124,9 +120,6 @@ begin
   gen_science_ctrl_rx_fsm : for N in LinkNumber-1 downto 0 generate
     inst_ctrl_rx_fsm : entity work.ctrl_rx_fsm
       port map (
-        -- param
-        wd_timeout => X"FFFF",
-
         -- global
         reset_n          => reset_n,
         i_clk_science    => i_clk_science(N),
@@ -234,6 +227,3 @@ begin
   end process p_frame_build;
 
 end RTL;
-
-
-

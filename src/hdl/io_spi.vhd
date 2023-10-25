@@ -35,8 +35,6 @@ use ieee.std_logic_1164.all;
 
 library unisim;
 
-
-
 entity io_spi is
   generic (
     g_SPI_CS_N_WIDTH : integer := 1

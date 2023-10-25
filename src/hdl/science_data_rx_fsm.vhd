@@ -1,6 +1,6 @@
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---                            Copyright (C) 2021-2030 Paul Marbeau, IRAP Toulouse.
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
+--                            Copyright (C) 2023-2030 Ken-ji de la Rosa, IRAP Toulouse.
+-- -------------------------------------------------------------------------------------------------------------
 --                            This file is part of the ATHENA X-IFU DRE Telemetry and Telecommand Firmware.
 --
 --                            tmtc-fw is free software: you can redistribute it and/or modify
@@ -15,18 +15,19 @@
 --
 --                            You should have received a copy of the GNU General Public License
 --                            along with this program.  If not, see <https://www.gnu.org/licenses/>.
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---    email                   paul.marbeau@alten.com
+-- -------------------------------------------------------------------------------------------------------------
+--    email                   kenji.delarosa@alten.com
 --!   @file                   science_data_rx_fsm.vhd
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--    reference design        Paul MARBEAU (IRAP Toulouse)
+-- -------------------------------------------------------------------------------------------------------------
 --    Automatic Generation    No
 --    Code Rules Reference    SOC of design and VHDL handbook for VLSI development, CNES Edition (v2.1)
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 --!   @details
 --
 --             Data State Machine.
 --
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -34,9 +35,6 @@ use ieee.numeric_std.all;
 
 entity science_data_rx_fsm is
   port (
-    -- param
-    wd_timeout : in std_logic_vector(15 downto 0);
-
     -- global
     reset_n          : in std_logic;
     i_clk_science    : in std_logic;
@@ -61,7 +59,7 @@ architecture Behavioral of science_data_rx_fsm is
   signal Rx_State : T_Rx_State;
 
   signal N              : integer range 0 to 5;
-  signal start_detected : std_logic;
+
 
   signal science_ctrl_FFF  : std_logic;
   signal i_science_ctrl_FF : std_logic;
@@ -140,7 +138,6 @@ begin
       Rx_State       <= Wait_First_start;
       N              <= 0;
       data_out       <= (others => '0');
-      start_detected <= '0';
       data_ready     <= '0';
       CTRL           <= (others => '0');
     else
@@ -171,7 +168,6 @@ begin
               data_out(6)    <= science_data;
               CTRL(6)        <= science_ctrl;
               N              <= 5;
-              start_detected <= '1';
             else
               Rx_State <= Wait_Second_start;
             end if;
@@ -179,7 +175,6 @@ begin
 
           when decode =>
             if N = 0 then
-              start_detected <= '0';
               data_ready     <= '1';
               data_out(N)    <= science_data;
               CTRL(N)        <= science_ctrl;

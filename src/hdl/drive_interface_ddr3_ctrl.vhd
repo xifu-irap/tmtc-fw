@@ -1,6 +1,6 @@
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 --                            Copyright (C) 2023-2030 Ken-ji de la ROSA, IRAP Toulouse.
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 --                            This file is part of the ATHENA X-IFU DRE Telemetry and Telecommand Firmware.
 --
 --                            tmtc-fw is free software: you can redistribute it and/or modify
@@ -15,19 +15,19 @@
 --
 --                            You should have received a copy of the GNU General Public License
 --                            along with this program.  If not, see <https://www.gnu.org/licenses/>.
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 --    email                   kenji.delarosa@alten.com
 --!   @file                   drive_interface_ddr3_ctrl.vhd
 --    reference design        Bernard Bertrand (IRAP Toulouse)
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 --    Automatic Generation    No
 --    Code Rules Reference    SOC of design and VHDL handbook for VLSI development, CNES Edition (v2.1)
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 --!   @details
 --
 --            Manage the DDR user interface
 --
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 
 
 library ieee;
@@ -46,13 +46,12 @@ entity drive_interface_ddr3_ctrl is
 --  //DDR Input Buffer (ib_)
     pipe_in_read      : out std_logic;
     pipe_in_data      : in  std_logic_vector(127 downto 0);
-    pipe_in_rd_count  : in  std_logic_vector(7 downto 0);
+
     pipe_in_valid     : in  std_logic;
     pipe_in_empty     : in  std_logic;
 --  //DDR Output Buffer (ob_)
     pipe_out_write    : out std_logic;
     pipe_out_data     : out std_logic_vector(127 downto 0);
-    pipe_out_wr_count : in  std_logic_vector(7 downto 0);
     pipe_out_full     : in  std_logic;
 
     app_rdy  : in  std_logic;
@@ -61,7 +60,6 @@ entity drive_interface_ddr3_ctrl is
     app_addr : out std_logic_vector(28 downto 0);
 
     app_rd_data       : in std_logic_vector(127 downto 0);
-    app_rd_data_end   : in std_logic;
     app_rd_data_valid : in std_logic;
 
     app_wdf_rdy  : in  std_logic;
@@ -71,14 +69,6 @@ entity drive_interface_ddr3_ctrl is
     app_wdf_mask : out std_logic_vector(15 downto 0);
 
     prog_empty : in std_logic;
-
-    load_ep_wire         : out std_logic;
-    fifo_filled          : in  std_logic;
-    counter_BL_read_DRR3 : out std_logic_vector(31 downto 0);
-
-    SYNC_OUT_3 : in std_logic_vector(31 downto 0);
-
-    ddr3_stamp : out std_logic_vector(28 downto 0);
 
     buffer_new_cmd_byte_addr_wr : out std_logic_vector(54 downto 0);
     buffer_new_cmd_byte_addr_rd : out std_logic_vector(54 downto 0)
@@ -93,8 +83,6 @@ architecture RTL of drive_interface_ddr3_ctrl is
   signal state_manager : FSM_State_manager;
 
 --  fsm_interface
-  constant FIFO_SIZE           : integer := 256;
-  constant BURST_UI_WORD_COUNT : integer := 2;  --'d1; //(WORD_SIZE*BURST_MODE/UI_SIZE) = BURST_UI_WORD_COUNT : 16*8/128 = 1
 
   constant ADDRESS_INCREMENT : std_logic_vector(4 downto 0) := b"01000";  --'d8; // UI Address is a word address. BL8 Burst Mode = 8.  Memory Width = 16.
 
@@ -118,9 +106,7 @@ architecture RTL of drive_interface_ddr3_ctrl is
   signal cnt_readed_rest : std_logic_vector(3 downto 0);
 
   signal signal_app_en       : std_logic;
-  signal signal_load_ep_wire : std_logic;
 
-  signal counter_wait_dump_ddr3 : integer;
 
 begin
 
@@ -143,8 +129,6 @@ begin
       max_readed_rest <= (others => '0');
     else
       if clk = '1' and clk'event then
-
-        signal_load_ep_wire <= '0';
 
         case state_manager is
 
