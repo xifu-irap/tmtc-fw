@@ -386,11 +386,9 @@ begin
     end if;
   end process;
 
-  -- leds
-  o_leds(0) <= not('1');
-  o_leds(1) <= led_r1;
-
-
+  ---------------------------------------------------------------------
+  -- detect @clk alive
+  ---------------------------------------------------------------------
   p_blink : process (clk) is
   begin
     if rising_edge(clk) then
@@ -400,7 +398,10 @@ begin
 
   trig <= cnt_r1(cnt_r1'high);
 
-  o_leds(2) <= not(init_calib_complete);
+  -- leds
+  o_leds(0) <= not('1');
+  o_leds(1) <= not(init_calib_complete);
+  o_leds(2) <= led_r1;
   o_leds(3) <= trig;
 ----------------------------------------------------
 --  RESET
