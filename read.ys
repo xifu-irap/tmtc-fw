@@ -1,8 +1,13 @@
+#############################################################################
+# Argument definition
+#  "-vhdl": compilation of vhdl file
+#  "-sv": compilation of verilog/system_verilog file
+#  "-lib": process the file as black box
+#############################################################################
 
 #############################################################################
-# Third party library (from GitHub)
 # Add Vivado library
-#    Those files can be found in the Vivado installation directory (2022.1)
+#  Those files can be found in the Vivado installation directory (2022.1)
 #############################################################################
 
 # UNISIM library: partial
@@ -17,11 +22,10 @@ verific -work unisim -vhdl ./third-party-libraries/ip/vivado/2022.1/data/vhdl/sr
 verific -vhdl -lib ./third-party-libraries/ip/vivado/opal_kelly/Front_panel_XEM7350-K160T/syn/okLibrary.vhd
 
 ##############################################################################
-# Project files
 # The list of source files was generated from Vivado by a TCL command
 #  report_compile_order -used_in synthesis -verbose   -file D:/compilation_order_synthesis.txt
 # Note:
-#   The output file was manually edited in order to be compatible with this file syntax (Linty tools).
+#   The output file was manually edited in order to be compatible with the Linty tools.
 ##############################################################################
 
 
@@ -32,9 +36,12 @@ verific -vhdl -lib ./ip/xilinx/coregen/fifo_r32_256_w32_256/fifo_r32_256_w32_256
 verific -vhdl -lib ./ip/xilinx/coregen/fifo_r32_256_w32_256_hk/fifo_r32_256_w32_256_hk_stub.vhdl
 verific -vhdl -lib ./ip/xilinx/coregen/fifo_r32_131068_w128_32728/fifo_r32_131068_w128_32728_stub.vhdl
 verific -vhdl -lib ./ip/xilinx/coregen/fifo_w32_131068_r128_32728/fifo_w32_131068_r128_32728_stub.vhdl
+verific -vhdl -lib ./ip/xilinx/coregen/ila_usb/ila_usb_stub.vhdl
 
 # VHDL
 #    Source files
+verific -vhdl ./src/hdl/synchronizer.vhd
+verific -vhdl ./src/hdl/pipeliner_with_init.vhd
 verific -vhdl ./src/hdl/spi_master.vhd
 verific -vhdl ./src/hdl/science_data_rx_package.vhd
 verific -vhdl ./src/hdl/science_data_rx_fsm.vhd

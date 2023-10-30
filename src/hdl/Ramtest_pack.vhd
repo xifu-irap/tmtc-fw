@@ -1,28 +1,36 @@
-----------------------------------------------------------------------------------
--- Company  : IRAP CNRS
--- Engineer : Bernard Bertrand
+-- -------------------------------------------------------------------------------------------------------------
+--                            Copyright (C) 2023-2030 Ken-ji de la ROSA, IRAP Toulouse.
+-- -------------------------------------------------------------------------------------------------------------
+--                            This file is part of the ATHENA X-IFU DRE Telemetry and Telecommand Firmware.
 --
--- Create Date:    17:00:51 07/31/2015
--- Design Name:    Ramtester
--- Module Name:    Ramtest - RTL
--- Project Name:     ATHENA XIFU
--- Target Devices: xc7k160t
--- Tool versions:  ISE 14.7
--- Description:
+--                            tmtc-fw is free software: you can redistribute it and/or modify
+--                            it under the terms of the GNU General Public License as published by
+--                            the Free Software Foundation, either version 3 of the License, or
+--                            (at your option) any later version.
 --
--- Dependencies:
+--                            This program is distributed in the hope that it will be useful,
+--                            but WITHOUT ANY WARRANTY; without even the implied warranty of
+--                            MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--                            GNU General Public License for more details.
 --
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
+--                            You should have received a copy of the GNU General Public License
+--                            along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-- -------------------------------------------------------------------------------------------------------------
+--    email                   kenji.delarosa@alten.com
+--!   @file                   Ramtest_pack.vhd
+-- -------------------------------------------------------------------------------------------------------------
+--    Automatic Generation    No
+--    Code Rules Reference    SOC of design and VHDL handbook for VLSI development, CNES Edition (v2.1)
+-- -------------------------------------------------------------------------------------------------------------
+--!   @details
 --
----------------------------------------------------------------------------------
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use ieee.std_logic_unsigned.all;
-use ieee.std_logic_arith.all;
---use ieee.float_pkg.all;
---use std.textio.all;
+--             MIG configuration constants.
+--
+-- -------------------------------------------------------------------------------------------------------------
+
+
+library ieee;
+use ieee.std_logic_1164.all;
 
 ---------------------------------------------------------------
 --
@@ -31,85 +39,57 @@ use ieee.std_logic_arith.all;
 ---------------------------------------------------------------
 package Ramtest_pack is
 
- 
-constant BANK_WIDTH            :	integer	:= 3;                                   -- --// # of memory Bank Address bits.
-constant CK_WIDTH              :	integer	:= 1;                                  
-constant CS_WIDTH              :	integer	:= 1;
-constant nCS_PER_RANK          :	integer	:= 1;
-constant CKE_WIDTH             :	integer	:= 1;
-constant DM_WIDTH              :	integer	:= 2;
-constant DQ_WIDTH              :	integer	:= 16;
-constant DQS_WIDTH             :	integer	:= 2;
---constant ODT_WIDTH             :	integer	:= 1;
-constant ROW_WIDTH             :	integer	:= 15;
-constant ADDR_WIDTH            :	integer	:= 29;
-constant nCK_PER_CLK           :	integer	:= 4;
---constant PAYLOAD_WIDTH         :	integer	:= 16;  
-constant APP_DATA_WIDTH        :	integer	:= 128; -- 2 * nCK_PER_CLK * PAYLOAD_WIDTH;								 
-constant APP_MASK_WIDTH        :	integer	:= 16; -- APP_DATA_WIDTH / 8;
 
---OK RamTest Parameters
---constant BLOCK_SIZE	:	integer	:= 128; 
---constant FIFO_SIZE	:	integer	:= 1024;
+  constant pkg_BANK_WIDTH   : integer := 3;  -- --// # of memory Bank Address bits.
+  constant pkg_CK_WIDTH     : integer := 1;
+  constant pkg_CS_WIDTH     : integer := 1;
+  constant pkg_nCS_PER_RANK : integer := 1;
+  constant pkg_CKE_WIDTH    : integer := 1;
+  constant pkg_DM_WIDTH     : integer := 2;
+  constant pkg_DQ_WIDTH     : integer := 16;
+  constant pkg_DQS_WIDTH    : integer := 2;
 
+  constant pkg_ROW_WIDTH   : integer := 15;
+  constant pkg_ADDR_WIDTH  : integer := 29;
+  constant pkg_nCK_PER_CLK : integer := 4;
 
---component start_stop 
---port(
---		--	global
-				
---		clk					: 	in	STD_LOGIC;
---		reset				: 	in	STD_LOGIC;		
-				
---		--	input	
-		
---		write_instrument	: 	in	STD_LOGIC;
---		ack_time_out		: 	in	STD_LOGIC;
---		time_out_type		: 	in	STD_LOGIC;
-		
---		--	output
-	
---		time_out			: 	out	STD_LOGIC
-		
---);
+  constant pkg_APP_DATA_WIDTH : integer := 128;  -- 2 * nCK_PER_CLK * PAYLOAD_WIDTH;
+  constant pkg_APP_MASK_WIDTH : integer := 16;   -- APP_DATA_WIDTH / 8;
 
---end component;	
-
-
-   -- =============================================================
-    function endian64(rhs : std_logic_vector(63 downto 0)) return std_logic_vector;
-    function endian32(rhs : std_logic_vector(31 downto 0)) return std_logic_vector;
---    function binstr_to_stdvec(inp: string; nbbit : integer) return std_logic_vector;	
+  -- =============================================================
+  function endian64(rhs : std_logic_vector(63 downto 0)) return std_logic_vector;
+  function endian32(rhs : std_logic_vector(31 downto 0)) return std_logic_vector;
 
 
 end Ramtest_pack;
 
 package body Ramtest_pack is
-    -- =============================================================
-    -- =============================================================
-    function endian64(rhs : std_logic_vector(63 downto 0)) return std_logic_vector is
-        variable x : std_logic_vector(63 downto 0);
-   begin
-        x(63 downto 56) := rhs(39 downto 32);
-        x(55 downto 48) := rhs(47 downto 40);
-        x(47 downto 40) := rhs(55 downto 48);
-        x(39 downto 32) := rhs(63 downto 56);
+  -- =============================================================
+  -- =============================================================
+  function endian64(rhs : std_logic_vector(63 downto 0)) return std_logic_vector is
+    variable x : std_logic_vector(63 downto 0);
+  begin
+    x(63 downto 56) := rhs(39 downto 32);
+    x(55 downto 48) := rhs(47 downto 40);
+    x(47 downto 40) := rhs(55 downto 48);
+    x(39 downto 32) := rhs(63 downto 56);
 
-        x(31 downto 24) := rhs(7 downto 0);
-        x(23 downto 16) := rhs(15 downto 8);
-        x(15 downto 8)  := rhs(23 downto 16);
-        x(7 downto 0)   := rhs(31 downto 24);
-        return x;
-    end function endian64;
-    -- =============================================================
-    -- =============================================================
-    function endian32(rhs : std_logic_vector(31 downto 0)) return std_logic_vector is
-        variable x : std_logic_vector(31 downto 0);
-   begin
-        x(31 downto 24) := rhs(7 downto 0);
-        x(23 downto 16) := rhs(15 downto 8);
-        x(15 downto 8)  := rhs(23 downto 16);
-        x(7 downto 0)   := rhs(31 downto 24);
-        return x;
-    end function endian32;
+    x(31 downto 24) := rhs(7 downto 0);
+    x(23 downto 16) := rhs(15 downto 8);
+    x(15 downto 8)  := rhs(23 downto 16);
+    x(7 downto 0)   := rhs(31 downto 24);
+    return x;
+  end function endian64;
+  -- =============================================================
+  -- =============================================================
+  function endian32(rhs : std_logic_vector(31 downto 0)) return std_logic_vector is
+    variable x : std_logic_vector(31 downto 0);
+  begin
+    x(31 downto 24) := rhs(7 downto 0);
+    x(23 downto 16) := rhs(15 downto 8);
+    x(15 downto 8)  := rhs(23 downto 16);
+    x(7 downto 0)   := rhs(31 downto 24);
+    return x;
+  end function endian32;
 
 end Ramtest_pack;

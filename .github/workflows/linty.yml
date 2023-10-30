@@ -13,7 +13,7 @@ jobs:
       EXT_LIB_PATH: xifu-irap/third-party-libraries-for-linty
       DEST_EXT_LIB_PATH: third-party-libraries/ip/
       PROJECT_NAME: tmtc-fw
-      LINTY_SCANNER: beta
+      LINTY_SCANNER: latest
 
     steps:
       - name: Git Checkout
@@ -24,6 +24,7 @@ jobs:
       - name: Git Checkout Third-Party Libraries
         uses: actions/checkout@v3
         with:
+          ref: tmtc-2.0.0
           repository: ${{env.EXT_LIB_PATH}}
           fetch-depth: 0
           token: ${{ secrets.THIRD_PARTY_LIBRARIES_TOKEN }}
@@ -34,7 +35,7 @@ jobs:
 
       - name: Get Libraries
         run: |
-          mv ./${{ env.EXT_LIB_PATH }}/${{ env.PROJECT_NAME }}/* ./${{ env.DEST_EXT_LIB_PATH }}
+          cp -r ./${{ env.EXT_LIB_PATH }}/${{ env.PROJECT_NAME }}/* ./${{ env.DEST_EXT_LIB_PATH }}
           ls -a ./${{ env.DEST_EXT_LIB_PATH }}
 
       - name: Cache
