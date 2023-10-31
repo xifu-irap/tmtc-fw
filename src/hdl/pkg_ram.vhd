@@ -39,25 +39,38 @@ use ieee.std_logic_1164.all;
 ---------------------------------------------------------------
 package pkg_ram is
 
-
-  constant pkg_BANK_WIDTH   : integer := 3;  -- --// # of memory Bank Address bits.
+  -- DDR bank width
+  constant pkg_BANK_WIDTH   : integer := 3;
+  -- DDR ck width
   constant pkg_CK_WIDTH     : integer := 1;
+  -- DDR cs width
   constant pkg_CS_WIDTH     : integer := 1;
+  -- DDR ncs per bank
   constant pkg_nCS_PER_RANK : integer := 1;
+  -- DDR cke width
   constant pkg_CKE_WIDTH    : integer := 1;
+  -- DDR dm width
   constant pkg_DM_WIDTH     : integer := 2;
+  -- DDR dq width
   constant pkg_DQ_WIDTH     : integer := 16;
+  -- DDR dqs width
   constant pkg_DQS_WIDTH    : integer := 2;
 
+  -- DDR row width
   constant pkg_ROW_WIDTH   : integer := 15;
+  -- DDR addr width
   constant pkg_ADDR_WIDTH  : integer := 29;
+  -- DDR nCK per clock
   constant pkg_nCK_PER_CLK : integer := 4;
 
+  -- DDR app data width
   constant pkg_APP_DATA_WIDTH : integer := 128;  -- 2 * nCK_PER_CLK * PAYLOAD_WIDTH;
+  -- DDR app mask width
   constant pkg_APP_MASK_WIDTH : integer := 16;   -- APP_DATA_WIDTH / 8;
 
-  -- =============================================================
+  -- swap bytes in each 32 bit-words
   function endian64(rhs : std_logic_vector(63 downto 0)) return std_logic_vector;
+  -- swap bytes
   function endian32(rhs : std_logic_vector(31 downto 0)) return std_logic_vector;
 
 

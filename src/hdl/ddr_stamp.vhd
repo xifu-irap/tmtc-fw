@@ -38,15 +38,17 @@ use ieee.std_logic_arith.all;
 entity ddr_stamp is
   port(
 
-    --  global
+    --  clock
     i_clk : in std_logic;
+    --  reset
     i_rst : in std_logic;
 
-    --  input
+    --  number of write address bytes
     i_buffer_new_cmd_byte_addr_wr : in std_logic_vector(54 downto 0);
+    --  number of read address bytes
     i_buffer_new_cmd_byte_addr_rd : in std_logic_vector(54 downto 0);
 
-    --  output
+    --  substraction result
     o_sub_addr_wr_addr_rd : out std_logic_vector(54 downto 0)
 
     );
@@ -57,9 +59,7 @@ architecture RTL of ddr_stamp is
 
 begin
 
--- ----------------------------------------------------
---
--- ----------------------------------------------------
+  -- compute the delta between the write address and the read address
   p_compute : process (i_clk)
   begin
 

@@ -28,8 +28,6 @@
 --            Manage the DDR user interface
 --
 -- -------------------------------------------------------------------------------------------------------------
-
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
@@ -39,38 +37,72 @@ use ieee.std_logic_arith.all;
 entity drive_interface_ddr3_ctrl is
   port(
 
+    -- clock
     i_clk : in std_logic;
+    -- reset
     i_rst : in std_logic;
 
-    i_calib_done   : in  std_logic;
---  //DDR Input Buffer (ib_)
-    o_pipe_in_read : out std_logic;
-    i_pipe_in_data : in  std_logic_vector(127 downto 0);
-
+    ---------------------------------------------------------------------
+    -- DDR status
+    ---------------------------------------------------------------------
+    -- DDR calibration is done
+    i_calib_done     : in  std_logic;
+    ---------------------------------------------------------------------
+    -- input FIFO
+    ---------------------------------------------------------------------
+    -- FIFO input read
+    o_pipe_in_read   : out std_logic;
+    -- input FIFO data
+    i_pipe_in_data   : in  std_logic_vector(127 downto 0);
+    -- input FIFO data valid
     i_pipe_in_valid  : in  std_logic;
+    -- input FIFO data empty
     i_pipe_in_empty  : in  std_logic;
---  //DDR Output Buffer (ob_)
+    -- input FIFO data prog empty
+    i_prog_empty     : in  std_logic;
+    ---------------------------------------------------------------------
+    -- output FIFO
+    ---------------------------------------------------------------------
+    -- output FIFO write enable
     o_pipe_out_write : out std_logic;
+    -- output FIFO write data
     o_pipe_out_data  : out std_logic_vector(127 downto 0);
+    -- output FIFO full
     i_pipe_out_full  : in  std_logic;
 
+    ---------------------------------------------------------------------
+    -- DDR data
+    ---------------------------------------------------------------------
+    -- indicates that the UI is ready to accept commands.
     i_app_rdy  : in  std_logic;
+    -- active-High strobe for the app_addr[], app_cmd[2:0], app_sz, and app_hi_pri inputs
     o_app_en   : out std_logic;
+    -- selects the command for the current request.
     o_app_cmd  : out std_logic_vector(2 downto 0);
+    -- address of the current request
     o_app_addr : out std_logic_vector(28 downto 0);
 
-    i_app_rd_data       : in std_logic_vector(127 downto 0);
-    i_app_rd_data_valid : in std_logic;
+    -- data from read commands
+    i_app_rd_data       : in  std_logic_vector(127 downto 0);
+    -- indicates app_rd_data is valid
+    i_app_rd_data_valid : in  std_logic;
+    -- indicates that the write data FIFO is ready to receive data
+    i_app_wdf_rdy       : in  std_logic;
+    -- active-High strobe for app_wdf_data
+    o_app_wdf_wren      : out std_logic;
+    -- data for write commands.
+    o_app_wdf_data      : out std_logic_vector(127 downto 0);
+    -- indicates that the current clock cycle is the last cycle of input data on app_wdf_data[
+    o_app_wdf_end       : out std_logic;
+    -- mask for app_wdf_data
+    o_app_wdf_mask      : out std_logic_vector(15 downto 0);
 
-    i_app_wdf_rdy  : in  std_logic;
-    o_app_wdf_wren : out std_logic;
-    o_app_wdf_data : out std_logic_vector(127 downto 0);
-    o_app_wdf_end  : out std_logic;
-    o_app_wdf_mask : out std_logic_vector(15 downto 0);
-
-    i_prog_empty : in std_logic;
-
+    ---------------------------------------------------------------------
+    -- Status
+    ---------------------------------------------------------------------
+    -- wr address (expressed in bytes)
     o_buffer_new_cmd_byte_addr_wr : out std_logic_vector(54 downto 0);
+    -- rd address (expressed in bytes)
     o_buffer_new_cmd_byte_addr_rd : out std_logic_vector(54 downto 0)
 
     );
@@ -78,48 +110,58 @@ end entity;
 
 architecture RTL of drive_interface_ddr3_ctrl is
 
---  fsm manager
+  -- fsm type declaration
   type t_fsm_state_manager is (E_IDLE, E_WRITE_DDR3, E_READ_DDR3, E_WAIT_RESTART);
-  signal sm_state_manager_r1 : t_fsm_state_manager;
+  -- state (registered)
+  signal sm_state_manager_r1   : t_fsm_state_manager;
+  -- define the address increment
+  --'d8; // UI Address is a word address. BL8 Burst Mode = 8.  Memory Width = 16.
+  constant c_ADDRESS_INCREMENT : std_logic_vector(4 downto 0) := b"01000";
 
---  fsm_interface
-
-  constant c_ADDRESS_INCREMENT : std_logic_vector(4 downto 0) := b"01000";  --'d8; // UI Address is a word address. BL8 Burst Mode = 8.  Memory Width = 16.
-
-  signal cmd_byte_addr_wr_r1 : std_logic_vector(57 downto 0);
-
+  -- wr address (expressed in bytes)
   signal new_cmd_byte_addr_wr_r1 : std_logic_vector(54 downto 0);
-
+  -- rd address (expressed in bytes)
   signal new_cmd_byte_addr_rd_r1 : std_logic_vector(54 downto 0);
+  -- current wr address
+  signal cmd_byte_addr_wr_r1     : std_logic_vector(57 downto 0);
+  -- current rd address
   signal cmd_byte_addr_rd_r1     : std_logic_vector(57 downto 0);
 
+  -- define if write mode
   signal write_mode_r1     : std_logic;
+  -- acknowledge of the write mode
   signal ack_write_mode_r1 : std_logic;
+  -- define if read mode
   signal read_mode_r1      : std_logic;
+  -- acknowledge of the read mode
   signal ack_read_mode_r1  : std_logic;
 
+  -- fsm type declaration
   type t_fsm_state is (E_IDLE, E_WRITE0, E_WRITE1, E_WRITE2, E_WRITE3, E_WRITE4, E_READ0, E_READ1, E_READ2, E_READ3);
+  -- state (registered)
   signal sm_state_r1 : t_fsm_state;
 
---  manage ep wire
+  --  max readed rest
   signal max_readed_rest_r1 : std_logic_vector(3 downto 0);
+  -- count the number of read to do
   signal cnt_readed_rest_r1 : std_logic_vector(3 downto 0);
 
-  signal signal_app_en_r1 : std_logic;
+  -- active-High strobe for the app_addr[], app_cmd[2:0], app_sz, and app_hi_pri inputs
+  signal app_en_r1 : std_logic;
 
 
 begin
 
   o_app_wdf_mask <= x"0000";
 
-  o_app_en                      <= signal_app_en_r1;
+  o_app_en                      <= app_en_r1;
   o_buffer_new_cmd_byte_addr_wr <= new_cmd_byte_addr_wr_r1;
   o_buffer_new_cmd_byte_addr_rd <= new_cmd_byte_addr_rd_r1;
-
 
 ----------------------------------------
 --  fsm_fsm_manager
 -----------------------------------------
+  -- DDR write/read auto-selection
   p_fsm_manager : process(i_clk)
   begin
 
@@ -202,7 +244,8 @@ begin
 
 --------------------------------------------
 --  fsm_interface
----------------------------------------------
+-------------------------------------------
+  -- DDR protocol generation
   p_fsm_interface : process(i_clk)
   begin
 
@@ -211,7 +254,7 @@ begin
         sm_state_r1         <= E_IDLE;
         cmd_byte_addr_wr_r1 <= (others => '0');
         cmd_byte_addr_rd_r1 <= (others => '0');
-        signal_app_en_r1    <= '0';
+        app_en_r1           <= '0';
         o_app_cmd           <= b"000";
         o_app_addr          <= (others => '0');
         o_app_wdf_wren      <= '0';
@@ -229,7 +272,7 @@ begin
         cnt_readed_rest_r1      <= (others => '0');
 
       else
-        signal_app_en_r1  <= '0';
+        app_en_r1         <= '0';
         o_app_wdf_wren    <= '0';
         o_app_wdf_end     <= '0';
         o_pipe_in_read    <= '0';
@@ -273,7 +316,7 @@ begin
             o_app_wdf_end  <= '1';
 
             if (i_app_wdf_rdy = '1') then  --  acknowledge data is writed in ddr3
-              signal_app_en_r1  <= '1';
+              app_en_r1         <= '1';
               o_app_cmd         <= b"000";
               sm_state_r1       <= E_WRITE4;
               ack_write_mode_r1 <= '1';    -- disable remote write
@@ -286,31 +329,31 @@ begin
               new_cmd_byte_addr_wr_r1 <= cmd_byte_addr_wr_r1(57 downto 3) + 1;
               sm_state_r1             <= E_IDLE;
             else
-              signal_app_en_r1 <= '1';
-              o_app_cmd        <= b"000";
+              app_en_r1 <= '1';
+              o_app_cmd <= b"000";
             end if;
 
           when E_READ0 =>               -- read data in ddr3
 
-            signal_app_en_r1   <= '1';  -- launch first read
+            app_en_r1          <= '1';  -- launch first read
             o_app_cmd          <= b"001";
             sm_state_r1        <= E_READ1;
             cnt_readed_rest_r1 <= (others => '0');
 
           when E_READ1 =>
 
-            if i_app_rdy = '0' and signal_app_en_r1 = '1' then  --  previous read data don't work, relaunch read
-              signal_app_en_r1 <= '1';
+            if i_app_rdy = '0' and app_en_r1 = '1' then  --  previous read data don't work, relaunch read
+              app_en_r1 <= '1';
             else
               if cnt_readed_rest_r1 < max_readed_rest_r1-1 then
-                if (i_app_rdy = '1') then  -- launch one read
+                if (i_app_rdy = '1') then                -- launch one read
                   o_app_addr          <= cmd_byte_addr_rd_r1(28 downto 0) + c_ADDRESS_INCREMENT;  -- boundary ddr3 adress on 11 bits
                   cmd_byte_addr_rd_r1 <= cmd_byte_addr_rd_r1 + c_ADDRESS_INCREMENT;
-                  signal_app_en_r1    <= '1';
+                  app_en_r1           <= '1';
                   cnt_readed_rest_r1  <= cnt_readed_rest_r1 + 1;
                 else
-                  signal_app_en_r1 <= '1';
-                  o_app_cmd        <= b"001";
+                  app_en_r1 <= '1';
+                  o_app_cmd <= b"001";
                 end if;
               else
                 cmd_byte_addr_rd_r1     <= cmd_byte_addr_rd_r1 + c_ADDRESS_INCREMENT;  --  set address data for next remote read
