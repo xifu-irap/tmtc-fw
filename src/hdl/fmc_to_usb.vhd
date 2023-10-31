@@ -365,23 +365,26 @@ begin
 --      led off: led <= '1';
 --      led on:  led <= '0';
 ----------------------------------------------------
-  p_clock_science_link0 : process (clk_science(0), rst_science0)
+  p_clock_science_link0 : process (clk_science(0))
   begin
-    if rst_science0 = '1' then
-      cpt0_r1 <= 0;
-      led_r1  <= '1';
-    elsif rising_edge(clk_science(0)) then
-      cpt0_r1 <= cpt0_r1 + 1;
-      if start_detected(0) = '1' then
-        start_r1 <= start_r1 + 1;
-      end if;
-      if cpt0_r1 = 1000000 then
-        if start_r1 = "0000" then
-          led_r1 <= '0';
-        else
-          led_r1 <= '1';
-        end if;
+
+    if rising_edge(clk_science(0)) then
+      if rst_science0 = '1' then
         cpt0_r1 <= 0;
+        led_r1  <= '1';
+      else
+        cpt0_r1 <= cpt0_r1 + 1;
+        if start_detected(0) = '1' then
+          start_r1 <= start_r1 + 1;
+        end if;
+        if cpt0_r1 = 1000000 then
+          if start_r1 = "0000" then
+            led_r1 <= '0';
+          else
+            led_r1 <= '1';
+          end if;
+          cpt0_r1 <= 0;
+        end if;
       end if;
     end if;
   end process;
@@ -411,18 +414,21 @@ begin
 ----------------------------------------------------
 --  FMC 105 LEDs
 ----------------------------------------------------
-  p_leds : process (okClk, usb_rst)
+  p_leds : process (okClk)
   begin
-    if usb_rst = '1' then
-      o_leds_fmc(0) <= '0';
-      o_leds_fmc(1) <= '0';
-      o_leds_fmc(2) <= '0';
-      o_leds_fmc(3) <= '0';
-    elsif rising_edge(okClk)then
-      o_leds_fmc(0) <= '1';
-      o_leds_fmc(1) <= cs_n(0);
-      o_leds_fmc(2) <= cs_n(1);
-      o_leds_fmc(3) <= sel_main_n_r1;
+
+    if rising_edge(okClk)then
+      if usb_rst = '1' then
+        o_leds_fmc(0) <= '0';
+        o_leds_fmc(1) <= '0';
+        o_leds_fmc(2) <= '0';
+        o_leds_fmc(3) <= '0';
+      else
+        o_leds_fmc(0) <= '1';
+        o_leds_fmc(1) <= cs_n(0);
+        o_leds_fmc(2) <= cs_n(1);
+        o_leds_fmc(3) <= sel_main_n_r1;
+      end if;
     end if;
   end process;
 
@@ -483,17 +489,20 @@ begin
       );
 
   --//MIG Infrastructure Reset
-  p_reset_mig : process (okClk, usb_rst)
+  p_reset_mig : process (okClk)
   begin
-    if usb_rst = '1' then
-      rst_cnt_r1 <= (others => '0');
-      sys_rst_r1 <= '1';
-    elsif rising_edge(okClk) then
-      if(rst_cnt_r1 < "1000") then
-        rst_cnt_r1 <= rst_cnt_r1 + 1;
+
+    if rising_edge(okClk) then
+      if usb_rst = '1' then
+        rst_cnt_r1 <= (others => '0');
         sys_rst_r1 <= '1';
       else
-        sys_rst_r1 <= '0';
+        if(rst_cnt_r1 < "1000") then
+          rst_cnt_r1 <= rst_cnt_r1 + 1;
+          sys_rst_r1 <= '1';
+        else
+          sys_rst_r1 <= '0';
+        end if;
       end if;
     end if;
   end process p_reset_mig;
@@ -583,22 +592,23 @@ begin
 -- meta wire out
 -- ----------------------------------------------------
 -- resynchronized register
-  p_synchronized_register : process (okClk, usb_rst)
+  p_synchronized_register : process (okClk)
   begin
-    if usb_rst = '1' then
 
-      ep23wire_r1 <= (others => '0');
-      ep23wire_r2 <= (others => '0');
-      ep22wire_r1 <= (others => '0');
-      ep22wire_r2 <= (others => '0');
+    if rising_edge (okClk) then
+      if usb_rst = '1' then
 
-      ep25wire_r1 <= (others => '0');
-      ep25wire_r2 <= (others => '0');
-      ep27wire_r1 <= (others => '0');
-      ep27wire_r2 <= (others => '0');
+        ep23wire_r1 <= (others => '0');
+        ep23wire_r2 <= (others => '0');
+        ep22wire_r1 <= (others => '0');
+        ep22wire_r2 <= (others => '0');
 
-    else
-      if rising_edge (okClk) then
+        ep25wire_r1 <= (others => '0');
+        ep25wire_r2 <= (others => '0');
+        ep27wire_r1 <= (others => '0');
+        ep27wire_r2 <= (others => '0');
+
+      else
 
         ep23wire_r1 <= ep23wire;
         ep23wire_r2 <= ep23wire_r1;
@@ -852,14 +862,15 @@ begin
   -- FIFO status
   ---------------------------------------------------------------------
   -- register: get the FIFO status
-  p_status_fifo : process (clk, ddr_rst)
+  p_status_fifo : process (clk)
   begin
-    if ddr_rst = '1' then
-      ep22wire <= (others => '0');
 
-    else
 
-      if rising_edge (clk) then
+    if rising_edge (clk) then
+      if ddr_rst = '1' then
+        ep22wire <= (others => '0');
+
+      else
         --  meta
         full_fifo_instrument_r1 <= full_fifo_instrument;
         full_fifo_instrument_r2 <= full_fifo_instrument_r1;
@@ -1017,13 +1028,14 @@ begin
   -- register: get the number of read science words
   ---------------------------------------------------------------------
   -- count the number of read science words.
-  p_nb_science_read_word : process (okClk, usb_rst)
+  p_nb_science_read_word : process (okClk)
   begin
-    if usb_rst = '1' then
-      ep25wire        <= (others => '0');
-      rd_piper_out_r1 <= (others => '0');
-    else
-      if rising_edge (okClk) then
+
+    if rising_edge (okClk) then
+      if usb_rst = '1' then
+        ep25wire        <= (others => '0');
+        rd_piper_out_r1 <= (others => '0');
+      else
         if po0_ep_read = '1' then
           rd_piper_out_r1 <= rd_piper_out_r1 + 1;
           ep25wire        <= std_logic_vector(rd_piper_out_r1);

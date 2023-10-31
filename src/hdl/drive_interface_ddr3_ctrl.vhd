@@ -120,15 +120,16 @@ begin
 ----------------------------------------
 --  fsm_fsm_manager
 -----------------------------------------
-  p_fsm_manager : process(i_rst, i_clk)
+  p_fsm_manager : process(i_clk)
   begin
-    if i_rst = '1' then
-      sm_state_manager_r1 <= E_IDLE;
-      write_mode_r1       <= '0';
-      read_mode_r1        <= '0';
-      max_readed_rest_r1  <= (others => '0');
-    else
-      if i_clk = '1' and i_clk'event then
+
+    if rising_edge(i_clk) then
+      if i_rst = '1' then
+        sm_state_manager_r1 <= E_IDLE;
+        write_mode_r1       <= '0';
+        read_mode_r1        <= '0';
+        max_readed_rest_r1  <= (others => '0');
+      else
 
         case sm_state_manager_r1 is
 
@@ -202,31 +203,32 @@ begin
 --------------------------------------------
 --  fsm_interface
 ---------------------------------------------
-  p_fsm_interface : process(i_rst, i_clk)
+  p_fsm_interface : process(i_clk)
   begin
-    if i_rst = '1' then
-      sm_state_r1         <= E_IDLE;
-      cmd_byte_addr_wr_r1 <= (others => '0');
-      cmd_byte_addr_rd_r1 <= (others => '0');
-      signal_app_en_r1    <= '0';
-      o_app_cmd           <= b"000";
-      o_app_addr          <= (others => '0');
-      o_app_wdf_wren      <= '0';
-      o_app_wdf_end       <= '0';
-      ack_write_mode_r1   <= '0';
-      ack_read_mode_r1    <= '0';
-      o_pipe_in_read      <= '0';
-      o_pipe_out_write    <= '0';
-      o_pipe_out_data     <= (others => '0');
-      o_app_wdf_data      <= (others => '0');
 
-      new_cmd_byte_addr_rd_r1 <= (others => '0');
+    if rising_edge(i_clk) then
+      if i_rst = '1' then
+        sm_state_r1         <= E_IDLE;
+        cmd_byte_addr_wr_r1 <= (others => '0');
+        cmd_byte_addr_rd_r1 <= (others => '0');
+        signal_app_en_r1    <= '0';
+        o_app_cmd           <= b"000";
+        o_app_addr          <= (others => '0');
+        o_app_wdf_wren      <= '0';
+        o_app_wdf_end       <= '0';
+        ack_write_mode_r1   <= '0';
+        ack_read_mode_r1    <= '0';
+        o_pipe_in_read      <= '0';
+        o_pipe_out_write    <= '0';
+        o_pipe_out_data     <= (others => '0');
+        o_app_wdf_data      <= (others => '0');
 
-      new_cmd_byte_addr_wr_r1 <= (others => '0');
-      cnt_readed_rest_r1      <= (others => '0');
+        new_cmd_byte_addr_rd_r1 <= (others => '0');
 
-    else
-      if i_clk = '1' and i_clk'event then
+        new_cmd_byte_addr_wr_r1 <= (others => '0');
+        cnt_readed_rest_r1      <= (others => '0');
+
+      else
         signal_app_en_r1  <= '0';
         o_app_wdf_wren    <= '0';
         o_app_wdf_end     <= '0';

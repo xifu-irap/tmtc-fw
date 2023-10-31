@@ -139,25 +139,28 @@ begin
   --   Register to maintain the value
   -- ------------------------------------------------------------------------------------------------------
   gen_reg : for N in pkg_LINK_NUMBER-1 downto 0 generate
-    p_ctrl_register : process (i_rst_n, i_clk_science(N))
+    p_ctrl_register : process (i_clk_science(N))
     begin
-      if i_rst_n = '0' then
-        ctrl_r1(N)         <= (others => '0');
-        data_ready_r1(N)   <= '0';
-        data_out_r1(4*N)   <= (others => '0');
-        data_out_r1(4*N+1) <= (others => '0');
-        data_out_r1(4*N+2) <= (others => '0');
-        data_out_r1(4*N+3) <= (others => '0');
-      elsif rising_edge(i_clk_science(N)) then
-        if data_ready(N) = '1' then
-          ctrl_r1(N)         <= CTRL(N);
-          data_ready_r1(N)   <= data_ready(N);
-          data_out_r1(4*N)   <= data_out(4*N);
-          data_out_r1(4*N+1) <= data_out(4*N+1);
-          data_out_r1(4*N+2) <= data_out(4*N+2);
-          data_out_r1(4*N+3) <= data_out(4*N+3);
-        elsif cpt_synchro_r1 = "10" then
-          data_ready_r1(N) <= '0';
+
+      if rising_edge(i_clk_science(N)) then
+        if i_rst_n = '0' then
+          ctrl_r1(N)         <= (others => '0');
+          data_ready_r1(N)   <= '0';
+          data_out_r1(4*N)   <= (others => '0');
+          data_out_r1(4*N+1) <= (others => '0');
+          data_out_r1(4*N+2) <= (others => '0');
+          data_out_r1(4*N+3) <= (others => '0');
+        else
+          if data_ready(N) = '1' then
+            ctrl_r1(N)         <= CTRL(N);
+            data_ready_r1(N)   <= data_ready(N);
+            data_out_r1(4*N)   <= data_out(4*N);
+            data_out_r1(4*N+1) <= data_out(4*N+1);
+            data_out_r1(4*N+2) <= data_out(4*N+2);
+            data_out_r1(4*N+3) <= data_out(4*N+3);
+          elsif cpt_synchro_r1 = "10" then
+            data_ready_r1(N) <= '0';
+          end if;
         end if;
       end if;
     end process p_ctrl_register;
@@ -166,62 +169,68 @@ begin
   -- ------------------------------------------------------------------------------------------------------
   --   Resynchro
   -- ------------------------------------------------------------------------------------------------------
-  p_sync_link : process (i_rst_n, i_clk_science(0))
+  p_sync_link : process (i_clk_science(0))
   begin
-    if i_rst_n = '0' then
-      reg_ctrl_r2     <= (others => (others => '0'));
-      reg_ctrl_r3     <= (others => (others => '0'));
-      reg_data_out_r2 <= (others => (others => '0'));
-      reg_data_out_r3 <= (others => (others => '0'));
-      start_maker_r1  <= '0';
-      cpt_synchro_r1  <= "00";
-    elsif rising_edge(i_clk_science(0)) then
-      start_maker_r1 <= '0';
-      if data_ready_r1 = (data_ready_r1'range => '1') then
-        cpt_synchro_r1  <= std_logic_vector(unsigned(cpt_synchro_r1) + 1);
-        reg_ctrl_r2     <= ctrl_r1;
-        reg_ctrl_r3     <= reg_ctrl_r2;
-        reg_data_out_r2 <= data_out_r1;
-        reg_data_out_r3 <= reg_data_out_r2;
-      end if;
-      if cpt_synchro_r1 = "10" then
-        start_maker_r1 <= '1';
-        cpt_synchro_r1 <= "00";
+
+    if rising_edge(i_clk_science(0)) then
+      if i_rst_n = '0' then
+        reg_ctrl_r2     <= (others => (others => '0'));
+        reg_ctrl_r3     <= (others => (others => '0'));
+        reg_data_out_r2 <= (others => (others => '0'));
+        reg_data_out_r3 <= (others => (others => '0'));
+        start_maker_r1  <= '0';
+        cpt_synchro_r1  <= "00";
+      else
+        start_maker_r1 <= '0';
+        if data_ready_r1 = (data_ready_r1'range => '1') then
+          cpt_synchro_r1  <= std_logic_vector(unsigned(cpt_synchro_r1) + 1);
+          reg_ctrl_r2     <= ctrl_r1;
+          reg_ctrl_r3     <= reg_ctrl_r2;
+          reg_data_out_r2 <= data_out_r1;
+          reg_data_out_r3 <= reg_data_out_r2;
+        end if;
+        if cpt_synchro_r1 = "10" then
+          start_maker_r1 <= '1';
+          cpt_synchro_r1 <= "00";
+        end if;
       end if;
     end if;
   end process p_sync_link;
 
-  p_frame_build : process(i_rst_n, i_clk_science(0))
+  p_frame_build : process(i_clk_science(0))
   begin
-    if i_rst_n = '0' then
-      frame_r4          <= (others => (others => '0'));
-      frame_fifo_r5     <= (others => (others => '0'));
-      o_data_instrument <= (others => '0');
-      o_wr_instrument   <= '0';
-      write_data_r1     <= '0';
-      cpt_frame_r1      <= 0;
-      cpt_fifo_r1       <= 0;
-    elsif rising_edge(i_clk_science(0)) then
-      if start_maker_r1 = '1' then
-        cpt_frame_r1           <= cpt_frame_r1 + 1;
-        frame_r4(cpt_frame_r1) <= x"AAAA" & reg_ctrl_r3(0) & reg_ctrl_r3(1) & reg_data_out_r3(0) & reg_data_out_r3(1) & reg_data_out_r3(2) & reg_data_out_r3(3) & reg_data_out_r3(4) & reg_data_out_r3(5) & reg_data_out_r3(6) & reg_data_out_r3(7);
-      end if;
-      if cpt_frame_r1 = 4 then
-        cpt_frame_r1     <= 0;
-        frame_fifo_r5(0) <= frame_r4(0) & frame_r4(1)(95 downto 64);
-        frame_fifo_r5(1) <= frame_r4(1)(63 downto 0) & frame_r4(2)(95 downto 32);
-        frame_fifo_r5(2) <= frame_r4(2)(31 downto 0) & frame_r4(3);
-        write_data_r1    <= '1';
-      end if;
-      if write_data_r1 = '1' and cpt_fifo_r1 < 3 then
-        cpt_fifo_r1       <= cpt_fifo_r1 + 1;
-        o_data_instrument <= frame_fifo_r5(cpt_fifo_r1);
-        o_wr_instrument   <= '1';
-      end if;
-      if cpt_fifo_r1 = 3 then
-        write_data_r1   <= '0';
-        cpt_fifo_r1     <= 0;
-        o_wr_instrument <= '0';
+
+    if rising_edge(i_clk_science(0)) then
+      if i_rst_n = '0' then
+        frame_r4          <= (others => (others => '0'));
+        frame_fifo_r5     <= (others => (others => '0'));
+        o_data_instrument <= (others => '0');
+        o_wr_instrument   <= '0';
+        write_data_r1     <= '0';
+        cpt_frame_r1      <= 0;
+        cpt_fifo_r1       <= 0;
+      else
+        if start_maker_r1 = '1' then
+          cpt_frame_r1           <= cpt_frame_r1 + 1;
+          frame_r4(cpt_frame_r1) <= x"AAAA" & reg_ctrl_r3(0) & reg_ctrl_r3(1) & reg_data_out_r3(0) & reg_data_out_r3(1) & reg_data_out_r3(2) & reg_data_out_r3(3) & reg_data_out_r3(4) & reg_data_out_r3(5) & reg_data_out_r3(6) & reg_data_out_r3(7);
+        end if;
+        if cpt_frame_r1 = 4 then
+          cpt_frame_r1     <= 0;
+          frame_fifo_r5(0) <= frame_r4(0) & frame_r4(1)(95 downto 64);
+          frame_fifo_r5(1) <= frame_r4(1)(63 downto 0) & frame_r4(2)(95 downto 32);
+          frame_fifo_r5(2) <= frame_r4(2)(31 downto 0) & frame_r4(3);
+          write_data_r1    <= '1';
+        end if;
+        if write_data_r1 = '1' and cpt_fifo_r1 < 3 then
+          cpt_fifo_r1       <= cpt_fifo_r1 + 1;
+          o_data_instrument <= frame_fifo_r5(cpt_fifo_r1);
+          o_wr_instrument   <= '1';
+        end if;
+        if cpt_fifo_r1 = 3 then
+          write_data_r1   <= '0';
+          cpt_fifo_r1     <= 0;
+          o_wr_instrument <= '0';
+        end if;
       end if;
     end if;
   end process p_frame_build;

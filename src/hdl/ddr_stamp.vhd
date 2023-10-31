@@ -60,12 +60,13 @@ begin
 -- ----------------------------------------------------
 --
 -- ----------------------------------------------------
-  p_compute : process (i_clk, i_rst)
+  p_compute : process (i_clk)
   begin
-    if i_rst = '1' then
-      o_sub_addr_wr_addr_rd <= (others => '0');
-    else
-      if rising_edge (i_clk) then
+
+    if rising_edge (i_clk) then
+      if i_rst = '1' then
+        o_sub_addr_wr_addr_rd <= (others => '0');
+      else
         o_sub_addr_wr_addr_rd <= i_buffer_new_cmd_byte_addr_wr - i_buffer_new_cmd_byte_addr_rd;
       end if;
     end if;

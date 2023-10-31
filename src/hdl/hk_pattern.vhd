@@ -54,11 +54,12 @@ begin
 
   p_fsm_hk : process(i_rst, i_okClk)
   begin
-    if i_rst = '1' then
-      o_result <= x"00000000";
-    else
 
-      if i_okClk = '1' and i_okClk' event then
+
+    if rising_edge(i_okClk) then
+      if i_rst = '1' then
+        o_result <= x"00000000";
+      else
 
 --  truncation LSB pour obtenir un multiple de 4 mots de 32 bits, donc des multiples de 16 octets,
 --  le tout remultiplier par 4 pour obtenir le bon nombre de mot de 32 bit a lire (le gse remultiplie par 4 pour obtenir le nombre d'octet a lire).

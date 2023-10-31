@@ -53,13 +53,14 @@ architecture RTL of manage_pipe_out is
 
 begin
 
-  p_reshape : process (i_okClk, i_rst)
+  p_reshape : process (i_okClk)
   begin
-    if i_rst = '1' then
-      o_result <= (others => '0');
-    else
 
-      if rising_edge(i_okClk) then
+
+    if rising_edge(i_okClk) then
+      if i_rst = '1' then
+        o_result <= (others => '0');
+      else
         o_result <= x"0000" & '0' & (i_rd_data_count(16 downto 2));
       end if;
     end if;
