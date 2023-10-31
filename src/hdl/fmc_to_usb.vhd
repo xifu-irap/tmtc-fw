@@ -416,19 +416,11 @@ begin
 ----------------------------------------------------
   p_leds : process (okClk)
   begin
-
     if rising_edge(okClk)then
-      if usb_rst = '1' then
-        o_leds_fmc(0) <= '0';
-        o_leds_fmc(1) <= '0';
-        o_leds_fmc(2) <= '0';
-        o_leds_fmc(3) <= '0';
-      else
         o_leds_fmc(0) <= '1';
         o_leds_fmc(1) <= cs_n(0);
         o_leds_fmc(2) <= cs_n(1);
         o_leds_fmc(3) <= sel_main_n_r1;
-      end if;
     end if;
   end process;
 
@@ -568,7 +560,7 @@ begin
       o_sub_addr_wr_addr_rd => Subtraction_addr_wr_addr_rd
       );
 
-  ep23wire <= Subtraction_addr_wr_addr_rd (31 downto 0);
+  ep23wire <= Subtraction_addr_wr_addr_rd(31 downto 0);
 
 -- ----------------------------------------------------
 -- manage ep20wire
@@ -596,20 +588,6 @@ begin
   begin
 
     if rising_edge (okClk) then
-      if usb_rst = '1' then
-
-        ep23wire_r1 <= (others => '0');
-        ep23wire_r2 <= (others => '0');
-        ep22wire_r1 <= (others => '0');
-        ep22wire_r2 <= (others => '0');
-
-        ep25wire_r1 <= (others => '0');
-        ep25wire_r2 <= (others => '0');
-        ep27wire_r1 <= (others => '0');
-        ep27wire_r2 <= (others => '0');
-
-      else
-
         ep23wire_r1 <= ep23wire;
         ep23wire_r2 <= ep23wire_r1;
 
@@ -621,8 +599,6 @@ begin
 
         ep27wire_r1 <= ep27wire;
         ep27wire_r2 <= ep27wire_r1;
-
-      end if;
     end if;
   end process p_synchronized_register;
 
@@ -867,10 +843,6 @@ begin
 
 
     if rising_edge (clk) then
-      if ddr_rst = '1' then
-        ep22wire <= (others => '0');
-
-      else
         --  meta
         full_fifo_instrument_r1 <= full_fifo_instrument;
         full_fifo_instrument_r2 <= full_fifo_instrument_r1;
@@ -896,7 +868,6 @@ begin
         end if;
 
       end if;
-    end if;
   end process p_status_fifo;
 
 ---------------------------------------------------------------------

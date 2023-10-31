@@ -85,12 +85,8 @@ begin
   begin
 
     if rising_edge(i_clk_science) then
-      if i_rst_n = '0' then
-        science_ctrl_r1 <= '0';
-      else
         science_ctrl_r1 <= i_science_ctrl;
         science_ctrl_r2 <= science_ctrl_r1;
-      end if;
     end if;
   end process p_meta_ctrl;
 
@@ -101,12 +97,8 @@ begin
   begin
 
     if rising_edge(i_clk_science) then
-      if i_rst_n = '0' then
-        science_data_r1 <= '0';
-      else
         science_data_r1 <= i_science_data;
         science_data_r2 <= science_data_r1;
-      end if;
     end if;
   end process p_meta_data;
 
