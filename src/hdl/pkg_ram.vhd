@@ -37,7 +37,7 @@ use ieee.std_logic_1164.all;
 -- PACKAGE
 --
 ---------------------------------------------------------------
-package Ramtest_pack is
+package pkg_ram is
 
 
   constant pkg_BANK_WIDTH   : integer := 3;  -- --// # of memory Bank Address bits.
@@ -61,9 +61,9 @@ package Ramtest_pack is
   function endian32(rhs : std_logic_vector(31 downto 0)) return std_logic_vector;
 
 
-end Ramtest_pack;
+end pkg_ram;
 
-package body Ramtest_pack is
+package body pkg_ram is
   -- =============================================================
   -- =============================================================
   function endian64(rhs : std_logic_vector(63 downto 0)) return std_logic_vector is
@@ -92,4 +92,4 @@ package body Ramtest_pack is
     return x;
   end function endian32;
 
-end Ramtest_pack;
+end pkg_ram;

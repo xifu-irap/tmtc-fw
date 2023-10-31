@@ -42,7 +42,7 @@ use work.pkg_project.all;
 library unisim;
 use unisim.VComponents.all;
 
-use work.Ramtest_pack.all;
+use work.pkg_ram.all;
 
 library xpm;
 use xpm.vcomponents.all;
