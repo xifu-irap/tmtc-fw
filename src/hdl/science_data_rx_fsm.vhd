@@ -36,7 +36,7 @@ use ieee.numeric_std.all;
 entity science_data_rx_fsm is
   port (
     -- reset
-    i_rst_n        : in std_logic;
+    i_rst          : in std_logic;
     -- science clock
     i_clk_science  : in std_logic;
     -- science data valid
@@ -131,7 +131,7 @@ begin
   begin
 
     if rising_edge(i_clk_science) then
-      if i_rst_n = '0' then
+      if i_rst = '1' then
         science_ctrl_r3 <= '0';
         science_data_r3 <= '0';
       else
@@ -152,7 +152,7 @@ begin
   begin
 
     if rising_edge(i_clk_science) then
-      if i_rst_n = '0' then
+      if i_rst = '1' then
         sm_rx_state_r1 <= E_WAIT1_START;
         N_r1           <= 0;
         o_data         <= (others => '0');

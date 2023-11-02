@@ -158,8 +158,6 @@ architecture RTL of fmc_to_usb is
   signal usb_rst        : std_logic;
   -- science reset
   signal rst_science0   : std_logic;
-  -- science reset_n
-  signal rst_science0_n : std_logic;
 
   --  usb_clk
   signal ok_clk : std_logic;
@@ -1076,7 +1074,6 @@ begin
 
       );
 
-  rst_science0   <= not(init_calib_complete_sync);
   rst_science0_n <= init_calib_complete_sync;
 
 
@@ -1086,7 +1083,7 @@ begin
   inst_science_data_rx : entity work.science_data_rx port map
     (
 
-      i_rst_n       => rst_science0_n,
+      i_rst         => rst_science0,
       i_clk_science => clk_science,
 
       -- Link

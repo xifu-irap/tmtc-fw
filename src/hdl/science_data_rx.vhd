@@ -38,7 +38,7 @@ use work.science_data_rx_package.all;
 entity science_data_rx is
   port (
     -- reset
-    i_rst_n       : in std_logic;
+    i_rst         : in std_logic;
     -- science clock
     i_clk_science : in std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
@@ -123,7 +123,7 @@ begin
         port map (
 
           -- global
-          i_rst_n        => i_rst_n,
+          i_rst          => i_rst,
           i_clk_science  => i_clk_science(I),
           i_data_rate_en => i_data_rate_en,
 
@@ -146,7 +146,7 @@ begin
     inst_ctrl_rx_fsm : entity work.ctrl_rx_fsm
       port map (
         -- global
-        i_rst_n        => i_rst_n,
+        i_rst          => i_rst,
         i_clk_science  => i_clk_science(N),
         i_data_rate_en => i_data_rate_en,
 
@@ -168,7 +168,7 @@ begin
     begin
 
       if rising_edge(i_clk_science(N)) then
-        if i_rst_n = '0' then
+        if i_rst   = '1' then
           ctrl_r1(N)         <= (others => '0');
           data_ready_r1(N)   <= '0';
           data_out_r1(4*N)   <= (others => '0');
@@ -199,7 +199,7 @@ begin
   begin
 
     if rising_edge(i_clk_science(0)) then
-      if i_rst_n = '0' then
+      if i_rst   = '1' then
         ctrl_r2        <= (others => (others => '0'));
         ctrl_r3        <= (others => (others => '0'));
         data_out_r2    <= (others => (others => '0'));
@@ -228,7 +228,7 @@ begin
   begin
 
     if rising_edge(i_clk_science(0)) then
-      if i_rst_n = '0' then
+      if i_rst   = '1' then
         frame_r4          <= (others => (others => '0'));
         frame_fifo_r5     <= (others => (others => '0'));
         o_data_instrument <= (others => '0');
