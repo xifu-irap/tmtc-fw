@@ -162,7 +162,7 @@ architecture RTL of fmc_to_usb is
   signal rst_science0_n : std_logic;
 
   --  usb_clk
-  signal okClk : std_logic;
+  signal ok_clk : std_logic;
   -- usb interface signal
   signal okHE  : std_logic_vector(112 downto 0);
   -- usb interface signal
@@ -411,7 +411,7 @@ architecture RTL of fmc_to_usb is
 begin
 
   gen_IBUFDS_science_data : for i in 0 to pkg_LINE_NUMBER - 1 generate
-    IBUFDS_i : IBUFDS
+    inst_IBUFDS_i : IBUFDS
       generic map (
         DIFF_TERM    => true,           -- Differential Termination
         IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
@@ -424,7 +424,7 @@ begin
   end generate;
 
   gen_IBUFDS_science_ctrl : for i in 0 to pkg_LINK_NUMBER - 1 generate
-    IBUFDS_science_ctrl : IBUFDS
+    inst_IBUFDS_science_ctrl : IBUFDS
       generic map (
         DIFF_TERM    => true,           -- Differential Termination
         IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
@@ -437,7 +437,7 @@ begin
   end generate;
 
   gen_IBUFDS_clk_science : for i in 0 to pkg_LINK_NUMBER - 1 generate
-    IBUFDS_clk_science : IBUFDS
+    inst_IBUFDS_clk_science : IBUFDS
       generic map (
         DIFF_TERM    => true,           -- Differential Termination
         IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
@@ -561,9 +561,9 @@ begin
 ----------------------------------------------------
 --  FMC 105 LEDs
 ----------------------------------------------------
-  p_leds : process (okClk)
+  p_leds : process (ok_clk)
   begin
-    if rising_edge(okClk)then
+    if rising_edge(ok_clk)then
       o_leds_fmc(0) <= '1';
       o_leds_fmc(1) <= cs_n(0);
       o_leds_fmc(2) <= cs_n(1);
@@ -628,10 +628,10 @@ begin
       );
 
   --//MIG Infrastructure Reset
-  p_reset_mig : process (okClk)
+  p_reset_mig : process (ok_clk)
   begin
 
-    if rising_edge(okClk) then
+    if rising_edge(ok_clk) then
       if usb_rst = '1' then
         rst_cnt_r1 <= (others => '0');
         sys_rst_r1 <= '1';
@@ -729,8 +729,8 @@ begin
   inst_manaage_pipe_out : entity work.manage_pipe_out
     port map (
       --  global
-      i_okClk => okClk,
-      i_rst   => usb_rst,
+      i_ok_clk => ok_clk,
+      i_rst    => usb_rst,
 
       --  fifo interface
       i_rd_data_count => rd_data_count,
@@ -745,10 +745,10 @@ begin
 -- meta wire out
 -- ----------------------------------------------------
 -- resynchronized register
-  p_synchronized_register : process (okClk)
+  p_synchronized_register : process (ok_clk)
   begin
 
-    if rising_edge (okClk) then
+    if rising_edge (ok_clk) then
       ep23wire_r1 <= ep23wire;
       ep23wire_r2 <= ep23wire_r1;
 
@@ -769,13 +769,13 @@ begin
   inst_okHost : okHost
     port map(
 
-      okUH  => i_okUH,
-      okHU  => o_okHU,
-      okUHU => b_okUHU,
-      okAA  => b_okAA,  --//temp removed for SIMULATION replace Core
-      okClk => okClk,                   --out
-      okHE  => okHE,
-      okEH  => okEH
+      okUH   => i_okUH,
+      okHU   => o_okHU,
+      okUHU  => b_okUHU,
+      okAA   => b_okAA,  --//temp removed for SIMULATION replace Core
+      ok_clk => ok_clk,                   --out
+      okHE   => okHE,
+      okEH   => okEH
 
       );
 
@@ -802,23 +802,24 @@ begin
 -- Le signal spi_chipselect_ras est recu sur le wire x"01"
 -- La valeur au reset est fixee a: spi_chipselect_ras = '1'
 -- Relecture du spi_chipselect_ras sur le wire x"24"
-  label_okWireIn_chipselect : okWireIn
+  inst_okWireIn_chipselect : okWireIn
     port map (
       okHE       => okHE,
       ep_addr    => x"01",
       ep_dataout => ep01wire
       );
 
-  label_okWireIn_icu_main : okWireIn
+  inst_okWireIn_icu_main : okWireIn
     port map (
       okHE       => okHE,
       ep_addr    => x"02",
       ep_dataout => ep02wire
       );
 
-  p_pipe : process (okClk)
+  -- add an output register to the sel_main_n signal
+  p_pipe : process (ok_clk)
   begin
-    if rising_edge(okClk)then
+    if rising_edge(ok_clk)then
       sel_main_n_r1 <= ep02wire(0);
     end if;
   end process p_pipe;
@@ -829,7 +830,9 @@ begin
   -- resynchronize shi
   ---------------------------------------------------------------------
   gen_spi_chipselect_ras : if true generate
+    -- temporary input pipe signal
     signal data_tmp0 : std_logic_vector(0 downto 0);
+    -- temporary output pipe signal
     signal data_tmp1 : std_logic_vector(0 downto 0);
   begin
     data_tmp0(0) <= ep01wire(0);
@@ -1110,7 +1113,7 @@ begin
     port map (
       rst           => ddr_rst,
       wr_clk        => clk,
-      rd_clk        => okClk,
+      rd_clk        => ok_clk,
       din           => pipe_out_data,   --// Bus [127 : 0]
       wr_en         => pipe_out_write,
       rd_en         => po0_ep_read,
@@ -1128,11 +1131,11 @@ begin
 ---------------------------------------------------------------
 --  Pipe out fifo  hk
 ---------------------------------------------------------------
-  isnt_okPipeOut_fifo_hk : entity work.fifo_r32_256_w32_256_hk
+  inst_okPipeOut_fifo_hk : entity work.fifo_r32_256_w32_256_hk
     port map (
       rst           => ddr_rst,
       wr_clk        => clk,
-      rd_clk        => okClk,
+      rd_clk        => ok_clk,
       din           => pipe_out_data_hk,  --// Bus [127 : 0]
       wr_en         => pipe_out_write_hk,
       rd_en         => po0_ep_read_hk,
@@ -1147,7 +1150,7 @@ begin
   inst_hk_pattern : entity work.hk_pattern
     port map (
 
-      i_okClk => okClk,
+      i_okClk => ok_clk,
       i_rst   => usb_rst,
 
       i_rd_data_count_hk => rd_data_count_hk,
@@ -1160,10 +1163,10 @@ begin
   -- register: get the number of read science words
   ---------------------------------------------------------------------
   -- count the number of read science words.
-  p_nb_science_read_word : process (okClk)
+  p_nb_science_read_word : process (ok_clk)
   begin
 
-    if rising_edge (okClk) then
+    if rising_edge (ok_clk) then
       if usb_rst = '1' then
         ep25wire        <= (others => '0');
         rd_piper_out_r1 <= (others => '0');
@@ -1187,7 +1190,7 @@ begin
   inst_okPipein_fifo : entity work.fifo_r32_256_w32_256
     port map (
       rst         => usb_rst,
-      wr_clk      => okClk,
+      wr_clk      => ok_clk,
       rd_clk      => clk,
       din         => pi0_ep_dataout,    --// Bus [31 : 0]
       wr_en       => pi0_ep_write,
@@ -1207,7 +1210,7 @@ begin
   begin
     inst_ila_usb : entity work.ila_usb
       port map (
-        clk => okClk,
+        clk => ok_clk,
 
         -- probe3
         probe2(2) => ep02wire(0),
