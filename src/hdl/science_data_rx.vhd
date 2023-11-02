@@ -205,7 +205,7 @@ begin
         data_out_r2    <= (others => (others => '0'));
         data_out_r3    <= (others => (others => '0'));
         start_maker_r1 <= '0';
-        cpt_synchro_r1 <= "00";
+        cpt_synchro_r1 <= (others => '0');
       else
         start_maker_r1 <= '0';
         if data_ready_r1 = (data_ready_r1'range => '1') then
@@ -217,7 +217,7 @@ begin
         end if;
         if cpt_synchro_r1 = "10" then
           start_maker_r1 <= '1';
-          cpt_synchro_r1 <= "00";
+          cpt_synchro_r1 <= (others => '0');
         end if;
       end if;
     end if;
