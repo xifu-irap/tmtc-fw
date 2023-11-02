@@ -48,7 +48,7 @@ verific -vhdl ./src/hdl/io_spi.vhd
 verific -vhdl ./src/hdl/spi_master.vhd
 verific -vhdl ./src/hdl/science_data_rx_package.vhd
 verific -vhdl ./src/hdl/science_data_rx_fsm.vhd
-verific -vhdl ./src/hdl/Ramtest_pack.vhd
+verific -vhdl ./src/hdl/pkg_ram.vhd
 verific -vhdl ./src/hdl/pkg_project.vhd
 verific -vhdl ./src/hdl/pkg_func_math.vhd
 verific -vhdl ./src/hdl/ctrl_rx_fsm.vhd

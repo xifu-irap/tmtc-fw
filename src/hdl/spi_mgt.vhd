@@ -100,33 +100,36 @@ begin
       );
 
 
-  p_read_tempo : process (i_clk, i_rst)
+  p_read_tempo : process (i_clk)
   begin
-    if i_rst = '1'                      -- Initialisation
-    then
-      read_en_rx          <= (others => '0');
-      spi_start_ry        <= '0';
-      miso_r1             <= '0';
-      miso_r2             <= '0';
-      trig_first_value_r1 <= '0';
-    elsif rising_edge(i_clk)
-    then
-      if spi_tx_busy_n = '1' and read_en_rx = (read_en_rx'range => '0') and i_fifo_empty = '0'  -- Read one value with the appropriate delay
-      then
-        read_en_rx <= read_en_rx(read_en_rx'high -1 downto 0) & '1';
-      else
-        read_en_rx <= read_en_rx(read_en_rx'high -1 downto 0) & '0';
-      end if;
-      if read_en_rx(read_en_rx'high) = '1'
-      then
-        trig_first_value_r1 <= '1';
-      end if;
-      spi_start_ry <= read_en_rx(read_en_rx'high-1);  -- Start SPI communication
-      miso_r2      <= miso_r1;          -- Synchronize  i_miso
-      miso_r1      <= i_miso;
 
+    if rising_edge(i_clk) then
+      if i_rst = '1' then
+        -- Initialisation
+        read_en_rx          <= (others => '0');
+        spi_start_ry        <= '0';
+        miso_r1             <= '0';
+        miso_r2             <= '0';
+        trig_first_value_r1 <= '0';
+      else
+        if spi_tx_busy_n = '1' and read_en_rx = (read_en_rx'range => '0') and i_fifo_empty = '0'  -- Read one value with the appropriate delay
+        then
+          read_en_rx <= read_en_rx(read_en_rx'high -1 downto 0) & '1';
+        else
+          read_en_rx <= read_en_rx(read_en_rx'high -1 downto 0) & '0';
+        end if;
+        if read_en_rx(read_en_rx'high) = '1'
+        then
+          trig_first_value_r1 <= '1';
+        end if;
+        spi_start_ry <= read_en_rx(read_en_rx'high-1);  -- Start SPI communication
+        miso_r2      <= miso_r1;        -- Synchronize  i_miso
+        miso_r1      <= i_miso;
+      end if;
     end if;
   end process p_read_tempo;
+
   o_read_en    <= read_en_rx(read_en_rx'high-1);  -- Buffer
   o_data_ready <= data_ready and trig_first_value_r1;
+
 end architecture RTL;

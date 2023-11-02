@@ -98,26 +98,29 @@ begin
   -- ------------------------------------------------------------------------------------------------------
   --!   Pulse generator
   -- ------------------------------------------------------------------------------------------------------
-  P_pulse_gen : process (i_rst, i_clk)
+  P_pulse_gen : process (i_clk)
   begin
 
-    if i_rst = '1' then
-      if (g_CPOL xor g_CPHA) = '0' then
-        pulse_gen <= std_logic_vector(to_signed(c_PULSE_GEN_L_MAX_VAL, pulse_gen'length));
-      else
-        pulse_gen <= std_logic_vector(to_signed(c_PULSE_GEN_H_MAX_VAL, pulse_gen'length));
-      end if;
-    elsif rising_edge(i_clk) then
-      if pls_ste_cnt(pls_ste_cnt'high) = '0' then
 
-        if pulse_gen(pulse_gen'high) = '1' then
-          if (g_CPOL xor g_CPHA xor pls_ste_cnt(0)) = '0' then
-            pulse_gen <= std_logic_vector(to_signed(c_PULSE_GEN_L_MAX_VAL, pulse_gen'length));
-          else
-            pulse_gen <= std_logic_vector(to_signed(c_PULSE_GEN_H_MAX_VAL, pulse_gen'length));
-          end if;
+    if rising_edge(i_clk) then
+      if i_rst = '1' then
+        if (g_CPOL xor g_CPHA) = '0' then
+          pulse_gen <= std_logic_vector(to_signed(c_PULSE_GEN_L_MAX_VAL, pulse_gen'length));
         else
-          pulse_gen <= std_logic_vector(signed(pulse_gen) - 1);
+          pulse_gen <= std_logic_vector(to_signed(c_PULSE_GEN_H_MAX_VAL, pulse_gen'length));
+        end if;
+      else
+        if pls_ste_cnt(pls_ste_cnt'high) = '0' then
+
+          if pulse_gen(pulse_gen'high) = '1' then
+            if (g_CPOL xor g_CPHA xor pls_ste_cnt(0)) = '0' then
+              pulse_gen <= std_logic_vector(to_signed(c_PULSE_GEN_L_MAX_VAL, pulse_gen'length));
+            else
+              pulse_gen <= std_logic_vector(to_signed(c_PULSE_GEN_H_MAX_VAL, pulse_gen'length));
+            end if;
+          else
+            pulse_gen <= std_logic_vector(signed(pulse_gen) - 1);
+          end if;
         end if;
       end if;
     end if;
@@ -127,16 +130,19 @@ begin
   -- ------------------------------------------------------------------------------------------------------
   --!   Pulse state counter
   -- ------------------------------------------------------------------------------------------------------
-  P_pls_ste_cnt : process (i_rst, i_clk)
+  P_pls_ste_cnt : process (i_clk)
   begin
 
-    if i_rst = '1' then
-      pls_ste_cnt <= (others => '1');
-    elsif rising_edge(i_clk) then
-      if i_start = '1' and pls_ste_cnt(pls_ste_cnt'high) = '1' then
-        pls_ste_cnt <= std_logic_vector(resize(unsigned(i_ser_wd_s & '0'), pls_ste_cnt'length) - 1);
-      elsif pulse_gen(pulse_gen'high) = '1' and pls_ste_cnt(pls_ste_cnt'high) = '0' then
-        pls_ste_cnt <= std_logic_vector(signed(pls_ste_cnt) - 1);
+
+    if rising_edge(i_clk) then
+      if i_rst = '1' then
+        pls_ste_cnt <= (others => '1');
+      else
+        if i_start = '1' and pls_ste_cnt(pls_ste_cnt'high) = '1' then
+          pls_ste_cnt <= std_logic_vector(resize(unsigned(i_ser_wd_s & '0'), pls_ste_cnt'length) - 1);
+        elsif pulse_gen(pulse_gen'high) = '1' and pls_ste_cnt(pls_ste_cnt'high) = '0' then
+          pls_ste_cnt <= std_logic_vector(signed(pls_ste_cnt) - 1);
+        end if;
       end if;
     end if;
 
@@ -145,16 +151,17 @@ begin
   -- ------------------------------------------------------------------------------------------------------
   --!   Data transmit serial management
   -- ------------------------------------------------------------------------------------------------------
-  P_data_tx_ser : process (i_rst, i_clk)
+  P_data_tx_ser : process (i_clk)
   begin
-
-    if i_rst = '1' then
-      data_tx_ser <= (others => '0');
-    elsif rising_edge(i_clk) then
-      if i_start = '1' and pls_ste_cnt(pls_ste_cnt'high) = '1' then
-        data_tx_ser <= i_data_tx;
-      elsif pulse_gen(pulse_gen'high) = '1' and pls_ste_cnt(0) = '0' and pls_ste_cnt(pls_ste_cnt'high) = '0' then
-        data_tx_ser <= data_tx_ser(data_tx_ser'high-1 downto 0) & '0';
+    if rising_edge(i_clk) then
+      if i_rst = '1' then
+        data_tx_ser <= (others => '0');
+      else
+        if i_start = '1' and pls_ste_cnt(pls_ste_cnt'high) = '1' then
+          data_tx_ser <= i_data_tx;
+        elsif pulse_gen(pulse_gen'high) = '1' and pls_ste_cnt(0) = '0' and pls_ste_cnt(pls_ste_cnt'high) = '0' then
+          data_tx_ser <= data_tx_ser(data_tx_ser'high-1 downto 0) & '0';
+        end if;
       end if;
     end if;
 
@@ -165,33 +172,34 @@ begin
   -- ------------------------------------------------------------------------------------------------------
   --!   Data receipt serial management
   -- ------------------------------------------------------------------------------------------------------
-  P_data_rx_ser : process (i_rst, i_clk)
+  P_data_rx_ser : process (i_clk)
   begin
+    if rising_edge(i_clk) then
+      if i_rst = '1' then
+        pls_smp_data_rx_ser <= (others => '0');
+        data_rx_ser_init    <= (others => '0');
+        data_rx_ser_end     <= (others => '0');
+        data_rx_ser         <= (others => '0');
+        o_data_rx           <= (others => '0');
+        o_data_rx_rdy       <= '0';
+      else
+        pls_smp_data_rx_ser <= pls_smp_data_rx_ser(pls_smp_data_rx_ser'high-1 downto 0) & (pulse_gen(pulse_gen'high) and not(pls_ste_cnt(0)) and not(pls_ste_cnt(pls_ste_cnt'high)));
+        data_rx_ser_init    <= data_rx_ser_init(data_rx_ser_init'high-1 downto 0) & (i_start and pls_ste_cnt(pls_ste_cnt'high));
+        data_rx_ser_end     <= data_rx_ser_end(data_rx_ser_end'high-1 downto 0) & pls_ste_cnt(pls_ste_cnt'high);
 
-    if i_rst = '1' then
-      pls_smp_data_rx_ser <= (others => '0');
-      data_rx_ser_init    <= (others => '0');
-      data_rx_ser_end     <= (others => '0');
-      data_rx_ser         <= (others => '0');
-      o_data_rx           <= (others => '0');
-      o_data_rx_rdy       <= '0';
-    elsif rising_edge(i_clk) then
-      pls_smp_data_rx_ser <= pls_smp_data_rx_ser(pls_smp_data_rx_ser'high-1 downto 0) & (pulse_gen(pulse_gen'high) and not(pls_ste_cnt(0)) and not(pls_ste_cnt(pls_ste_cnt'high)));
-      data_rx_ser_init    <= data_rx_ser_init(data_rx_ser_init'high-1 downto 0) & (i_start and pls_ste_cnt(pls_ste_cnt'high));
-      data_rx_ser_end     <= data_rx_ser_end(data_rx_ser_end'high-1 downto 0) & pls_ste_cnt(pls_ste_cnt'high);
+        if data_rx_ser_init(data_rx_ser_init'high-1) = '1' then
+          data_rx_ser <= (others => '0');
+        elsif pls_smp_data_rx_ser(pls_smp_data_rx_ser'high-1) = '1' then
+          data_rx_ser <= data_rx_ser(data_rx_ser'high-1 downto 0) & i_miso;
+        end if;
 
-      if data_rx_ser_init(data_rx_ser_init'high-1) = '1' then
-        data_rx_ser <= (others => '0');
-      elsif pls_smp_data_rx_ser(pls_smp_data_rx_ser'high-1) = '1' then
-        data_rx_ser <= data_rx_ser(data_rx_ser'high-1 downto 0) & i_miso;
+        if (data_rx_ser_end(data_rx_ser_end'high-1) and not(data_rx_ser_end(data_rx_ser_end'high))) = '1' then
+          o_data_rx <= data_rx_ser;
+        end if;
+
+        o_data_rx_rdy <= data_rx_ser_end(data_rx_ser_end'high-1) and not(data_rx_ser_end(data_rx_ser_end'high));
+
       end if;
-
-      if (data_rx_ser_end(data_rx_ser_end'high-1) and not(data_rx_ser_end(data_rx_ser_end'high))) = '1' then
-        o_data_rx <= data_rx_ser;
-      end if;
-
-      o_data_rx_rdy <= data_rx_ser_end(data_rx_ser_end'high-1) and not(data_rx_ser_end(data_rx_ser_end'high));
-
     end if;
 
   end process P_data_rx_ser;
@@ -199,17 +207,19 @@ begin
   -- ------------------------------------------------------------------------------------------------------
   --!   SPI management
   -- ------------------------------------------------------------------------------------------------------
-  P_spi_mgt : process (i_rst, i_clk)
+  P_spi_mgt : process (i_clk)
   begin
 
-    if i_rst = '1' then
-      o_mosi <= '0';
-      o_sclk <= g_CPOL;
-      o_cs_n <= '1';
-    elsif rising_edge(i_clk) then
-      o_mosi <= data_tx_ser(data_tx_ser'high);
-      o_sclk <= not(g_CPHA) xor g_CPOL xor (pls_ste_cnt(0) and not(g_CPHA and pls_ste_cnt(pls_ste_cnt'high)));
-      o_cs_n <= pls_ste_cnt(pls_ste_cnt'high);
+    if rising_edge(i_clk) then
+      if i_rst = '1' then
+        o_mosi <= '0';
+        o_sclk <= g_CPOL;
+        o_cs_n <= '1';
+      else
+        o_mosi <= data_tx_ser(data_tx_ser'high);
+        o_sclk <= not(g_CPHA) xor g_CPOL xor (pls_ste_cnt(0) and not(g_CPHA and pls_ste_cnt(pls_ste_cnt'high)));
+        o_cs_n <= pls_ste_cnt(pls_ste_cnt'high);
+      end if;
     end if;
 
   end process P_spi_mgt;

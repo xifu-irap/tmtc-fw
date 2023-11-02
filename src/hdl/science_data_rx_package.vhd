@@ -34,17 +34,24 @@ use IEEE.NUMERIC_STD.all;
 use IEEE.math_real.all;
 
 package science_data_rx_package is
-
+  -- define the number of science link
   constant pkg_LINK_NUMBER : integer := 2;
+  -- define the total number of science column
   constant pkg_COL_NUMBER  : integer := pkg_LINK_NUMBER*2;
+  -- define the total number of science line
   constant pkg_LINE_NUMBER : integer := pkg_COL_NUMBER*2;
 
-
+  -- define the type of array of 16 bits
   type t_ARRAY16bits is array (natural range <>) of std_logic_vector(15 downto 0);
+  -- define the type of array of 8 bits
   type t_ARRAY8bits is array (pkg_LINE_NUMBER-1 downto 0) of std_logic_vector(7 downto 0);
+  -- define the type of array of 3 bits
   type t_ARRAY3bits is array (pkg_LINE_NUMBER-1 downto 0) of std_logic_vector(2 downto 0);
+  -- define the type of array of 8 bits (for science ctrl)
   type t_ARRAY8bits_ctrl is array ((pkg_COL_NUMBER/2)-1 downto 0) of std_logic_vector(7 downto 0);
+  -- define the type of array of 96 bits
   type t_ARRAY96bits is array (natural range <>) of std_logic_vector(95 downto 0);
+  -- define the type of array of 128 bits
   type t_ARRAY128bits is array (natural range <>) of std_logic_vector(127 downto 0);
 
 end science_data_rx_package;

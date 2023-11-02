@@ -35,18 +35,27 @@ use ieee.numeric_std.all;
 
 entity ctrl_rx_fsm is
   port (
-    -- global
-    i_rst_n        : in std_logic;
-    i_clk_science  : in std_logic;
+    -- reset
+    i_rst_n       : in std_logic;
+    -- science clock
+    i_clk_science : in std_logic;
+
+    -- science control data valid
     i_data_rate_en : in std_logic;
 
-    -- Link
+    -- science control bit
     i_science_ctrl : in std_logic;
 
-    -- decode
+    -- detect the science synchro words
     o_start_detected : out std_logic;
-    o_ctrl           : out std_logic_vector(7 downto 0);
-    o_data_ready     : out std_logic
+
+    ---------------------------------------------------------------------
+    -- deserialization
+    ---------------------------------------------------------------------
+    -- science control word
+    o_ctrl       : out std_logic_vector(7 downto 0);
+    -- detection control word complete
+    o_data_ready : out std_logic
 
     );
 
@@ -54,17 +63,26 @@ end ctrl_rx_fsm;
 
 architecture Behavioral of ctrl_rx_fsm is
 
+  -- fsm type declaration
   type t_rx_state is (E_WAIT1_START, E_WAIT2_START, E_WAIT3_START, E_DECODE);
+  -- state (registered)
   signal sm_state_rx_r1 : t_rx_state;
 
+  -- bit counter (all bits excepts synchro bits)
   signal N_r1 : integer range 0 to 5;
 
-  signal science_ctrl_r2 : std_logic;
+  -- delayed science ctrl bit (step1)
   signal science_ctrl_r1 : std_logic;
+  -- delayed science ctrl bit (step2)
+  signal science_ctrl_r2 : std_logic;
+  -- delayed science ctrl bit (step3)
   signal science_ctrl_r3 : std_logic;
 
+  -- fpga specific attribute: force to use registers (very close)
   attribute ASYNC_REG                    : string;
+  -- apply attribute on science_ctrl_r1
   attribute ASYNC_REG of science_ctrl_r1 : signal is "TRUE";
+  -- apply attribute on science_ctrl_r2
   attribute ASYNC_REG of science_ctrl_r2 : signal is "TRUE";
 
 begin
@@ -72,28 +90,25 @@ begin
 -------------------------------------------------------------------------------------------------
 -- Metastability protect on CTRL
 -------------------------------------------------------------------------------------------------
-  p_meta_ctrl : process(i_rst_n, i_clk_science)
+  -- pipe for the Metastability
+  p_meta_ctrl : process(i_clk_science)
   begin
-    if i_rst_n = '0' then
-      science_ctrl_r1 <= '0';
-      science_ctrl_r2 <= '0';
-    else
-      if i_clk_science = '1' and i_clk_science'event then
-        science_ctrl_r1 <= i_science_ctrl;
-        science_ctrl_r2 <= science_ctrl_r1;
-      end if;
+    if rising_edge(i_clk_science) then
+      science_ctrl_r1 <= i_science_ctrl;
+      science_ctrl_r2 <= science_ctrl_r1;
     end if;
   end process p_meta_ctrl;
 
 -------------------------------------------------------------------------------------------------
 -- Data rate protect on DATA
 -------------------------------------------------------------------------------------------------
-  p_data_rate : process(i_rst_n, i_clk_science)
+  -- latch data
+  p_data_rate : process(i_clk_science)
   begin
-    if i_rst_n = '0' then
-      science_ctrl_r3 <= '0';
-    else
-      if i_clk_science = '1' and i_clk_science'event then
+    if rising_edge(i_clk_science) then
+      if i_rst_n = '0' then
+        science_ctrl_r3 <= '0';
+      else
         if i_data_rate_en = '1' then
           science_ctrl_r3 <= science_ctrl_r2;
         end if;
@@ -105,19 +120,17 @@ begin
 -------------------------------------------------------------------------------------------------
 -- Decode characters
 -------------------------------------------------------------------------------------------------
-  p_FSM : process(i_rst_n, i_clk_science)
-
+  -- deserialized the input frame by detecting synchro word
+  p_FSM : process(i_clk_science)
   begin
-
-    if i_rst_n = '0' then
-      sm_state_rx_r1   <= E_WAIT1_START;
-      N_r1             <= 0;
-      o_start_detected <= '0';
-      o_data_ready     <= '0';
-      o_ctrl           <= (others => '0');
-    else
-
-      if i_clk_science = '1' and i_clk_science'event then
+    if rising_edge(i_clk_science) then
+      if i_rst_n = '0' then
+        sm_state_rx_r1   <= E_WAIT1_START;
+        N_r1             <= 0;
+        o_start_detected <= '0';
+        o_data_ready     <= '0';
+        o_ctrl           <= (others => '0');
+      else
         o_data_ready <= '0';
 
         case sm_state_rx_r1 is

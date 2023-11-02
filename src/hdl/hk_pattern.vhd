@@ -37,13 +37,15 @@ use ieee.std_logic_arith.all;
 
 entity hk_pattern is
   port(
-
+    -- clock
     i_okClk : in std_logic;
+    -- rst
     i_rst   : in std_logic;
 
-    i_rd_data_count_hk : in std_logic_vector(9 downto 0);
-
-    o_result : out std_logic_vector(31 downto 0)
+    -- HK read data count
+    i_rd_data_count_hk : in  std_logic_vector(9 downto 0);
+    -- HK read data count (expressed in 32 bits words)
+    o_result           : out std_logic_vector(31 downto 0)
 
     );
 end entity;
@@ -52,14 +54,13 @@ architecture RTL of hk_pattern is
 
 begin
 
+  -- compute the number of HK words of 32 bits.
   p_fsm_hk : process(i_rst, i_okClk)
   begin
-    if i_rst = '1' then
-      o_result <= x"00000000";
-    else
-
-      if i_okClk = '1' and i_okClk' event then
-
+    if rising_edge(i_okClk) then
+      if i_rst = '1' then
+        o_result <= x"00000000";
+      else
 --  truncation LSB pour obtenir un multiple de 4 mots de 32 bits, donc des multiples de 16 octets,
 --  le tout remultiplier par 4 pour obtenir le bon nombre de mot de 32 bit a lire (le gse remultiplie par 4 pour obtenir le nombre d'octet a lire).
         o_result <= x"0000" & (i_rd_data_count_hk(9 downto 2) * x"04");

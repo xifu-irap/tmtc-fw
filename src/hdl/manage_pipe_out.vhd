@@ -35,14 +35,15 @@ use ieee.std_logic_1164.all;
 
 entity manage_pipe_out is
   port(
-    --  global
+    --  clock
     i_okClk : in std_logic;
+    --  reset
     i_rst   : in std_logic;
 
-    --  fifo interface
+    --  fifo read data count (expressed in 32 bits words)
     i_rd_data_count : in std_logic_vector(16 downto 0);
 
-    --  ctrl interface
+    --  fifo read data count (expressed in packet of 4 words of 32 bits)
     o_result : out std_logic_vector(31 downto 0)
 
     );
@@ -53,13 +54,13 @@ architecture RTL of manage_pipe_out is
 
 begin
 
-  p_reshape : process (i_okClk, i_rst)
+  -- compute the number of packet of 4 words of 32 bits
+  p_reshape : process (i_okClk)
   begin
-    if i_rst = '1' then
-      o_result <= (others => '0');
-    else
-
-      if rising_edge(i_okClk) then
+    if rising_edge(i_okClk) then
+      if i_rst = '1' then
+        o_result <= (others => '0');
+      else
         o_result <= x"0000" & '0' & (i_rd_data_count(16 downto 2));
       end if;
     end if;

@@ -42,143 +42,243 @@ use work.pkg_project.all;
 library unisim;
 use unisim.VComponents.all;
 
-use work.Ramtest_pack.all;
+use work.pkg_ram.all;
 
 library xpm;
 use xpm.vcomponents.all;
 
 entity fmc_to_usb is
   generic (
+    -- enable debug
     g_DEBUG : boolean := true
     );
   port(
-
+    ---------------------------------------------------------------------
+    -- Opal Kelly inouts
+    ---------------------------------------------------------------------
+    -- usb interface signal
     i_okUH  : in    std_logic_vector(4 downto 0);
+    -- usb interface signal
     o_okHU  : out   std_logic_vector(2 downto 0);
+    -- usb interface signal
     b_okUHU : inout std_logic_vector(31 downto 0);
+    -- usb interface signal
     b_okAA  : inout std_logic;
 
-    i_sys_clkp : in std_logic;          -- input    wire         sys_clkp,
-    i_sys_clkn : in std_logic;          -- input  wire         sys_clkn,
+    ---------------------------------------------------------------------
+    -- DDR
+    ---------------------------------------------------------------------
+    -- DDR input differential_p clock
+    i_sys_clkp : in std_logic;
+    -- DDR input differential_n clock
+    i_sys_clkn : in std_logic;
 
-    o_leds_fmc : out std_logic_vector(3 downto 0);  -- FMC 105 LEDS
-    o_leds     : out std_logic_vector(3 downto 0);  -- Opal Kelly LEDs
+    -- inout  wire [DQ_WIDTH-1:0]  ddr3_dq,  //16
+    ddr3_dq      : inout std_logic_vector (pkg_DQ_WIDTH-1 downto 0);
+    -- output wire [ROW_WIDTH-1:0] ddr3_addr,  //15
+    ddr3_addr    : out   std_logic_vector (pkg_ROW_WIDTH-1 downto 0);
+    -- output wire [BANK_WIDTH-1:0] ddr3_ba,    //3
+    ddr3_ba      : out   std_logic_vector (pkg_BANK_WIDTH-1 downto 0);
+    -- output wire [CK_WIDTH-1:0] ddr3_ck_p,  //1
+    ddr3_ck_p    : out   std_logic_vector (pkg_CK_WIDTH-1 downto 0);
+    -- output wire [CK_WIDTH-1:0] ddr3_ck_n,
+    ddr3_ck_n    : out   std_logic_vector (pkg_CK_WIDTH-1 downto 0);
+    -- output wire [CKE_WIDTH-1:0] ddr3_cke,  //1
+    ddr3_cke     : out   std_logic_vector (pkg_CKE_WIDTH-1 downto 0);
+    -- output wire [(CS_WIDTH*nCS_PER_RANK)-1:0]  ddr3_cs_n,
+    ddr3_cs_n    : out   std_logic_vector ((pkg_CS_WIDTH*pkg_nCS_PER_RANK)-1 downto 0);
+    -- output wire ddr3_cas_n,
+    ddr3_cas_n   : out   std_logic;
+    -- output wire ddr3_ras_n,
+    ddr3_ras_n   : out   std_logic;
+    -- output wire ddr3_we_n,
+    ddr3_we_n    : out   std_logic;
+    -- output wire [(CS_WIDTH*nCS_PER_RANK)-1:0]  ddr3_odt,
+    ddr3_odt     : out   std_logic_vector ((pkg_CS_WIDTH*pkg_nCS_PER_RANK)-1 downto 0);
+    -- output wire [DM_WIDTH-1:0] ddr3_dm,  //2
+    ddr3_dm      : out   std_logic_vector (pkg_DM_WIDTH-1 downto 0);
+    -- inout wire [DQS_WIDTH-1:0]ddr3_dqs_p,  //2
+    ddr3_dqs_p   : inout std_logic_vector (pkg_DQS_WIDTH-1 downto 0);
+    -- inout wire [DQS_WIDTH-1:0]ddr3_dqs_n,
+    ddr3_dqs_n   : inout std_logic_vector (pkg_DQS_WIDTH-1 downto 0);
+    -- output wire ddr3_reset_n
+    ddr3_reset_n : out   std_logic;
 
-
-    ddr3_dq      : inout std_logic_vector (pkg_DQ_WIDTH-1 downto 0);  -- inout  wire [DQ_WIDTH-1:0]                 ddr3_dq,  //16
-    ddr3_addr    : out   std_logic_vector (pkg_ROW_WIDTH-1 downto 0);  -- output wire [ROW_WIDTH-1:0]                ddr3_addr,  //15
-    ddr3_ba      : out   std_logic_vector (pkg_BANK_WIDTH-1 downto 0);  -- output wire [BANK_WIDTH-1:0]               ddr3_ba,    //3
-    ddr3_ck_p    : out   std_logic_vector (pkg_CK_WIDTH-1 downto 0);  -- output wire [CK_WIDTH-1:0]                 ddr3_ck_p,  //1
-    ddr3_ck_n    : out   std_logic_vector (pkg_CK_WIDTH-1 downto 0);  -- output wire [CK_WIDTH-1:0]                 ddr3_ck_n,
-    ddr3_cke     : out   std_logic_vector (pkg_CKE_WIDTH-1 downto 0);  -- output wire [CKE_WIDTH-1:0]                ddr3_cke,  //1
-    ddr3_cs_n    : out   std_logic_vector ((pkg_CS_WIDTH*pkg_nCS_PER_RANK)-1 downto 0);  -- output wire [(CS_WIDTH*nCS_PER_RANK)-1:0]  ddr3_cs_n,
-    ddr3_cas_n   : out   std_logic;  -- output wire                                ddr3_cas_n,
-    ddr3_ras_n   : out   std_logic;  -- output wire                                ddr3_ras_n,
-    ddr3_we_n    : out   std_logic;  -- output wire                                ddr3_we_n,
-    ddr3_odt     : out   std_logic_vector ((pkg_CS_WIDTH*pkg_nCS_PER_RANK)-1 downto 0);  -- output wire [(CS_WIDTH*nCS_PER_RANK)-1:0]  ddr3_odt,
-    ddr3_dm      : out   std_logic_vector (pkg_DM_WIDTH-1 downto 0);  -- output wire [DM_WIDTH-1:0]                 ddr3_dm,  //2
-    ddr3_dqs_p   : inout std_logic_vector (pkg_DQS_WIDTH-1 downto 0);  -- inout  wire [DQS_WIDTH-1:0]                ddr3_dqs_p,  //2
-    ddr3_dqs_n   : inout std_logic_vector (pkg_DQS_WIDTH-1 downto 0);  -- inout  wire [DQS_WIDTH-1:0]                ddr3_dqs_n,
-    ddr3_reset_n : out   std_logic;  -- output wire                                ddr3_reset_n
-
+    ---------------------------------------------------------------------
+    -- DEMUX
+    ---------------------------------------------------------------------
     --  from DEMUX
+    -- diffential_p science clock
     i_clk_science_p : in std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
+    -- diffential_n science clock
     i_clk_science_n : in std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
+    -- diffential_p control science
     i_science_ctrl_p : in std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
+    -- diffential_n control science
     i_science_ctrl_n : in std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
+    -- diffential_p data science
     i_science_data_p : in std_logic_vector(pkg_LINE_NUMBER-1 downto 0);
+    -- diffential_n data science
     i_science_data_n : in std_logic_vector(pkg_LINE_NUMBER-1 downto 0);
 
--- Le chip select passe sur 2 bits
--- Le chip select est renomme en cs_n dans tout le code car il est actif a l'etat bas.
-    -- SPI --
+    -- to DEMUX: SPI link
+    -- Shared SPI MISO
     i_miso : in  std_logic;
+    -- Shared SPI MOSI
     o_mosi : out std_logic;
+    -- Shared SPI clock line
     o_sclk : out std_logic;
+    -- SPI chip select
     o_cs_n : out std_logic_vector(1 downto 0);
 
+    ---------------------------------------------------------------------
+    -- LEDS
+    ---------------------------------------------------------------------
+    -- FMC 105 LEDS
+    o_leds_fmc : out std_logic_vector(3 downto 0);
+    -- Opal Kelly LEDs
+    o_leds     : out std_logic_vector(3 downto 0);
 
+    ---------------------------------------------------------------------
+    -- ICU
+    ---------------------------------------------------------------------
     -- ICU selection : 0 for main, 1 for redundant
     o_sel_main_n : out std_logic
     );
 end entity;
 
 architecture RTL of fmc_to_usb is
-
+  -- ddr clock (user side)
   signal clk            : std_logic;
-  signal usb_rst        : std_logic;
+  -- ddr reset @clk (user side)
   signal ddr_rst        : std_logic;
+  -- reset @usb_clk
+  signal usb_rst        : std_logic;
+  -- science reset
   signal rst_science0   : std_logic;
+  -- science reset_n
   signal rst_science0_n : std_logic;
 
-  --  okHost
+  --  usb_clk
   signal okClk : std_logic;
-
-  signal okHE : std_logic_vector(112 downto 0);
-  signal okEH : std_logic_vector(64 downto 0);
-
-  --  okWireOR
+  -- usb interface signal
+  signal okHE  : std_logic_vector(112 downto 0);
+  -- usb interface signal
+  signal okEH  : std_logic_vector(64 downto 0);
+  -- usb interface signal
   signal okEHx : std_logic_vector(65*12-1 downto 0);
 
-  -- fifo instrument
+  ---------------------------------------------------------------------
+  -- FIFO instrument
+  ---------------------------------------------------------------------
+  -- fifo instrument read enable
   signal read_instrument       : std_logic;
+  -- fifo instrument empty
   signal empty_fifo_instrument : std_logic;
 
-  signal full_fifo_instrument    : std_logic;
-  signal full_fifo_instrument_r1 : std_logic;
-  signal full_fifo_instrument_r2 : std_logic;
+  -- fifo instrument full
+  signal full_fifo_instrument       : std_logic;
+  -- delayed fifo instrument full
+  signal full_fifo_instrument_r1    : std_logic;
+  -- delayed fifo instrument full
+  signal full_fifo_instrument_r2    : std_logic;
+  -- fifo instrument prog full
+  signal prog_empty_fifo_instrument : std_logic;
 
+  -- fifo instrument data valid
   signal valid_fifo_instrument : std_logic;
+  -- fifo instrument input data
   signal dataout_instrument    : std_logic_vector(127 downto 0);
+  -- fifo instrument write enable
   signal write_instrument      : std_logic;
+  -- fifo instrument output data
+  signal data_instrument       : std_logic_vector(127 downto 0);
 
-  signal data_instrument : std_logic_vector(127 downto 0);
-
-
-  --  okPipeIn_fifo
+  ---------------------------------------------------------------------
+  -- FIFO fifo_r32_256_w32_256
+  ---------------------------------------------------------------------
+  -- fifo write enable
   signal pi0_ep_write   : std_logic;
+  -- fifo input data
   signal pi0_ep_dataout : std_logic_vector(31 downto 0);
+  -- fifo read enable
   signal pipe_in_read   : std_logic;
+  -- fifo read data
   signal pipe_in_data   : std_logic_vector(31 downto 0);
+  -- fifo empty
   signal pipe_in_empty  : std_logic;
 
-  --  okPipeOut_fifo
+  ---------------------------------------------------------------------
+  -- FIFO fifo_r32_131068_w128_32728
+  ---------------------------------------------------------------------
+  -- fifo read enable
   signal po0_ep_read    : std_logic;
+  -- fifo data output
   signal po0_ep_datain  : std_logic_vector(31 downto 0);
+  -- fifo write enable
   signal pipe_out_write : std_logic;
+  -- fifo input data
   signal pipe_out_data  : std_logic_vector(127 downto 0);
+  -- fifo prog full
   signal pipe_out_full  : std_logic;
+  -- fifo empty
   signal empty          : std_logic;
+  -- fifo write data count
   signal wr_data_count  : std_logic_vector(14 downto 0);
+  -- fifo read data count
   signal rd_data_count  : std_logic_vector(16 downto 0);
 
   --  wire
+  -- wire in00
   signal ep00wire : std_logic_vector(31 downto 0);
+  -- wire in01
   signal ep01wire : std_logic_vector(31 downto 0);
+  -- wire in02
   signal ep02wire : std_logic_vector(31 downto 0);
+  -- wire out00
   signal ep20wire : std_logic_vector(31 downto 0);
+  -- wire out02
   signal ep22wire : std_logic_vector(31 downto 0);
+  -- wire out03
   signal ep23wire : std_logic_vector(31 downto 0);
+  -- wire out05
   signal ep25wire : std_logic_vector(31 downto 0);
+  -- wire out06
   signal ep26wire : std_logic_vector(31 downto 0);
+  -- wire out07
   signal ep27wire : std_logic_vector(31 downto 0);
+  -- wire out30
   signal ep3Ewire : std_logic_vector(31 downto 0);
+  -- wire out31
   signal ep3Fwire : std_logic_vector(31 downto 0);
 
+  -- delayed wire out03
   signal ep23wire_r1 : std_logic_vector(31 downto 0);
+  -- delayed wire out03
   signal ep23wire_r2 : std_logic_vector(31 downto 0);
+
+  -- delayed wire out02
   signal ep22wire_r1 : std_logic_vector(31 downto 0);
+  -- delayed wire out02
   signal ep22wire_r2 : std_logic_vector(31 downto 0);
+
+  -- delayed wire out05
   signal ep25wire_r1 : std_logic_vector(31 downto 0);
+  -- delayed wire out05
   signal ep25wire_r2 : std_logic_vector(31 downto 0);
+
+  -- delayed wire out07
   signal ep27wire_r1 : std_logic_vector(31 downto 0);
+  -- delayed wire out07
   signal ep27wire_r2 : std_logic_vector(31 downto 0);
 
-  --  ddr3 stamp
+  --  ddr3: read address (expressed in byte)
   signal buffer_new_cmd_byte_addr_rd : std_logic_vector(54 downto 0);
+  --  ddr3: write address (expressed in byte)
   signal buffer_new_cmd_byte_addr_wr : std_logic_vector(54 downto 0);
+  --  ddr3: computed delta between the write address and the read address
   signal Subtraction_addr_wr_addr_rd : std_logic_vector(54 downto 0);
 
 
@@ -186,79 +286,126 @@ architecture RTL of fmc_to_usb is
 -- la valeur des chip select DEMUX et RAS de la prochaine commande SPI.
   signal spi_chipselect_ras : std_logic;
 
-  --  ddr3 interconnect
+  -- DDR calibration is done
   signal init_calib_complete      : std_logic;
+  -- DDR calibration is done (resynchronized)
   signal init_calib_complete_sync : std_logic;
+  -- DDR input reset
   signal sys_rst_r1               : std_logic;
+  -- DDR input reset counter
   signal rst_cnt_r1               : unsigned(4 downto 0) := (others => '0');
 
+  -- address of the current request
   signal app_addr          : std_logic_vector (pkg_ADDR_WIDTH-1 downto 0);
+  -- selects the command for the current request.
   signal app_cmd           : std_logic_vector (2 downto 0);
+  -- This is the active-High strobe for the app_addr[], app_cmd[2:0], app_sz, and app_hi_pri inputs
   signal app_en            : std_logic;
+  --  indicates that the UI is ready to accept commands.
   signal app_rdy           : std_logic;
+  -- data from read commands
   signal app_rd_data       : std_logic_vector (pkg_APP_DATA_WIDTH-1 downto 0);
+  -- indicates app_rd_data is valid
   signal app_rd_data_valid : std_logic;
+  -- data for write commands.
   signal app_wdf_data      : std_logic_vector (pkg_APP_DATA_WIDTH-1 downto 0);
+  -- indicates that the current clock cycle is the last cycle of input data on app_wdf_data[
   signal app_wdf_end       : std_logic;
+  -- mask for app_wdf_data
   signal app_wdf_mask      : std_logic_vector (pkg_APP_MASK_WIDTH-1 downto 0);
+  -- indicates that the write data FIFO is ready to receive data
   signal app_wdf_rdy       : std_logic;
+  -- active-High strobe for app_wdf_data
   signal app_wdf_wren      : std_logic;
 
-  --  led
+  ---------------------------------------------------------------------
+  -- leds
+  ---------------------------------------------------------------------
+  -- counter for the blinked led
   signal cpt0_r1  : integer;
+  -- count the number of science synchro word
   signal start_r1 : unsigned(3 downto 0);
+  -- blinked led @science_clk
   signal led_r1   : std_logic;
 
 
-  -- manage ep20wire
-  signal prog_empty : std_logic;
-
+  -- count the numbers of read science word
   signal rd_piper_out_r1 : unsigned(31 downto 0);
 
-  --  HK
+  --  HK output data
   signal pipe_out_data_hk  : std_logic_vector(31 downto 0);
+  --  HK write enable
   signal pipe_out_write_hk : std_logic;
 
+  ---------------------------------------------------------------------
+  -- HK okPipeOut
+  ---------------------------------------------------------------------
+  -- HK read enable
   signal po0_ep_read_hk   : std_logic;
+  -- HK input data
   signal po0_ep_datain_hk : std_logic_vector(31 downto 0);
+  ---------------------------------------------------------------------
+  -- HK wire_out
+  ---------------------------------------------------------------------
+  -- HK data count
   signal rd_data_count_hk : std_logic_vector(9 downto 0);
 
-  --
-
+  ---------------------------------------------------------------------
+  -- science
+  ---------------------------------------------------------------------
+  -- science data valid
   signal data_rate_enable : std_logic;
 
-  -- Paul Part --
-  signal science_ctrl : std_logic_vector(pkg_LINK_NUMBER - 1 downto 0);
-
+  -- science control (serialized)
+  signal science_ctrl   : std_logic_vector(pkg_LINK_NUMBER - 1 downto 0);
+  -- science clock
   signal clk_science    : std_logic_vector(pkg_LINK_NUMBER - 1 downto 0);
+  -- science data (serialized)
   signal science_data   : std_logic_vector(pkg_LINE_NUMBER - 1 downto 0);
+  -- detect the science synchro words
   signal start_detected : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
+  -- endianess: swap bytes
   signal pipe_in_data_big_endian : std_logic_vector(31 downto 0);
-  signal sync_n                  : std_logic;
-  signal miso                    : std_logic;
-  signal mosi                    : std_logic;
-  signal sclk                    : std_logic;
-  signal cs_n                    : std_logic_vector(o_cs_n'range);
 
+  -- shared SPI chip select
+  signal sync_n        : std_logic;
+  -- Shared SPI MISO
+  signal miso          : std_logic;
+  -- Shared SPI MOSI
+  signal mosi          : std_logic;
+  -- Shared SPI clock line
+  signal sclk          : std_logic;
+  -- SPI chip select
+  signal cs_n          : std_logic_vector(o_cs_n'range);
+  -- ICU selection
   signal sel_main_n_r1 : std_logic;
 
-
+  -- fpga specific attribute: force to use registers (very close)
   attribute ASYNC_REG                : string;
+  -- apply attribute on ep23wire_r1
   attribute ASYNC_REG of ep23wire_r1 : signal is "TRUE";
+  -- apply attribute on ep23wire_r2
   attribute ASYNC_REG of ep23wire_r2 : signal is "TRUE";
 
+  -- apply attribute on ep22wire_r1
   attribute ASYNC_REG of ep22wire_r1 : signal is "TRUE";
+  -- apply attribute on ep22wire_r2
   attribute ASYNC_REG of ep22wire_r2 : signal is "TRUE";
 
+  -- apply attribute on ep25wire_r1
   attribute ASYNC_REG of ep25wire_r1 : signal is "TRUE";
+  -- apply attribute on ep25wire_r2
   attribute ASYNC_REG of ep25wire_r2 : signal is "TRUE";
 
+  -- apply attribute on ep27wire_r1
   attribute ASYNC_REG of ep27wire_r1 : signal is "TRUE";
+  -- apply attribute on ep27wire_r2
   attribute ASYNC_REG of ep27wire_r2 : signal is "TRUE";
 
-
+  -- led: count clock cycle
   signal cnt_r1 : unsigned(26 downto 0) := (others => '0');
+  -- led: change state
   signal trig   : std_logic;
 
 begin
@@ -365,23 +512,26 @@ begin
 --      led off: led <= '1';
 --      led on:  led <= '0';
 ----------------------------------------------------
-  p_clock_science_link0 : process (clk_science(0), rst_science0)
+  p_clock_science_link0 : process (clk_science(0))
   begin
-    if rst_science0 = '1' then
-      cpt0_r1 <= 0;
-      led_r1  <= '1';
-    elsif rising_edge(clk_science(0)) then
-      cpt0_r1 <= cpt0_r1 + 1;
-      if start_detected(0) = '1' then
-        start_r1 <= start_r1 + 1;
-      end if;
-      if cpt0_r1 = 1000000 then
-        if start_r1 = "0000" then
-          led_r1 <= '0';
-        else
-          led_r1 <= '1';
-        end if;
+
+    if rising_edge(clk_science(0)) then
+      if rst_science0 = '1' then
         cpt0_r1 <= 0;
+        led_r1  <= '1';
+      else
+        cpt0_r1 <= cpt0_r1 + 1;
+        if start_detected(0) = '1' then
+          start_r1 <= start_r1 + 1;
+        end if;
+        if cpt0_r1 = 1000000 then
+          if start_r1 = "0000" then
+            led_r1 <= '0';
+          else
+            led_r1 <= '1';
+          end if;
+          cpt0_r1 <= 0;
+        end if;
       end if;
     end if;
   end process;
@@ -411,14 +561,9 @@ begin
 ----------------------------------------------------
 --  FMC 105 LEDs
 ----------------------------------------------------
-  p_leds : process (okClk, usb_rst)
+  p_leds : process (okClk)
   begin
-    if usb_rst = '1' then
-      o_leds_fmc(0) <= '0';
-      o_leds_fmc(1) <= '0';
-      o_leds_fmc(2) <= '0';
-      o_leds_fmc(3) <= '0';
-    elsif rising_edge(okClk)then
+    if rising_edge(okClk)then
       o_leds_fmc(0) <= '1';
       o_leds_fmc(1) <= cs_n(0);
       o_leds_fmc(2) <= cs_n(1);
@@ -483,17 +628,20 @@ begin
       );
 
   --//MIG Infrastructure Reset
-  p_reset_mig : process (okClk, usb_rst)
+  p_reset_mig : process (okClk)
   begin
-    if usb_rst = '1' then
-      rst_cnt_r1 <= (others => '0');
-      sys_rst_r1 <= '1';
-    elsif rising_edge(okClk) then
-      if(rst_cnt_r1 < "1000") then
-        rst_cnt_r1 <= rst_cnt_r1 + 1;
+
+    if rising_edge(okClk) then
+      if usb_rst = '1' then
+        rst_cnt_r1 <= (others => '0');
         sys_rst_r1 <= '1';
       else
-        sys_rst_r1 <= '0';
+        if(rst_cnt_r1 < "1000") then
+          rst_cnt_r1 <= rst_cnt_r1 + 1;
+          sys_rst_r1 <= '1';
+        else
+          sys_rst_r1 <= '0';
+        end if;
       end if;
     end if;
   end process p_reset_mig;
@@ -507,18 +655,31 @@ begin
       i_clk => clk,
       i_rst => ddr_rst,
 
+      ---------------------------------------------------------------------
+      -- DDR status
+      ---------------------------------------------------------------------
       i_calib_done => init_calib_complete,
 
+      ---------------------------------------------------------------------
+      -- input FIFO
+      ---------------------------------------------------------------------
       o_pipe_in_read => read_instrument,
       i_pipe_in_data => data_instrument,
 
       i_pipe_in_valid => valid_fifo_instrument,
       i_pipe_in_empty => empty_fifo_instrument,
+      i_prog_empty    => prog_empty_fifo_instrument,
 
+      ---------------------------------------------------------------------
+      -- output FIFO
+      ---------------------------------------------------------------------
       o_pipe_out_write => pipe_out_write,
       o_pipe_out_data  => pipe_out_data,
       i_pipe_out_full  => pipe_out_full,
 
+      ---------------------------------------------------------------------
+      -- DDR data
+      ---------------------------------------------------------------------
       i_app_rdy  => app_rdy,            --: STD_LOGIC;
       o_app_en   => app_en,             --: STD_LOGIC
       o_app_cmd  => app_cmd,            --: STD_LOGIC_VECTOR  (2 downto 0);
@@ -533,9 +694,10 @@ begin
       o_app_wdf_end  => app_wdf_end,    --: STD_LOGIC;
       o_app_wdf_mask => app_wdf_mask,  --: STD_LOGIC_VECTOR  (APP_MASK_WIDTH-1 downto 0);  --constant APP_DATA_WIDTH        :  integer := 128;
 
-      i_prog_empty => prog_empty,
 
-
+      ---------------------------------------------------------------------
+      -- status
+      ---------------------------------------------------------------------
       o_buffer_new_cmd_byte_addr_wr => buffer_new_cmd_byte_addr_wr,
       o_buffer_new_cmd_byte_addr_rd => buffer_new_cmd_byte_addr_rd
 
@@ -559,7 +721,7 @@ begin
       o_sub_addr_wr_addr_rd => Subtraction_addr_wr_addr_rd
       );
 
-  ep23wire <= Subtraction_addr_wr_addr_rd (31 downto 0);
+  ep23wire <= Subtraction_addr_wr_addr_rd(31 downto 0);
 
 -- ----------------------------------------------------
 -- manage ep20wire
@@ -583,36 +745,21 @@ begin
 -- meta wire out
 -- ----------------------------------------------------
 -- resynchronized register
-  p_synchronized_register : process (okClk, usb_rst)
+  p_synchronized_register : process (okClk)
   begin
-    if usb_rst = '1' then
 
-      ep23wire_r1 <= (others => '0');
-      ep23wire_r2 <= (others => '0');
-      ep22wire_r1 <= (others => '0');
-      ep22wire_r2 <= (others => '0');
+    if rising_edge (okClk) then
+      ep23wire_r1 <= ep23wire;
+      ep23wire_r2 <= ep23wire_r1;
 
-      ep25wire_r1 <= (others => '0');
-      ep25wire_r2 <= (others => '0');
-      ep27wire_r1 <= (others => '0');
-      ep27wire_r2 <= (others => '0');
+      ep22wire_r1 <= ep22wire;
+      ep22wire_r2 <= ep22wire_r1;
 
-    else
-      if rising_edge (okClk) then
+      ep25wire_r1 <= ep25wire;
+      ep25wire_r2 <= ep25wire_r1;
 
-        ep23wire_r1 <= ep23wire;
-        ep23wire_r2 <= ep23wire_r1;
-
-        ep22wire_r1 <= ep22wire;
-        ep22wire_r2 <= ep22wire_r1;
-
-        ep25wire_r1 <= ep25wire;
-        ep25wire_r2 <= ep25wire_r1;
-
-        ep27wire_r1 <= ep27wire;
-        ep27wire_r2 <= ep27wire_r1;
-
-      end if;
+      ep27wire_r1 <= ep27wire;
+      ep27wire_r2 <= ep27wire_r1;
     end if;
   end process p_synchronized_register;
 
@@ -852,39 +999,35 @@ begin
   -- FIFO status
   ---------------------------------------------------------------------
   -- register: get the FIFO status
-  p_status_fifo : process (clk, ddr_rst)
+  p_status_fifo : process (clk)
   begin
-    if ddr_rst = '1' then
-      ep22wire <= (others => '0');
 
-    else
 
-      if rising_edge (clk) then
-        --  meta
-        full_fifo_instrument_r1 <= full_fifo_instrument;
-        full_fifo_instrument_r2 <= full_fifo_instrument_r1;
+    if rising_edge (clk) then
+      --  meta
+      full_fifo_instrument_r1 <= full_fifo_instrument;
+      full_fifo_instrument_r2 <= full_fifo_instrument_r1;
 
-        ep22wire(2) <= '0';
-        ep22wire(3) <= '0';
-        ep22wire(4) <= empty;
-        ep22wire(5) <= empty_fifo_instrument;
-        ep22wire(6) <= '0';
+      ep22wire(2) <= '0';
+      ep22wire(3) <= '0';
+      ep22wire(4) <= empty;
+      ep22wire(5) <= empty_fifo_instrument;
+      ep22wire(6) <= '0';
 
-        --  detect error
-        if pipe_out_full = '1' and full_fifo_instrument_r2 = '0' then
-          ep22wire(0) <= '1';
+      --  detect error
+      if pipe_out_full = '1' and full_fifo_instrument_r2 = '0' then
+        ep22wire(0) <= '1';
+      else
+        if pipe_out_full = '0' and full_fifo_instrument_r2 = '1' then
+          ep22wire(1) <= '1';
         else
-          if pipe_out_full = '0' and full_fifo_instrument_r2 = '1' then
+          if pipe_out_full = '1' and full_fifo_instrument_r2 = '1' then
             ep22wire(1) <= '1';
-          else
-            if pipe_out_full = '1' and full_fifo_instrument_r2 = '1' then
-              ep22wire(1) <= '1';
-              ep22wire(0) <= '1';
-            end if;
+            ep22wire(0) <= '1';
           end if;
         end if;
-
       end if;
+
     end if;
   end process p_status_fifo;
 
@@ -925,7 +1068,7 @@ begin
       valid         => valid_fifo_instrument,
       rd_data_count => open,            --// Bus [7 : 0]
       wr_data_count => open,            --// Bus [9 : 0]
-      prog_empty    => prog_empty
+      prog_empty    => prog_empty_fifo_instrument
 
 
       );
@@ -1017,13 +1160,14 @@ begin
   -- register: get the number of read science words
   ---------------------------------------------------------------------
   -- count the number of read science words.
-  p_nb_science_read_word : process (okClk, usb_rst)
+  p_nb_science_read_word : process (okClk)
   begin
-    if usb_rst = '1' then
-      ep25wire        <= (others => '0');
-      rd_piper_out_r1 <= (others => '0');
-    else
-      if rising_edge (okClk) then
+
+    if rising_edge (okClk) then
+      if usb_rst = '1' then
+        ep25wire        <= (others => '0');
+        rd_piper_out_r1 <= (others => '0');
+      else
         if po0_ep_read = '1' then
           rd_piper_out_r1 <= rd_piper_out_r1 + 1;
           ep25wire        <= std_logic_vector(rd_piper_out_r1);
