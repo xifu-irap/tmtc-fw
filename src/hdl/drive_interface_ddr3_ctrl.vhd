@@ -111,7 +111,7 @@ end entity;
 architecture RTL of drive_interface_ddr3_ctrl is
 
   -- fsm type declaration
-  type t_fsm_state_manager is (E_IDLE, E_WRITE_DDR3, E_READ_DDR3, E_WAIT_RESTART);
+  type t_fsm_state_manager is (E_IDLE, E_WRITE_DDR3, E_READ_DDR3);
   -- state (registered)
   signal sm_state_manager_r1   : t_fsm_state_manager;
   -- define the address increment
