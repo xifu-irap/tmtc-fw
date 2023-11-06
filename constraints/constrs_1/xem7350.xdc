@@ -546,8 +546,8 @@ set_property IOSTANDARD LVCMOS25 [get_ports {o_mosi}];# TC-HK_MOSI
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-E10
-set_property PACKAGE_PIN AE26 [get_ports {o_leds_fmc[3]}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_leds_fmc[3]}]
+# set_property PACKAGE_PIN AE26 [get_ports {}]
+# set_property IOSTANDARD  [get_ports {}]
 # FMC-E11
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -651,17 +651,17 @@ set_property IOSTANDARD LVCMOS25 [get_ports {o_sel_main_n}];# SEL_MAINn
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-E6
-set_property PACKAGE_PIN W23 [get_ports {o_leds_fmc[0]}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_leds_fmc[0]}]
+# set_property PACKAGE_PIN W23 [get_ports {}]
+# set_property IOSTANDARD  [get_ports {}]
 # FMC-E7
-set_property PACKAGE_PIN W24 [get_ports {o_leds_fmc[1]}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_leds_fmc[1]}]
+# set_property PACKAGE_PIN W24 [get_ports {}]
+# set_property IOSTANDARD  [get_ports {}]
 # FMC-E8
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-E9
-set_property PACKAGE_PIN AD26 [get_ports {o_leds_fmc[2]}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_leds_fmc[2]}]
+# set_property PACKAGE_PIN AD26 [get_ports {}]
+# set_property IOSTANDARD  [get_ports {}]
 # FMC-F1
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]

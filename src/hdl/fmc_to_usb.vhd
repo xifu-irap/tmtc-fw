@@ -136,8 +136,6 @@ entity fmc_to_usb is
     ---------------------------------------------------------------------
     -- LEDS
     ---------------------------------------------------------------------
-    -- FMC 105 LEDS
-    o_leds_fmc : out std_logic_vector(3 downto 0);
     -- Opal Kelly LEDs
     o_leds     : out std_logic_vector(3 downto 0);
 
@@ -556,18 +554,6 @@ begin
 ----------------------------------------------------
   usb_rst   <= ep00wire(0);
 
-----------------------------------------------------
---  FMC 105 LEDs
-----------------------------------------------------
-  p_leds : process (ok_clk)
-  begin
-    if rising_edge(ok_clk)then
-      o_leds_fmc(0) <= '1';
-      o_leds_fmc(1) <= cs_n(0);
-      o_leds_fmc(2) <= cs_n(1);
-      o_leds_fmc(3) <= sel_main_n_r1;
-    end if;
-  end process;
 
 ----------------------------------------------------
 --  Controller DDR3

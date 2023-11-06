@@ -359,7 +359,6 @@ set_false_path -hold   -fall_from [get_clocks virtual_ddr_clk] -rise_to [get_clo
 # others (input ports): asynchronuous ports
 ##################################################################################
 set_false_path -to   [get_ports "o_leds*"];
-set_false_path -to   [get_ports "o_leds_fmc*"];
 set_false_path -to   [get_ports "o_sel_main_n"];
 
 ##################################################################################
