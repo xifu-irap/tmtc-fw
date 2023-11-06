@@ -50,7 +50,7 @@ use xpm.vcomponents.all;
 entity fmc_to_usb is
   generic (
     -- enable debug
-    g_DEBUG : boolean := false
+    g_DEBUG : boolean := true
     );
   port(
     ---------------------------------------------------------------------
@@ -278,8 +278,9 @@ architecture RTL of fmc_to_usb is
   signal Subtraction_addr_wr_addr_rd : std_logic_vector(54 downto 0);
 
 
--- Ajout d'un signal spi_chipselect_ras qui vient du XIFU Studio par l'USB pour definir
--- la valeur des chip select DEMUX et RAS de la prochaine commande SPI.
+  -- spi chip select: DEMUX or RAS
+  signal spi_chipselect_ras_tmp : std_logic;
+  -- resynchronized spi chip select: DEMUX or RAS
   signal spi_chipselect_ras : std_logic;
 
   -- DDR calibration is done
@@ -375,6 +376,8 @@ architecture RTL of fmc_to_usb is
   -- SPI chip select
   signal cs_n          : std_logic_vector(o_cs_n'range);
   -- ICU selection
+  signal sel_main_n_tmp : std_logic;
+  -- delayed ICU selection
   signal sel_main_n_r1 : std_logic;
 
   -- fpga specific attribute: force to use registers (very close)
@@ -793,6 +796,8 @@ begin
       ep_dataout => ep01wire
       );
 
+  spi_chipselect_ras_tmp <= ep01wire(0);
+
   inst_okWireIn_icu_main : okWireIn
     port map (
       okHE       => okHE,
@@ -800,11 +805,12 @@ begin
       ep_dataout => ep02wire
       );
 
+  sel_main_n_tmp <= ep02wire(0);
   -- add an output register to the sel_main_n signal
   p_pipe : process (ok_clk)
   begin
     if rising_edge(ok_clk)then
-      sel_main_n_r1 <= ep02wire(0);
+      sel_main_n_r1 <= sel_main_n_tmp;
     end if;
   end process p_pipe;
 
@@ -819,7 +825,7 @@ begin
     -- temporary output pipe signal
     signal data_tmp1 : std_logic_vector(0 downto 0);
   begin
-    data_tmp0(0) <= ep01wire(0);
+    data_tmp0(0) <= spi_chipselect_ras_tmp;
     inst_synchronizer_spi_chipselect_ras : entity work.synchronizer
       generic map(
         g_INIT            => '0',  -- Initial value of synchronizer registers upon startup, 1'b0 or 1'b1.
@@ -1196,8 +1202,8 @@ begin
         clk => ok_clk,
 
         -- probe3
-        probe2(2) => ep02wire(0),
-        probe2(1) => ep01wire(0),
+        probe2(2) => sel_main_n_tmp,
+        probe2(1) => spi_chipselect_ras_tmp,
         probe2(0) => usb_rst,
         -- probe1
         probe1(2) => po0_ep_read,
@@ -1208,6 +1214,28 @@ begin
         probe0(95 downto 64) => po0_ep_datain,
         probe0(63 downto 32) => po0_ep_datain_hk,
         probe0(31 downto 0)  => pi0_ep_dataout
+        );
+
+      inst_ila_ddr : entity work.ila_ddr
+      port map (
+        clk => clk,
+
+        -- probe3
+        probe2(5) => pipe_out_full,
+        probe2(4) => pipe_out_write,
+        probe2(3) => ddr_rst,
+        probe2(2) => spi_chipselect_ras,
+        probe2(1) => pipe_in_read,
+        probe2(0) => pipe_out_write_hk,
+        -- probe1
+        probe1(4 downto 3) => cs_n,
+        probe1(2) => miso,
+        probe1(1) => mosi,
+        probe1(0) => sclk,
+
+        -- probe0
+        probe0(63 downto 32) => pipe_out_data_hk,
+        probe0(31 downto 0)  => pipe_in_data_big_endian
         );
   end generate gen_ILAs;
 end RTL;
