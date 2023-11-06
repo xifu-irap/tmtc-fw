@@ -50,7 +50,7 @@ use xpm.vcomponents.all;
 entity fmc_to_usb is
   generic (
     -- enable debug
-    g_DEBUG : boolean := true
+    g_DEBUG : boolean := false
     );
   port(
     ---------------------------------------------------------------------
@@ -771,7 +771,7 @@ begin
       okHU   => o_okHU,
       okUHU  => b_okUHU,
       okAA   => b_okAA,  --//temp removed for SIMULATION replace Core
-      ok_clk => ok_clk,                   --out
+      okclk  => ok_clk,                   --out
       okHE   => okHE,
       okEH   => okEH
 
@@ -1074,7 +1074,7 @@ begin
 
       );
 
-  rst_science0_n <= init_calib_complete_sync;
+  rst_science0 <= not(init_calib_complete_sync);
 
 
 ---------------------------------------------------------------
