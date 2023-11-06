@@ -130,7 +130,7 @@ entity fmc_to_usb is
     o_mosi : out std_logic;
     -- Shared SPI clock line
     o_sclk : out std_logic;
-    -- SPI chip select
+    -- SPI chip select: bit0: RAS cs_n, bit1: DEMUX cs_n
     o_cs_n : out std_logic_vector(1 downto 0);
 
     ---------------------------------------------------------------------
