@@ -170,61 +170,61 @@ architecture RTL of fmc_to_usb is
   -- FIFO instrument
   ---------------------------------------------------------------------
   -- fifo instrument read enable
-  signal read_instrument       : std_logic;
+  signal fifo_in_science_rd_en       : std_logic;
   -- fifo instrument empty
-  signal empty_fifo_instrument : std_logic;
+  signal fifo_in_science_empty : std_logic;
 
   -- fifo instrument full
-  signal full_fifo_instrument       : std_logic;
+  signal fifo_in_science_full       : std_logic;
   -- delayed fifo instrument full
-  signal full_fifo_instrument_r1    : std_logic;
+  signal fifo_in_science_full_r1    : std_logic;
   -- delayed fifo instrument full
-  signal full_fifo_instrument_r2    : std_logic;
+  signal fifo_in_science_full_r2    : std_logic;
   -- fifo instrument prog full
-  signal prog_empty_fifo_instrument : std_logic;
+  signal fifo_in_science_prog_empty : std_logic;
 
   -- fifo instrument data valid
-  signal valid_fifo_instrument : std_logic;
+  signal fifo_in_science_valid : std_logic;
   -- fifo instrument input data
-  signal dataout_instrument    : std_logic_vector(127 downto 0);
+  signal fifo_in_science_wr_data    : std_logic_vector(127 downto 0);
   -- fifo instrument write enable
-  signal write_instrument      : std_logic;
+  signal fifo_in_science_wr_en      : std_logic;
   -- fifo instrument output data
-  signal data_instrument       : std_logic_vector(127 downto 0);
+  signal fifo_in_science_rd_data       : std_logic_vector(127 downto 0);
 
   ---------------------------------------------------------------------
   -- FIFO fifo_r32_256_w32_256
   ---------------------------------------------------------------------
   -- fifo write enable
-  signal pi0_ep_write   : std_logic;
+  signal okpipe_spi_wr_en   : std_logic;
   -- fifo input data
-  signal pi0_ep_dataout : std_logic_vector(31 downto 0);
+  signal okpipe_spi_wr_data : std_logic_vector(31 downto 0);
   -- fifo read enable
-  signal pipe_in_read   : std_logic;
+  signal fifo_in_spi_rd_en   : std_logic;
   -- fifo read data
-  signal pipe_in_data   : std_logic_vector(31 downto 0);
+  signal fifo_in_spi_rd_data   : std_logic_vector(31 downto 0);
   -- fifo empty
-  signal pipe_in_empty  : std_logic;
+  signal fifo_in_spi_empty  : std_logic;
 
   ---------------------------------------------------------------------
   -- FIFO fifo_r32_131068_w128_32728
   ---------------------------------------------------------------------
   -- fifo read enable
-  signal po0_ep_read    : std_logic;
+  signal okpipe_science_rd_en    : std_logic;
   -- fifo data output
-  signal po0_ep_datain  : std_logic_vector(31 downto 0);
+  signal okpipe_science_rd_data  : std_logic_vector(31 downto 0);
   -- fifo write enable
-  signal pipe_out_write : std_logic;
+  signal fifo_out_science_wr_en : std_logic;
   -- fifo input data
-  signal pipe_out_data  : std_logic_vector(127 downto 0);
+  signal fifo_out_science_wr_data  : std_logic_vector(127 downto 0);
   -- fifo prog full
-  signal pipe_out_full  : std_logic;
+  signal fifo_out_science_full  : std_logic;
   -- fifo empty
-  signal empty          : std_logic;
+  signal fifo_out_science_empty          : std_logic;
   -- fifo write data count
-  signal wr_data_count  : std_logic_vector(14 downto 0);
+  signal fifo_out_science_wr_data_count  : std_logic_vector(14 downto 0);
   -- fifo read data count
-  signal rd_data_count  : std_logic_vector(16 downto 0);
+  signal fifo_out_science_rd_data_count  : std_logic_vector(16 downto 0);
 
   --  wire
   -- wire in00
@@ -327,25 +327,25 @@ architecture RTL of fmc_to_usb is
 
 
   -- count the numbers of read science word
-  signal rd_piper_out_r1 : unsigned(31 downto 0);
+  signal okpipe_science_rd_cnt_r1 : unsigned(31 downto 0);
 
   --  HK output data
-  signal pipe_out_data_hk  : std_logic_vector(31 downto 0);
+  signal fifo_out_hk_wr_data  : std_logic_vector(31 downto 0);
   --  HK write enable
-  signal pipe_out_write_hk : std_logic;
+  signal fifo_out_hk_wr_en : std_logic;
 
   ---------------------------------------------------------------------
   -- HK okPipeOut
   ---------------------------------------------------------------------
   -- HK read enable
-  signal po0_ep_read_hk   : std_logic;
+  signal okpipe_hk_rd_en   : std_logic;
   -- HK input data
-  signal po0_ep_datain_hk : std_logic_vector(31 downto 0);
+  signal okpipe_hk_data : std_logic_vector(31 downto 0);
   ---------------------------------------------------------------------
   -- HK wire_out
   ---------------------------------------------------------------------
   -- HK data count
-  signal rd_data_count_hk : std_logic_vector(9 downto 0);
+  signal fifo_out_hk_rd_data_count : std_logic_vector(9 downto 0);
 
   ---------------------------------------------------------------------
   -- science
@@ -363,7 +363,7 @@ architecture RTL of fmc_to_usb is
   signal start_detected : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
   -- endianess: swap bytes
-  signal pipe_in_data_big_endian : std_logic_vector(31 downto 0);
+  signal fifo_in_spi_rd_data_big_endian : std_logic_vector(31 downto 0);
 
   -- shared SPI chip select
   signal sync_n        : std_logic;
@@ -460,13 +460,13 @@ begin
     port map(
       i_rst         => ddr_rst,
       i_clk         => clk,
-      i_spi_data_tx => pipe_in_data_big_endian,
+      i_spi_data_tx => fifo_in_spi_rd_data_big_endian,
       i_miso        => miso,
-      i_fifo_empty  => pipe_in_empty,
+      i_fifo_empty  => fifo_in_spi_empty,
 
-      o_read_en    => pipe_in_read,
-      o_data_ready => pipe_out_write_hk,
-      o_data       => pipe_out_data_hk,
+      o_read_en    => fifo_in_spi_rd_en,
+      o_data_ready => fifo_out_hk_wr_en,
+      o_data       => fifo_out_hk_wr_data,
       o_mosi       => mosi,
       o_sclk       => sclk,
       o_sync_n     => sync_n
@@ -476,7 +476,7 @@ begin
   cs_n(1) <= sync_n when spi_chipselect_ras = '0' else '1';  -- Chip select _n for DEMUX (in the future, maybe there will be more DEMUX)
 
   -- endianess: swap bytes
-  pipe_in_data_big_endian <= pipe_in_data(7 downto 0) & pipe_in_data(15 downto 8) & pipe_in_data(23 downto 16) & pipe_in_data(31 downto 24);
+  fifo_in_spi_rd_data_big_endian <= fifo_in_spi_rd_data(7 downto 0) & fifo_in_spi_rd_data(15 downto 8) & fifo_in_spi_rd_data(23 downto 16) & fifo_in_spi_rd_data(31 downto 24);
 
   ---------------------------------------------------------------------
   -- SPI_IO
@@ -650,36 +650,36 @@ begin
       ---------------------------------------------------------------------
       -- input FIFO
       ---------------------------------------------------------------------
-      o_pipe_in_read => read_instrument,
-      i_pipe_in_data => data_instrument,
+      o_pipe_in_read => fifo_in_science_rd_en,
+      i_pipe_in_data => fifo_in_science_rd_data,
 
-      i_pipe_in_valid => valid_fifo_instrument,
-      i_pipe_in_empty => empty_fifo_instrument,
-      i_prog_empty    => prog_empty_fifo_instrument,
+      i_pipe_in_valid => fifo_in_science_valid,
+      i_pipe_in_empty => fifo_in_science_empty,
+      i_prog_empty    => fifo_in_science_prog_empty,
 
       ---------------------------------------------------------------------
       -- output FIFO
       ---------------------------------------------------------------------
-      o_pipe_out_write => pipe_out_write,
-      o_pipe_out_data  => pipe_out_data,
-      i_pipe_out_full  => pipe_out_full,
+      o_pipe_out_write => fifo_out_science_wr_en,
+      o_pipe_out_data  => fifo_out_science_wr_data,
+      i_pipe_out_full  => fifo_out_science_full,
 
       ---------------------------------------------------------------------
       -- DDR data
       ---------------------------------------------------------------------
-      i_app_rdy  => app_rdy,            --: STD_LOGIC;
-      o_app_en   => app_en,             --: STD_LOGIC
-      o_app_cmd  => app_cmd,            --: STD_LOGIC_VECTOR  (2 downto 0);
-      o_app_addr => app_addr,  --: STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0); --ADDR_WIDTH            : integer := 29;
+      i_app_rdy  => app_rdy,
+      o_app_en   => app_en,
+      o_app_cmd  => app_cmd,
+      o_app_addr => app_addr,
 
-      i_app_rd_data       => app_rd_data,  --: STD_LOGIC_VECTOR  (APP_DATA_WIDTH-1 downto 0);  --constant APP_DATA_WIDTH        :  integer := 128;
-      i_app_rd_data_valid => app_rd_data_valid,  --: STD_LOGIC;
+      i_app_rd_data       => app_rd_data,
+      i_app_rd_data_valid => app_rd_data_valid,
 
-      i_app_wdf_rdy  => app_wdf_rdy,    --: STD_LOGIC;
-      o_app_wdf_wren => app_wdf_wren,   --: STD_LOGIC;
-      o_app_wdf_data => app_wdf_data,  --: STD_LOGIC_VECTOR  (APP_DATA_WIDTH-1 downto 0);  --constant APP_DATA_WIDTH        :  integer := 128;
-      o_app_wdf_end  => app_wdf_end,    --: STD_LOGIC;
-      o_app_wdf_mask => app_wdf_mask,  --: STD_LOGIC_VECTOR  (APP_MASK_WIDTH-1 downto 0);  --constant APP_DATA_WIDTH        :  integer := 128;
+      i_app_wdf_rdy  => app_wdf_rdy,
+      o_app_wdf_wren => app_wdf_wren,
+      o_app_wdf_data => app_wdf_data,
+      o_app_wdf_end  => app_wdf_end,
+      o_app_wdf_mask => app_wdf_mask,
 
 
       ---------------------------------------------------------------------
@@ -720,7 +720,7 @@ begin
       i_rst    => usb_rst,
 
       --  fifo interface
-      i_rd_data_count => rd_data_count,
+      i_rd_data_count => fifo_out_science_rd_data_count,
 
       --  ctrl interface
 
@@ -785,7 +785,9 @@ begin
       ep_dataout => ep00wire
       );
 
-
+---------------------------------------------------------------------
+  -- WireIn: spi chip select
+  ---------------------------------------------------------------------
 -- Le signal spi_chipselect_ras est recu sur le wire x"01"
 -- La valeur au reset est fixee a: spi_chipselect_ras = '1'
 -- Relecture du spi_chipselect_ras sur le wire x"24"
@@ -798,6 +800,10 @@ begin
 
   spi_chipselect_ras_tmp <= ep01wire(0);
 
+
+  ---------------------------------------------------------------------
+  -- WireIn: ICU
+  ---------------------------------------------------------------------
   inst_okWireIn_icu_main : okWireIn
     port map (
       okHE       => okHE,
@@ -862,9 +868,9 @@ begin
       okHE    => okHE,
       okEH    => okEHx(2*65-1 downto 1*65),
       ep_addr => x"A0",
-      ep_read => po0_ep_read,
+      ep_read => okpipe_science_rd_en,
 
-      ep_datain => po0_ep_datain
+      ep_datain => okpipe_science_rd_data
 
       );
 
@@ -972,8 +978,8 @@ begin
       okHE      => okHE,
       okEH      => okEHx(11*65-1 downto 10*65),
       ep_addr   => x"A1",
-      ep_read   => po0_ep_read_hk,
-      ep_datain => po0_ep_datain_hk
+      ep_read   => okpipe_hk_rd_en,
+      ep_datain => okpipe_hk_data
       );
 
 ----------------------------------------------------
@@ -984,8 +990,8 @@ begin
       okHE       => okHE,
       okEH       => okEHx(12*65-1 downto 11*65),
       ep_addr    => x"80",
-      ep_write   => pi0_ep_write,
-      ep_dataout => pi0_ep_dataout
+      ep_write   => okpipe_spi_wr_en,
+      ep_dataout => okpipe_spi_wr_data
       );
 
   ---------------------------------------------------------------------
@@ -998,23 +1004,23 @@ begin
 
     if rising_edge (clk) then
       --  meta
-      full_fifo_instrument_r1 <= full_fifo_instrument;
-      full_fifo_instrument_r2 <= full_fifo_instrument_r1;
+      fifo_in_science_full_r1 <= fifo_in_science_full;
+      fifo_in_science_full_r2 <= fifo_in_science_full_r1;
 
       ep22wire(2) <= '0';
       ep22wire(3) <= '0';
-      ep22wire(4) <= empty;
-      ep22wire(5) <= empty_fifo_instrument;
+      ep22wire(4) <= fifo_out_science_empty;
+      ep22wire(5) <= fifo_in_science_empty;
       ep22wire(6) <= '0';
 
       --  detect error
-      if pipe_out_full = '1' and full_fifo_instrument_r2 = '0' then
+      if fifo_out_science_full = '1' and fifo_in_science_full_r2 = '0' then
         ep22wire(0) <= '1';
       else
-        if pipe_out_full = '0' and full_fifo_instrument_r2 = '1' then
+        if fifo_out_science_full = '0' and fifo_in_science_full_r2 = '1' then
           ep22wire(1) <= '1';
         else
-          if pipe_out_full = '1' and full_fifo_instrument_r2 = '1' then
+          if fifo_out_science_full = '1' and fifo_in_science_full_r2 = '1' then
             ep22wire(1) <= '1';
             ep22wire(0) <= '1';
           end if;
@@ -1052,16 +1058,16 @@ begin
       rst           => rst_science0,
       wr_clk        => clk_science(0),
       rd_clk        => clk,
-      din           => dataout_instrument,  --  pi0_ep_dataout  for test with pipe in (small packet)
-      wr_en         => write_instrument,  --  pi0_ep_write  for test with pipe in (small packet)
-      rd_en         => read_instrument,
-      dout          => data_instrument,   --// Bus [127 : 0]
-      full          => full_fifo_instrument,
-      empty         => empty_fifo_instrument,
-      valid         => valid_fifo_instrument,
+      din           => fifo_in_science_wr_data,  --  pi0_ep_dataout  for test with pipe in (small packet)
+      wr_en         => fifo_in_science_wr_en,  --  pi0_ep_write  for test with pipe in (small packet)
+      rd_en         => fifo_in_science_rd_en,
+      dout          => fifo_in_science_rd_data,   --// Bus [127 : 0]
+      full          => fifo_in_science_full,
+      empty         => fifo_in_science_empty,
+      valid         => fifo_in_science_valid,
       rd_data_count => open,            --// Bus [7 : 0]
       wr_data_count => open,            --// Bus [9 : 0]
-      prog_empty    => prog_empty_fifo_instrument
+      prog_empty    => fifo_in_science_prog_empty
 
 
       );
@@ -1087,8 +1093,8 @@ begin
       i_data_rate_en => data_rate_enable,
 
       --  fifo
-      o_data_instrument => dataout_instrument,
-      o_wr_instrument   => write_instrument
+      o_data_instrument => fifo_in_science_wr_data,
+      o_wr_instrument   => fifo_in_science_wr_en
 
       );
 
@@ -1103,19 +1109,19 @@ begin
       rst           => ddr_rst,
       wr_clk        => clk,
       rd_clk        => ok_clk,
-      din           => pipe_out_data,   --// Bus [127 : 0]
-      wr_en         => pipe_out_write,
-      rd_en         => po0_ep_read,
-      dout          => po0_ep_datain,   --// Bus [31 : 0]
+      din           => fifo_out_science_wr_data,   --// Bus [127 : 0]
+      wr_en         => fifo_out_science_wr_en,
+      rd_en         => okpipe_science_rd_en,
+      dout          => okpipe_science_rd_data,   --// Bus [31 : 0]
       full          => open,
-      empty         => empty,
+      empty         => fifo_out_science_empty,
       valid         => open,
-      rd_data_count => rd_data_count,   --// Bus [9 : 0]
-      wr_data_count => wr_data_count,   --// Bus [7 : 0]
-      prog_full     => pipe_out_full
+      rd_data_count => fifo_out_science_rd_data_count,   --// Bus [9 : 0]
+      wr_data_count => fifo_out_science_wr_data_count,   --// Bus [7 : 0]
+      prog_full     => fifo_out_science_full
       );
 
-  ep27wire <= "00000000000000000"&wr_data_count;
+  ep27wire <= "00000000000000000"&fifo_out_science_wr_data_count;
 
 ---------------------------------------------------------------
 --  Pipe out fifo  hk
@@ -1125,13 +1131,13 @@ begin
       rst           => ddr_rst,
       wr_clk        => clk,
       rd_clk        => ok_clk,
-      din           => pipe_out_data_hk,  --// Bus [127 : 0]
-      wr_en         => pipe_out_write_hk,
-      rd_en         => po0_ep_read_hk,
-      dout          => po0_ep_datain_hk,  --// Bus [31 : 0]
+      din           => fifo_out_hk_wr_data,  --// Bus [127 : 0]
+      wr_en         => fifo_out_hk_wr_en,
+      rd_en         => okpipe_hk_rd_en,
+      dout          => okpipe_hk_data,  --// Bus [31 : 0]
       full          => open,
       empty         => open,
-      rd_data_count => rd_data_count_hk,  --// Bus [9 : 0]
+      rd_data_count => fifo_out_hk_rd_data_count,  --// Bus [9 : 0]
       wr_rst_busy   => open,
       rd_rst_busy   => open
       );
@@ -1142,7 +1148,7 @@ begin
       i_okClk => ok_clk,
       i_rst   => usb_rst,
 
-      i_rd_data_count_hk => rd_data_count_hk,
+      i_rd_data_count_hk => fifo_out_hk_rd_data_count,
 
       o_result => ep26wire
 
@@ -1158,15 +1164,15 @@ begin
     if rising_edge (ok_clk) then
       if usb_rst = '1' then
         ep25wire        <= (others => '0');
-        rd_piper_out_r1 <= (others => '0');
+        okpipe_science_rd_cnt_r1 <= (others => '0');
       else
-        if po0_ep_read = '1' then
-          rd_piper_out_r1 <= rd_piper_out_r1 + 1;
-          ep25wire        <= std_logic_vector(rd_piper_out_r1);
+        if okpipe_science_rd_en = '1' then
+          okpipe_science_rd_cnt_r1 <= okpipe_science_rd_cnt_r1 + 1;
+          ep25wire        <= std_logic_vector(okpipe_science_rd_cnt_r1);
         else
-          if empty = '1' then
-            ep25wire        <= (others => '0');
-            rd_piper_out_r1 <= (others => '0');
+          if fifo_out_science_empty = '1' then
+            ep25wire                 <= (others => '0');
+            okpipe_science_rd_cnt_r1 <= (others => '0');
           end if;
         end if;
       end if;
@@ -1181,12 +1187,12 @@ begin
       rst         => usb_rst,
       wr_clk      => ok_clk,
       rd_clk      => clk,
-      din         => pi0_ep_dataout,    --// Bus [31 : 0]
-      wr_en       => pi0_ep_write,
-      rd_en       => pipe_in_read,
-      dout        => pipe_in_data,      --// Bus [127 : 0]
+      din         => okpipe_spi_wr_data,    --// Bus [31 : 0]
+      wr_en       => okpipe_spi_wr_en,
+      rd_en       => fifo_in_spi_rd_en,
+      dout        => fifo_in_spi_rd_data,      --// Bus [127 : 0]
       full        => open,
-      empty       => pipe_in_empty,
+      empty       => fifo_in_spi_empty,
       valid       => open,
       wr_rst_busy => open,
       rd_rst_busy => open
@@ -1206,14 +1212,14 @@ begin
         probe2(1) => spi_chipselect_ras_tmp,
         probe2(0) => usb_rst,
         -- probe1
-        probe1(2) => po0_ep_read,
-        probe1(1) => po0_ep_read_hk,
-        probe1(0) => pi0_ep_write,
+        probe1(2) => okpipe_science_rd_en,
+        probe1(1) => okpipe_hk_rd_en,
+        probe1(0) => okpipe_spi_wr_en,
 
         -- probe0
-        probe0(95 downto 64) => po0_ep_datain,
-        probe0(63 downto 32) => po0_ep_datain_hk,
-        probe0(31 downto 0)  => pi0_ep_dataout
+        probe0(95 downto 64) => okpipe_science_rd_data,
+        probe0(63 downto 32) => okpipe_hk_data,
+        probe0(31 downto 0)  => okpipe_spi_wr_data
         );
 
       inst_ila_ddr : entity work.ila_ddr
@@ -1221,12 +1227,12 @@ begin
         clk => clk,
 
         -- probe3
-        probe2(5) => pipe_out_full,
-        probe2(4) => pipe_out_write,
+        probe2(5) => fifo_out_science_full,
+        probe2(4) => fifo_out_science_wr_en,
         probe2(3) => ddr_rst,
         probe2(2) => spi_chipselect_ras,
-        probe2(1) => pipe_in_read,
-        probe2(0) => pipe_out_write_hk,
+        probe2(1) => fifo_in_spi_rd_en,
+        probe2(0) => fifo_out_hk_wr_en,
         -- probe1
         probe1(4 downto 3) => cs_n,
         probe1(2) => miso,
@@ -1234,8 +1240,8 @@ begin
         probe1(0) => sclk,
 
         -- probe0
-        probe0(63 downto 32) => pipe_out_data_hk,
-        probe0(31 downto 0)  => pipe_in_data_big_endian
+        probe0(63 downto 32) => fifo_out_hk_wr_data,
+        probe0(31 downto 0)  => fifo_in_spi_rd_data_big_endian
         );
   end generate gen_ILAs;
 end RTL;
