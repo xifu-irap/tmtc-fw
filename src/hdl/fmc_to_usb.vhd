@@ -200,11 +200,11 @@ architecture RTL of fmc_to_usb is
   -- fifo input data
   signal okpipe_spi_wr_data : std_logic_vector(31 downto 0);
   -- fifo read enable
-  signal fifo_in_spi_rd_en   : std_logic;
+  signal fifo_in_hk_rd_en   : std_logic;
   -- fifo read data
-  signal fifo_in_spi_rd_data   : std_logic_vector(31 downto 0);
+  signal fifo_hk_spi_rd_data   : std_logic_vector(31 downto 0);
   -- fifo empty
-  signal fifo_in_spi_empty  : std_logic;
+  signal fifo_in_hk_empty  : std_logic;
 
   ---------------------------------------------------------------------
   -- FIFO fifo_r32_131068_w128_32728
@@ -225,6 +225,11 @@ architecture RTL of fmc_to_usb is
   signal fifo_out_science_wr_data_count  : std_logic_vector(14 downto 0);
   -- fifo read data count
   signal fifo_out_science_rd_data_count  : std_logic_vector(16 downto 0);
+
+  -- for the register: fifo write data count
+  signal reg_fifo_out_science_wr_data_count  : std_logic_vector(31 downto 0);
+  -- for the register: fifo read data count
+  signal reg_fifo_out_science_rd_data_count : std_logic_vector(31 downto 0);
 
   --  wire
   -- wire in00
@@ -277,6 +282,8 @@ architecture RTL of fmc_to_usb is
   --  ddr3: computed delta between the write address and the read address
   signal Subtraction_addr_wr_addr_rd : std_logic_vector(54 downto 0);
 
+  --  for the register: computed delta between the write address and the read address
+   signal reg_ddr_delta_addr_wr_addr_rd :std_logic_vector(31 downto 0);
 
   -- spi chip select: DEMUX or RAS
   signal spi_chipselect_ras_tmp : std_logic;
@@ -363,7 +370,7 @@ architecture RTL of fmc_to_usb is
   signal start_detected : std_logic_vector(pkg_LINK_NUMBER-1 downto 0);
 
   -- endianess: swap bytes
-  signal fifo_in_spi_rd_data_big_endian : std_logic_vector(31 downto 0);
+  signal fifo_in_hk_rd_data_big_endian : std_logic_vector(31 downto 0);
 
   -- shared SPI chip select
   signal sync_n        : std_logic;
@@ -460,11 +467,11 @@ begin
     port map(
       i_rst         => ddr_rst,
       i_clk         => clk,
-      i_spi_data_tx => fifo_in_spi_rd_data_big_endian,
+      i_spi_data_tx => fifo_in_hk_rd_data_big_endian,
       i_miso        => miso,
-      i_fifo_empty  => fifo_in_spi_empty,
+      i_fifo_empty  => fifo_in_hk_empty,
 
-      o_read_en    => fifo_in_spi_rd_en,
+      o_read_en    => fifo_in_hk_rd_en,
       o_data_ready => fifo_out_hk_wr_en,
       o_data       => fifo_out_hk_wr_data,
       o_mosi       => mosi,
@@ -476,7 +483,7 @@ begin
   cs_n(1) <= sync_n when spi_chipselect_ras = '0' else '1';  -- Chip select _n for DEMUX (in the future, maybe there will be more DEMUX)
 
   -- endianess: swap bytes
-  fifo_in_spi_rd_data_big_endian <= fifo_in_spi_rd_data(7 downto 0) & fifo_in_spi_rd_data(15 downto 8) & fifo_in_spi_rd_data(23 downto 16) & fifo_in_spi_rd_data(31 downto 24);
+  fifo_in_hk_rd_data_big_endian <= fifo_hk_spi_rd_data(7 downto 0) & fifo_hk_spi_rd_data(15 downto 8) & fifo_hk_spi_rd_data(23 downto 16) & fifo_hk_spi_rd_data(31 downto 24);
 
   ---------------------------------------------------------------------
   -- SPI_IO
@@ -708,7 +715,8 @@ begin
       o_sub_addr_wr_addr_rd => Subtraction_addr_wr_addr_rd
       );
 
-  ep23wire <= Subtraction_addr_wr_addr_rd(31 downto 0);
+  reg_ddr_delta_addr_wr_addr_rd <= Subtraction_addr_wr_addr_rd(31 downto 0);
+  ep23wire <= reg_ddr_delta_addr_wr_addr_rd;
 
 -- ----------------------------------------------------
 -- manage ep20wire
@@ -724,10 +732,10 @@ begin
 
       --  ctrl interface
 
-      o_result => ep20wire
+      o_result => reg_fifo_out_science_rd_data_count
 
       );
-
+ep20wire <= reg_fifo_out_science_rd_data_count;
 -- ----------------------------------------------------
 -- meta wire out
 -- ----------------------------------------------------
@@ -1121,7 +1129,8 @@ begin
       prog_full     => fifo_out_science_full
       );
 
-  ep27wire <= "00000000000000000"&fifo_out_science_wr_data_count;
+  reg_fifo_out_science_wr_data_count <= "00000000000000000"&fifo_out_science_wr_data_count;
+  ep27wire <= reg_fifo_out_science_wr_data_count;
 
 ---------------------------------------------------------------
 --  Pipe out fifo  hk
@@ -1189,10 +1198,10 @@ begin
       rd_clk      => clk,
       din         => okpipe_spi_wr_data,    --// Bus [31 : 0]
       wr_en       => okpipe_spi_wr_en,
-      rd_en       => fifo_in_spi_rd_en,
-      dout        => fifo_in_spi_rd_data,      --// Bus [127 : 0]
+      rd_en       => fifo_in_hk_rd_en,
+      dout        => fifo_hk_spi_rd_data,      --// Bus [127 : 0]
       full        => open,
-      empty       => fifo_in_spi_empty,
+      empty       => fifo_in_hk_empty,
       valid       => open,
       wr_rst_busy => open,
       rd_rst_busy => open
@@ -1217,6 +1226,7 @@ begin
         probe1(0) => okpipe_spi_wr_en,
 
         -- probe0
+        probe0(127 downto 96) => reg_fifo_out_science_rd_data_count,
         probe0(95 downto 64) => okpipe_science_rd_data,
         probe0(63 downto 32) => okpipe_hk_data,
         probe0(31 downto 0)  => okpipe_spi_wr_data
@@ -1231,7 +1241,7 @@ begin
         probe2(4) => fifo_out_science_wr_en,
         probe2(3) => ddr_rst,
         probe2(2) => spi_chipselect_ras,
-        probe2(1) => fifo_in_spi_rd_en,
+        probe2(1) => fifo_in_hk_rd_en,
         probe2(0) => fifo_out_hk_wr_en,
         -- probe1
         probe1(4 downto 3) => cs_n,
@@ -1240,8 +1250,10 @@ begin
         probe1(0) => sclk,
 
         -- probe0
+        probe0(127 downto 96) => reg_fifo_out_science_wr_data_count,
+        probe0(95 downto 64) => reg_ddr_delta_addr_wr_addr_rd,
         probe0(63 downto 32) => fifo_out_hk_wr_data,
-        probe0(31 downto 0)  => fifo_in_spi_rd_data_big_endian
+        probe0(31 downto 0)  => fifo_in_hk_rd_data_big_endian
         );
   end generate gen_ILAs;
 end RTL;
