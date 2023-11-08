@@ -91,14 +91,14 @@ entity system_tmtc_top is
     -- DEMUX: science interface
     ---------------------------------------------------------------------
     -- differential_p science clock
-    i_science_clk_p : in std_logic;
+    i_science_clk_p : in std_logic_vector(1 downto 0); -- bit1, not used
     -- differential_n science clock
-    i_science_clk_n : in std_logic;
+    i_science_clk_n : in std_logic_vector(1 downto 0); -- bit1, not used
 
     -- Differential_p science ctrl
-    i_science_ctrl_p : in std_logic;
+    i_science_ctrl_p : in std_logic_vector(1 downto 0); -- bit1, not used
     -- Differential_n science ctrl
-    i_science_ctrl_n : in std_logic;
+    i_science_ctrl_n : in std_logic_vector(1 downto 0); -- bit1, not used
 
     -- Differential_p science data
     i_science_data_p : in std_logic_vector(pkg_SC_LIGN_NUMBER_BY_COL - 1 downto 0);
@@ -551,10 +551,10 @@ hardware_id <= (others => '0'); -- TODO
       ---------------------------------------------------------------------
       -- from DEMUX: science interface @i_science_clk
       ---------------------------------------------------------------------
-      i_science_clk_p      => i_science_clk_p,
-      i_science_clk_n      => i_science_clk_n,
-      i_science_ctrl_p     => i_science_ctrl_p,
-      i_science_ctrl_n     => i_science_ctrl_n,
+      i_science_clk_p      => i_science_clk_p(0),
+      i_science_clk_n      => i_science_clk_n(0),
+      i_science_ctrl_p     => i_science_ctrl_p(0),
+      i_science_ctrl_n     => i_science_ctrl_n(0),
       i_science_data_p     => i_science_data_p,
       i_science_data_n     => i_science_data_n,
       ---------------------------------------------------------------------
