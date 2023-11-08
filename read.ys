@@ -55,7 +55,6 @@ verific -vhdl ./src/hdl/pkg_func_math.vhd
 verific -vhdl ./src/hdl/ctrl_rx_fsm.vhd
 verific -vhdl ./src/hdl/spi_mgt.vhd
 verific -vhdl ./src/hdl/science_data_rx.vhd
-verific -vhdl ./src/hdl/pkg_project_ok.vhd
 verific -vhdl ./src/hdl/manage_pipe_out.vhd
 verific -vhdl ./src/hdl/hk_pattern.vhd
 verific -vhdl ./src/hdl/drive_interface_ddr3_ctrl.vhd

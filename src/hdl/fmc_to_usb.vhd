@@ -25,7 +25,7 @@
 -- -------------------------------------------------------------------------------------------------------------
 --!   @details
 --
---            Top of the TMTC firmware.
+--    Top level of the TMTC firmware.
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -36,7 +36,6 @@ use ieee.numeric_std.all;
 use work.FRONTPANEL.all;
 use work.science_data_rx_package.all;
 use work.pkg_func_math.all;
-use work.pkg_project_ok.all;
 use work.pkg_project.all;
 
 library unisim;
@@ -50,7 +49,7 @@ use xpm.vcomponents.all;
 entity fmc_to_usb is
   generic (
     -- enable debug
-    g_DEBUG : boolean := true
+    g_DEBUG : boolean := false
     );
   port(
     ---------------------------------------------------------------------
@@ -196,13 +195,13 @@ architecture RTL of fmc_to_usb is
   -- FIFO fifo_r32_256_w32_256
   ---------------------------------------------------------------------
   -- fifo write enable
-  signal okpipe_spi_wr_en   : std_logic;
+  signal okpipe_hk_wr_en   : std_logic;
   -- fifo input data
-  signal okpipe_spi_wr_data : std_logic_vector(31 downto 0);
+  signal okpipe_hk_wr_data : std_logic_vector(31 downto 0);
   -- fifo read enable
   signal fifo_in_hk_rd_en   : std_logic;
   -- fifo read data
-  signal fifo_hk_spi_rd_data   : std_logic_vector(31 downto 0);
+  signal fifo_in_hk_rd_data : std_logic_vector(31 downto 0);
   -- fifo empty
   signal fifo_in_hk_empty  : std_logic;
 
@@ -239,7 +238,7 @@ architecture RTL of fmc_to_usb is
   -- wire in02
   signal ep02wire : std_logic_vector(31 downto 0);
   -- wire out00
-  signal ep20wire : std_logic_vector(31 downto 0);
+  signal ep21wire : std_logic_vector(31 downto 0);
   -- wire out02
   signal ep22wire : std_logic_vector(31 downto 0);
   -- wire out03
@@ -419,50 +418,46 @@ begin
   gen_IBUFDS_science_data : for i in 0 to pkg_LINE_NUMBER - 1 generate
     inst_IBUFDS_i : IBUFDS
       generic map (
-        DIFF_TERM    => true,           -- Differential Termination
+        DIFF_TERM    => true,  -- Differential Termination
         IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
         IOSTANDARD   => "DEFAULT")
       port map (
-        O  => science_data(i),          -- Buffer output
-        I  => i_science_data_p(i),  -- Diff_p buffer input (connect directly to top-level port)
-        IB => i_science_data_n(i)  -- Diff_n buffer input (connect directly to top-level port)
+        O  => science_data(i),
+        I  => i_science_data_p(i),
+        IB => i_science_data_n(i)
         );
   end generate;
 
   gen_IBUFDS_science_ctrl : for i in 0 to pkg_LINK_NUMBER - 1 generate
     inst_IBUFDS_science_ctrl : IBUFDS
       generic map (
-        DIFF_TERM    => true,           -- Differential Termination
+        DIFF_TERM    => true,  -- Differential Termination
         IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
         IOSTANDARD   => "DEFAULT")
       port map (
-        O  => science_ctrl(i),          -- Buffer output
-        I  => i_science_ctrl_p(i),  -- Diff_p buffer input (connect directly to top-level port)
-        IB => i_science_ctrl_n(i)  -- Diff_n buffer input (connect directly to top-level port)
+        O  => science_ctrl(i),
+        I  => i_science_ctrl_p(i),
+        IB => i_science_ctrl_n(i)
         );
   end generate;
 
   gen_IBUFDS_clk_science : for i in 0 to pkg_LINK_NUMBER - 1 generate
     inst_IBUFDS_clk_science : IBUFDS
       generic map (
-        DIFF_TERM    => true,           -- Differential Termination
+        DIFF_TERM    => true,  -- Differential Termination
         IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
         IOSTANDARD   => "DEFAULT")
       port map (
-        O  => clk_science(i),           -- Buffer output
-        I  => i_clk_science_p(i),  -- Diff_p buffer input (connect directly to top-level port)
-        IB => i_clk_science_n(i)  -- Diff_n buffer input (connect directly to top-level port)
+        O  => clk_science(i),
+        I  => i_clk_science_p(i),
+        IB => i_clk_science_n(i)
         );
   end generate;
 
--- Gestion de o_cs_n sur 2 bits
--- le spi_chipselect_ras est utilise pour "orienter" le o_sync_n vers le DEMUX ou le RAS
--- si spi_chipselect_ras = 1 on selectionne le RAS
 
 ----------------------------------------------------
 --  SPI
 ----------------------------------------------------
-
   inst_spi_mgt : entity work.spi_mgt
     port map(
       i_rst         => ddr_rst,
@@ -479,11 +474,14 @@ begin
       o_sync_n     => sync_n
       );
 
-  cs_n(0) <= sync_n when spi_chipselect_ras = '1' else '1';  -- Chip select _n for RAS
-  cs_n(1) <= sync_n when spi_chipselect_ras = '0' else '1';  -- Chip select _n for DEMUX (in the future, maybe there will be more DEMUX)
+-- Gestion de o_cs_n sur 2 bits
+-- le spi_chipselect_ras est utilise pour "orienter" le o_sync_n vers le DEMUX ou le RAS
+-- si spi_chipselect_ras = 1 on selectionne le RAS
+  cs_n(0) <= sync_n when spi_chipselect_ras = '1' else '1';  -- Chip select_n for RAS
+  cs_n(1) <= sync_n when spi_chipselect_ras = '0' else '1';  -- Chip select_n for DEMUX (in the future, maybe there will be more DEMUX)
 
   -- endianess: swap bytes
-  fifo_in_hk_rd_data_big_endian <= fifo_hk_spi_rd_data(7 downto 0) & fifo_hk_spi_rd_data(15 downto 8) & fifo_hk_spi_rd_data(23 downto 16) & fifo_hk_spi_rd_data(31 downto 24);
+  fifo_in_hk_rd_data_big_endian <= fifo_in_hk_rd_data(7 downto 0) & fifo_in_hk_rd_data(15 downto 8) & fifo_in_hk_rd_data(23 downto 16) & fifo_in_hk_rd_data(31 downto 24);
 
   ---------------------------------------------------------------------
   -- SPI_IO
@@ -735,7 +733,7 @@ begin
       o_result => reg_fifo_out_science_rd_data_count
 
       );
-ep20wire <= reg_fifo_out_science_rd_data_count;
+ep21wire <= reg_fifo_out_science_rd_data_count;
 -- ----------------------------------------------------
 -- meta wire out
 -- ----------------------------------------------------
@@ -767,8 +765,8 @@ ep20wire <= reg_fifo_out_science_rd_data_count;
       okUH   => i_okUH,
       okHU   => o_okHU,
       okUHU  => b_okUHU,
-      okAA   => b_okAA,  --//temp removed for SIMULATION replace Core
-      okclk  => ok_clk,                   --out
+      okAA   => b_okAA,
+      okclk  => ok_clk,
       okHE   => okHE,
       okEH   => okEH
 
@@ -793,12 +791,11 @@ ep20wire <= reg_fifo_out_science_rd_data_count;
       ep_dataout => ep00wire
       );
 
----------------------------------------------------------------------
+  ---------------------------------------------------------------------
   -- WireIn: spi chip select
   ---------------------------------------------------------------------
--- Le signal spi_chipselect_ras est recu sur le wire x"01"
--- La valeur au reset est fixee a: spi_chipselect_ras = '1'
--- Relecture du spi_chipselect_ras sur le wire x"24"
+  -- Le signal spi_chipselect_ras est recu sur le wire x"01"
+  -- Relecture du spi_chipselect_ras sur le wire x"24"
   inst_okWireIn_chipselect : okWireIn
     port map (
       okHE       => okHE,
@@ -807,7 +804,6 @@ ep20wire <= reg_fifo_out_science_rd_data_count;
       );
 
   spi_chipselect_ras_tmp <= ep01wire(0);
-
 
   ---------------------------------------------------------------------
   -- WireIn: ICU
@@ -871,7 +867,7 @@ ep20wire <= reg_fifo_out_science_rd_data_count;
 ----------------------------------------------------
 --  ok pipe out
 ----------------------------------------------------
-  inst_okPipeOut : okPipeOut            --okBTPipeOut
+  inst_okPipeOut : okPipeOut
     port map (
       okHE    => okHE,
       okEH    => okEHx(2*65-1 downto 1*65),
@@ -912,7 +908,7 @@ ep20wire <= reg_fifo_out_science_rd_data_count;
       okHE      => okHE,
       okEH      => okEHx(5*65-1 downto 4*65),
       ep_addr   => x"21",
-      ep_datain => ep20wire
+      ep_datain => ep21wire
       );
 
 ----------------------------------------------------
@@ -981,7 +977,7 @@ ep20wire <= reg_fifo_out_science_rd_data_count;
 ----------------------------------------------------
 --  ok pipe out hk
 ----------------------------------------------------
-  inst_okPipeOut_hk : okPipeOut         --okBTPipeOut
+  inst_okPipeOut_hk : okPipeOut
     port map (
       okHE      => okHE,
       okEH      => okEHx(11*65-1 downto 10*65),
@@ -993,13 +989,13 @@ ep20wire <= reg_fifo_out_science_rd_data_count;
 ----------------------------------------------------
 --  ok pipe in
 ----------------------------------------------------
-  inst_okPipeIn : okPipeIn              --okBTPipeIn
+  inst_okPipeIn : okPipeIn
     port map (
       okHE       => okHE,
       okEH       => okEHx(12*65-1 downto 11*65),
       ep_addr    => x"80",
-      ep_write   => okpipe_spi_wr_en,
-      ep_dataout => okpipe_spi_wr_data
+      ep_write   => okpipe_hk_wr_en,
+      ep_dataout => okpipe_hk_wr_data
       );
 
   ---------------------------------------------------------------------
@@ -1196,10 +1192,10 @@ ep20wire <= reg_fifo_out_science_rd_data_count;
       rst         => usb_rst,
       wr_clk      => ok_clk,
       rd_clk      => clk,
-      din         => okpipe_spi_wr_data,    --// Bus [31 : 0]
-      wr_en       => okpipe_spi_wr_en,
+      din         => okpipe_hk_wr_data,    --// Bus [31 : 0]
+      wr_en       => okpipe_hk_wr_en,
       rd_en       => fifo_in_hk_rd_en,
-      dout        => fifo_hk_spi_rd_data,      --// Bus [127 : 0]
+      dout        => fifo_in_hk_rd_data,      --// Bus [127 : 0]
       full        => open,
       empty       => fifo_in_hk_empty,
       valid       => open,
@@ -1223,13 +1219,13 @@ ep20wire <= reg_fifo_out_science_rd_data_count;
         -- probe1
         probe1(2) => okpipe_science_rd_en,
         probe1(1) => okpipe_hk_rd_en,
-        probe1(0) => okpipe_spi_wr_en,
+        probe1(0) => okpipe_hk_wr_en,
 
         -- probe0
         probe0(127 downto 96) => reg_fifo_out_science_rd_data_count,
         probe0(95 downto 64) => okpipe_science_rd_data,
         probe0(63 downto 32) => okpipe_hk_data,
-        probe0(31 downto 0)  => okpipe_spi_wr_data
+        probe0(31 downto 0)  => okpipe_hk_wr_data
         );
 
       inst_ila_ddr : entity work.ila_ddr
