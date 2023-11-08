@@ -39,7 +39,7 @@ verific -vhdl -lib ./ip/xilinx/coregen/fifo_r32_256_w32_256_hk/fifo_r32_256_w32_
 verific -vhdl -lib ./ip/xilinx/coregen/fifo_r32_131068_w128_32728/fifo_r32_131068_w128_32728_stub.vhdl
 verific -vhdl -lib ./ip/xilinx/coregen/fifo_w32_131068_r128_32728/fifo_w32_131068_r128_32728_stub.vhdl
 verific -vhdl -lib ./ip/xilinx/coregen/ila_usb/ila_usb_stub.vhdl
-verific -vhdl -lib ./ip/xilinx/coregen/ila_usb/ila_ddr_stub.vhdl
+verific -vhdl -lib ./ip/xilinx/coregen/ila_ddr/ila_ddr_stub.vhdl
 
 # VHDL
 #    Source files
