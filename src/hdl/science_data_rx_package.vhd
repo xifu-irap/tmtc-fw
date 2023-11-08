@@ -24,14 +24,14 @@
 -- -------------------------------------------------------------------------------------------------------------
 --!   @details
 --
---             science constant definitions.
+--    science constant definitions.
 --
 -- -------------------------------------------------------------------------------------------------------------
 
-library IEEE;
-use IEEE.STD_LOGIC_1164.all;
-use IEEE.NUMERIC_STD.all;
-use IEEE.math_real.all;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.math_real.all;
 
 package science_data_rx_package is
   -- define the number of science link

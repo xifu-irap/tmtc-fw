@@ -306,11 +306,11 @@ set_property PACKAGE_PIN AC3 [get_ports {i_sys_clkn}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-C10
-set_property PACKAGE_PIN C19 [get_ports {i_science_data_p[7]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[7]}]
+set_property PACKAGE_PIN C19 [get_ports {i_science_data_p[7]}];# SCIENCE_DATA1_COL3_P
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[7]}];# SCIENCE_DATA1_COL3_P
 # FMC-C11
-set_property PACKAGE_PIN B19 [get_ports {i_science_data_n[7]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[7]}]
+set_property PACKAGE_PIN B19 [get_ports {i_science_data_n[7]}];# SCIENCE_DATA1_COL3_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[7]}];# SCIENCE_DATA1_COL3_N
 # FMC-C12
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -318,11 +318,11 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[7]}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-C14
-set_property PACKAGE_PIN B17 [get_ports {i_science_data_p[6]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[6]}]
+set_property PACKAGE_PIN B17 [get_ports {i_science_data_p[6]}];# SCIENCE_DATA0_COL3_P
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[6]}];# SCIENCE_DATA0_COL3_P
 # FMC-C15
-set_property PACKAGE_PIN A17 [get_ports {i_science_data_n[6]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[6]}]
+set_property PACKAGE_PIN A17 [get_ports {i_science_data_n[6]}];# SCIENCE_DATA0_COL3_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[6]}];# SCIENCE_DATA0_COL3_N
 # FMC-C16
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -330,11 +330,11 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[6]}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-C18
-set_property PACKAGE_PIN H16 [get_ports {i_science_data_p[3]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[3]}]
+set_property PACKAGE_PIN H16 [get_ports {i_science_data_p[3]}];# SCIENCE_DATA1_COL1_P
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[3]}];# SCIENCE_DATA1_COL1_P
 # FMC-C19
-set_property PACKAGE_PIN G16 [get_ports {i_science_data_n[3]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[3]}]
+set_property PACKAGE_PIN G16 [get_ports {i_science_data_n[3]}];# SCIENCE_DATA1_COL1_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[3]}];# SCIENCE_DATA1_COL1_N
 # FMC-C2
 # set_property PACKAGE_PIN F2 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -345,11 +345,11 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[3]}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-C22
-set_property PACKAGE_PIN F17 [get_ports {i_clk_science_p[1]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_clk_science_p[1]}]
+set_property PACKAGE_PIN F17 [get_ports {i_clk_science_p[1]}];# SCIENCE_CLOCK_23_P
+set_property IOSTANDARD LVDS_25 [get_ports {i_clk_science_p[1]}];# SCIENCE_CLOCK_23_P
 # FMC-C23
-set_property PACKAGE_PIN E17 [get_ports {i_clk_science_n[1]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_clk_science_n[1]}]
+set_property PACKAGE_PIN E17 [get_ports {i_clk_science_n[1]}];# SCIENCE_CLOCK_23_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_clk_science_n[1]}];# SCIENCE_CLOCK_23_N
 # FMC-C24
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -438,11 +438,11 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_clk_science_n[1]}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-D14
-set_property PACKAGE_PIN L19 [get_ports {i_science_data_p[2]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[2]}]
+set_property PACKAGE_PIN L19 [get_ports {i_science_data_p[2]}];# SCIENCE_DATA0_COL1_P
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[2]}];# SCIENCE_DATA0_COL1_P
 # FMC-D15
-set_property PACKAGE_PIN L20 [get_ports {i_science_data_n[2]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[2]}]
+set_property PACKAGE_PIN L20 [get_ports {i_science_data_n[2]}];# SCIENCE_DATA0_COL1_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[2]}];# SCIENCE_DATA0_COL1_N
 # FMC-D16
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -459,11 +459,11 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[2]}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-D20
-set_property PACKAGE_PIN E10 [get_ports {i_science_ctrl_p[0]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_ctrl_p[0]}]
+set_property PACKAGE_PIN E10 [get_ports {i_science_ctrl_p[0]}];# SCIENCE_CTRL_01_P
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_ctrl_p[0]}];# SCIENCE_CTRL_01_P
 # FMC-D21
-set_property PACKAGE_PIN D10 [get_ports {i_science_ctrl_n[0]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_ctrl_n[0]}]
+set_property PACKAGE_PIN D10 [get_ports {i_science_ctrl_n[0]}];# SCIENCE_CTRL_01_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_ctrl_n[0]}];# SCIENCE_CTRL_01_N
 # FMC-D22
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -537,8 +537,8 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_ctrl_n[0]}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-D8
-set_property PACKAGE_PIN G17 [get_ports {o_mosi}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_mosi}]
+set_property PACKAGE_PIN G17 [get_ports {o_mosi}];# TC-HK_MOSI
+set_property IOSTANDARD LVCMOS25 [get_ports {o_mosi}];# TC-HK_MOSI
 # FMC-D9
 # set_property PACKAGE_PIN F18 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -546,8 +546,8 @@ set_property IOSTANDARD LVCMOS25 [get_ports {o_mosi}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-E10
-set_property PACKAGE_PIN AE26 [get_ports {o_leds_fmc[3]}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_leds_fmc[3]}]
+# set_property PACKAGE_PIN AE26 [get_ports {}]
+# set_property IOSTANDARD  [get_ports {}]
 # FMC-E11
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -576,8 +576,8 @@ set_property IOSTANDARD LVCMOS25 [get_ports {o_leds_fmc[3]}]
 # set_property PACKAGE_PIN V22 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-E2
-set_property PACKAGE_PIN Y23 [get_ports {o_cs_n[0]}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_cs_n[0]}]
+set_property PACKAGE_PIN Y23 [get_ports {o_cs_n[0]}];# RAS_TC-HK_CSn
+set_property IOSTANDARD LVCMOS25 [get_ports {o_cs_n[0]}];# RAS_TC-HK_CSn
 # FMC-E20
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -609,8 +609,8 @@ set_property IOSTANDARD LVCMOS25 [get_ports {o_cs_n[0]}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-E3
-set_property PACKAGE_PIN AA24 [get_ports {o_sel_main_n}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_sel_main_n}]
+set_property PACKAGE_PIN AA24 [get_ports {o_sel_main_n}];# SEL_MAINn
+set_property IOSTANDARD LVCMOS25 [get_ports {o_sel_main_n}];# SEL_MAINn
 # FMC-E30
 # set_property PACKAGE_PIN AB14 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -651,17 +651,17 @@ set_property IOSTANDARD LVCMOS25 [get_ports {o_sel_main_n}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-E6
-set_property PACKAGE_PIN W23 [get_ports {o_leds_fmc[0]}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_leds_fmc[0]}]
+# set_property PACKAGE_PIN W23 [get_ports {}]
+# set_property IOSTANDARD  [get_ports {}]
 # FMC-E7
-set_property PACKAGE_PIN W24 [get_ports {o_leds_fmc[1]}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_leds_fmc[1]}]
+# set_property PACKAGE_PIN W24 [get_ports {}]
+# set_property IOSTANDARD  [get_ports {}]
 # FMC-E8
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-E9
-set_property PACKAGE_PIN AD26 [get_ports {o_leds_fmc[2]}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_leds_fmc[2]}]
+# set_property PACKAGE_PIN AD26 [get_ports {}]
+# set_property IOSTANDARD  [get_ports {}]
 # FMC-F1
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -675,11 +675,11 @@ set_property IOSTANDARD LVCMOS25 [get_ports {o_leds_fmc[2]}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-F13
-set_property PACKAGE_PIN W25 [get_ports {i_science_ctrl_p[1]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_ctrl_p[1]}]
+set_property PACKAGE_PIN W25 [get_ports {i_science_ctrl_p[1]}];# SCIENCE_CTRL_23_P
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_ctrl_p[1]}];# SCIENCE_CTRL_23_P
 # FMC-F14
-set_property PACKAGE_PIN W26 [get_ports {i_science_ctrl_n[1]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_ctrl_n[1]}]
+set_property PACKAGE_PIN W26 [get_ports {i_science_ctrl_n[1]}];# SCIENCE_CTRL_23_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_ctrl_n[1]}];# SCIENCE_CTRL_23_N
 # FMC-F15
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -762,14 +762,14 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_ctrl_n[1]}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-F4
-set_property PACKAGE_PIN Y22 [get_ports {i_science_data_p[4]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[4]}]
+set_property PACKAGE_PIN Y22 [get_ports {i_science_data_p[4]}];# SCIENCE_DATA0_COL2_P
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[4]}];# SCIENCE_DATA0_COL2_P
 # FMC-F40
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-F5
-set_property PACKAGE_PIN AA22 [get_ports {i_science_data_n[4]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[4]}]
+set_property PACKAGE_PIN AA22 [get_ports {i_science_data_n[4]}];# SCIENCE_DATA0_COL2_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[4]}];# SCIENCE_DATA0_COL2_N
 # FMC-F6
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -792,8 +792,8 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[4]}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-G12
-set_property PACKAGE_PIN F19 [get_ports {i_miso}]
-set_property IOSTANDARD LVCMOS25 [get_ports {i_miso}]
+set_property PACKAGE_PIN F19 [get_ports {i_miso}];# TC-HK_MISO
+set_property IOSTANDARD LVCMOS25 [get_ports {i_miso}];# TC-HK_MISO
 # FMC-G13
 # set_property PACKAGE_PIN E20 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -816,8 +816,8 @@ set_property IOSTANDARD LVCMOS25 [get_ports {i_miso}]
 # set_property PACKAGE_PIN A8 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-G2
-set_property PACKAGE_PIN E11 [get_ports {i_clk_science_p[0]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_clk_science_p[0]}]
+set_property PACKAGE_PIN E11 [get_ports {i_clk_science_p[0]}];# SCIENCE_CLOCK_01_P
+set_property IOSTANDARD LVDS_25 [get_ports {i_clk_science_p[0]}];# SCIENCE_CLOCK_01_P
 # FMC-G20
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -831,26 +831,26 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_clk_science_p[0]}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-G24
-set_property PACKAGE_PIN G11 [get_ports {i_science_data_p[0]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[0]}]
+set_property PACKAGE_PIN G11 [get_ports {i_science_data_p[0]}];# SCIENCE_DATA0_COL0_P
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[0]}];# SCIENCE_DATA0_COL0_P
 # FMC-G25
-set_property PACKAGE_PIN F10 [get_ports {i_science_data_n[0]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[0]}]
+set_property PACKAGE_PIN F10 [get_ports {i_science_data_n[0]}];# SCIENCE_DATA0_COL0_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[0]}];# SCIENCE_DATA0_COL0_N
 # FMC-G26
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-G27
-set_property PACKAGE_PIN J15 [get_ports {i_science_data_p[1]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[1]}]
+set_property PACKAGE_PIN J15 [get_ports {i_science_data_p[1]}];# SCIENCE_DATA1_COL0_P
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[1]}];# SCIENCE_DATA1_COL0_P
 # FMC-G28
-set_property PACKAGE_PIN J16 [get_ports {i_science_data_n[1]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[1]}]
+set_property PACKAGE_PIN J16 [get_ports {i_science_data_n[1]}];# SCIENCE_DATA1_COL0_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[1]}];# SCIENCE_DATA1_COL0_N
 # FMC-G29
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-G3
-set_property PACKAGE_PIN D11 [get_ports {i_clk_science_n[0]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_clk_science_n[0]}]
+set_property PACKAGE_PIN D11 [get_ports {i_clk_science_n[0]}];# SCIENCE_CLOCK_01_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_clk_science_n[0]}];# SCIENCE_CLOCK_01_N
 # FMC-G30
 # set_property PACKAGE_PIN J13 [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -870,11 +870,11 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_clk_science_n[0]}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-G36
-set_property PACKAGE_PIN F9 [get_ports {o_cs_n[1]}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_cs_n[1]}]
+set_property PACKAGE_PIN F9 [get_ports {o_cs_n[1]}];# DMX0_TC-HK_CSn
+set_property IOSTANDARD LVCMOS25 [get_ports {o_cs_n[1]}];# DMX0_TC-HK_CSn
 # FMC-G37
-set_property PACKAGE_PIN F8 [get_ports {o_sclk}]
-set_property IOSTANDARD LVCMOS25 [get_ports {o_sclk}]
+set_property PACKAGE_PIN F8 [get_ports {o_sclk}];# TC-HK_SCLK
+set_property IOSTANDARD LVCMOS25 [get_ports {o_sclk}];# TC-HK_SCLK
 # FMC-G38
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
@@ -993,11 +993,11 @@ set_property IOSTANDARD LVCMOS25 [get_ports {o_sclk}]
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
 # FMC-H37
-set_property PACKAGE_PIN H9 [get_ports {i_science_data_p[5]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[5]}]
+set_property PACKAGE_PIN H9 [get_ports {i_science_data_p[5]}];# SCIENCE_DATA1_COL2_P
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[5]}];# SCIENCE_DATA1_COL2_P
 # FMC-H38
-set_property PACKAGE_PIN H8 [get_ports {i_science_data_n[5]}]
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[5]}]
+set_property PACKAGE_PIN H8 [get_ports {i_science_data_n[5]}];# SCIENCE_DATA1_COL2_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[5]}];# SCIENCE_DATA1_COL2_N
 # FMC-H39
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]

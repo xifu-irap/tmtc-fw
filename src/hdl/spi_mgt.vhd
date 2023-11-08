@@ -25,7 +25,7 @@
 -- -------------------------------------------------------------------------------------------------------------
 --!   @details
 --
---             Management of the SPI Link
+--    Manage the SPI link.
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -39,24 +39,24 @@ use work.pkg_project.all;
 entity spi_mgt is
   port(
     i_rst         : in std_logic;  --! Reset asynchronous assertion, synchronous de-assertion ('0' = Inactive, '1' = Active)
-    i_clk         : in std_logic;       --! System Clock
-    i_spi_data_tx : in std_logic_vector(pkg_DAC_SPI_SER_WD_S-1 downto 0);  --! Data to transmit
-    i_miso        : in std_logic;       --! Serial data Master in Slave Out
+    i_clk         : in std_logic;  --! System Clock
+    i_spi_data_tx : in std_logic_vector(pkg_SPI_SER_WD_S-1 downto 0);  --! Data to transmit
+    i_miso        : in std_logic;  --! Serial data Master in Slave Out
     i_fifo_empty  : in std_logic;  --! Fifo State (Empty = '1', not Empty ='0')
 
-    o_read_en    : out std_logic;       --! Read Fifo next value
-    o_data_ready : out std_logic;
-    o_data       : out std_logic_vector(pkg_DAC_SPI_SER_WD_S-1 downto 0);
-    o_mosi       : out std_logic;       --! DAC - Serial Data
-    o_sclk       : out std_logic;       --! Serial Clock
+    o_read_en    : out std_logic; --! Read Fifo next value
+    o_data_ready : out std_logic; --! Receipted data ready ('0' = Not ready, '1' = Ready)
+    o_data       : out std_logic_vector(pkg_SPI_SER_WD_S-1 downto 0);
+    o_mosi       : out std_logic; --! DAC - Serial Data
+    o_sclk       : out std_logic; --! Serial Clock
     o_sync_n     : out std_logic  --! Frame Synchronization ('0' = Active, '1' = Inactive)
     );
 end entity spi_mgt;
 
 architecture RTL of spi_mgt is
-  constant c_SPI_SER_WD_S_V_S   : integer := log2_ceil(pkg_DAC_SPI_SER_WD_S+1);  --! DAC SPI: Serial word size vector bus size
+  constant c_SPI_SER_WD_S_V_S   : integer := log2_ceil(pkg_SPI_SER_WD_S+1);  --! DAC SPI: Serial word size vector bus size
   constant c_DAC_SPI_SER_WD_S_V : std_logic_vector(c_SPI_SER_WD_S_V_S-1 downto 0) :=
-    std_logic_vector(to_unsigned(pkg_DAC_SPI_SER_WD_S, c_SPI_SER_WD_S_V_S));  --! DAC SPI: Serial word size vector
+    std_logic_vector(to_unsigned(pkg_SPI_SER_WD_S, c_SPI_SER_WD_S_V_S));  --! DAC SPI: Serial word size vector
 
   signal spi_start_ry        : std_logic;  -- Starts SPI link (Active = '1', Inactive ='0')
   signal spi_tx_busy_n       : std_logic;  -- SPI link state (Not Busy = '1', Busy = '0')
@@ -74,32 +74,32 @@ begin
   -- ------------------------------------------------------------------------------------------------------
   inst_dac_spi_master : entity work.spi_master
     generic map(
-      g_CPOL               => pkg_DAC_SPI_CPOL,  -- std_logic                                        ; --! Clock polarity
-      g_CPHA               => pkg_DAC_SPI_CPHA,  -- std_logic                                        ; --! Clock phase
-      g_N_CLK_PER_SCLK_L   => pkg_DAC_SPI_SCLK_L,  -- integer                                          ; --! Number of clock period for elaborating SPI Serial Clock low  level
-      g_N_CLK_PER_SCLK_H   => pkg_DAC_SPI_SCLK_H,  -- integer                                          ; --! Number of clock period for elaborating SPI Serial Clock high level
-      g_N_CLK_PER_MISO_DEL => 2,  -- integer                                          ; --! Number of clock period for miso signal delay from spi pin input to spi master input
-      g_DATA_S             => pkg_DAC_SPI_SER_WD_S  -- integer                                            --! Data bus size
+      g_CPOL               => pkg_SPI_CPOL,  -- Clock polarity
+      g_CPHA               => pkg_SPI_CPHA,  -- Clock phase
+      g_N_CLK_PER_SCLK_L   => pkg_SPI_SCLK_L,  -- Number of clock period for elaborating SPI Serial Clock low  level
+      g_N_CLK_PER_SCLK_H   => pkg_SPI_SCLK_H,  -- Number of clock period for elaborating SPI Serial Clock high level
+      g_N_CLK_PER_MISO_DEL => 2,  -- Number of clock period for miso signal delay from spi pin input to spi master input
+      g_DATA_S             => pkg_SPI_SER_WD_S  -- Data bus size
       )
     port map(
-      i_rst => i_rst,  -- in     std_logic                                 ; --! Reset asynchronous assertion, synchronous de-assertion ('0' = Inactive, '1' = Active)
-      i_clk => i_clk,  -- in     std_logic                                 ; --! Clock
+      i_rst => i_rst,  -- Reset asynchronous assertion, synchronous de-assertion ('0' = Inactive, '1' = Active)
+      i_clk => i_clk,  -- Clock
 
-      i_start     => spi_start_ry,  -- in     std_logic                                 ; --! Start transmit ('0' = Inactive, '1' = Active)
-      i_ser_wd_s  => c_DAC_SPI_SER_WD_S_V,  -- in     slv(log2_ceil(g_DATA_S+1)-1 downto 0)     ; --! Serial word size
-      i_data_tx   => i_spi_data_tx,  -- in     std_logic_vector(g_DATA_S-1 downto 0)     ; --! Data to transmit (stall on MSB)
-      o_tx_busy_n => spi_tx_busy_n,  -- out    std_logic                                 ; --! Transmit link busy ('0' = Busy, '1' = Not Busy)
+      i_start     => spi_start_ry,  -- Start transmit ('0' = Inactive, '1' = Active)
+      i_ser_wd_s  => c_DAC_SPI_SER_WD_S_V,  -- Serial word size
+      i_data_tx   => i_spi_data_tx,  -- Data to transmit (stall on MSB)
+      o_tx_busy_n => spi_tx_busy_n,  -- Transmit link busy ('0' = Busy, '1' = Not Busy)
 
-      o_data_rx     => o_data,  -- out    std_logic_vector(g_DATA_S-1 downto 0)     ; --! Receipted data (stall on LSB)
-      o_data_rx_rdy => data_ready,  -- out    std_logic                                 ; --! Receipted data ready ('0' = Not ready, '1' = Ready)
+      o_data_rx     => o_data,  -- Receipted data (stall on LSB)
+      o_data_rx_rdy => data_ready,  -- Receipted data ready ('0' = Not ready, '1' = Ready)
 
-      i_miso => miso_r2,  -- in     std_logic                                 ; --! SPI Master Input Slave Output
-      o_mosi => o_mosi,  -- out    std_logic                                 ; --! SPI Master Output Slave Input
-      o_sclk => o_sclk,  -- out    std_logic                                 ; --! SPI Serial Clock
-      o_cs_n => o_sync_n  -- out    std_logic                                   --! SPI Chip Select ('0' = Active, '1' = Inactive)
+      i_miso => miso_r2,  -- SPI Master Input Slave Output
+      o_mosi => o_mosi,  -- SPI Master Output Slave Input
+      o_sclk => o_sclk,  -- SPI Serial Clock
+      o_cs_n => o_sync_n  -- SPI Chip Select ('0' = Active, '1' = Inactive)
       );
 
-
+  -- add a read tempo
   p_read_tempo : process (i_clk)
   begin
 

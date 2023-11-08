@@ -11,8 +11,7 @@
             <top_module name="parameters" />
             <top_module name="pkg_func_math" />
             <top_module name="pkg_project" />
-            <top_module name="pkg_project_ok" />
-            <top_module name="ramtest_pack" />
+            <top_module name="pkg_ram" />
             <top_module name="science_data_rx_package" />
             <top_module name="tb_fmc_to_usb" />
             <top_module name="vcomponents" />
@@ -21,12 +20,12 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0.000000000 us"></ZoomStartTime>
-      <ZoomEndTime time="4.220410823 us"></ZoomEndTime>
+      <ZoomEndTime time="5.539817814 us"></ZoomEndTime>
       <Cursor1Time time="0.100000000 us"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="276"></NameColumnWidth>
-      <ValueColumnWidth column_width="104"></ValueColumnWidth>
+      <ValueColumnWidth column_width="100"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="8" />
    <wvobject fp_name="group83" type="group">
@@ -199,10 +198,6 @@
             <obj_property name="ElementShortName">o_cs_n[1:0]</obj_property>
             <obj_property name="ObjectShortName">o_cs_n[1:0]</obj_property>
          </wvobject>
-      </wvobject>
-      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/o_leds_fmc" type="array">
-         <obj_property name="ElementShortName">o_leds_fmc[3:0]</obj_property>
-         <obj_property name="ObjectShortName">o_leds_fmc[3:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/tb_fmc_to_usb/o_leds" type="array">
          <obj_property name="ElementShortName">o_leds[3:0]</obj_property>

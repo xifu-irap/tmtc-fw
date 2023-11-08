@@ -25,7 +25,7 @@
 -- -------------------------------------------------------------------------------------------------------------
 --!   @details
 --
---            Specific project constants
+--    SPI constants
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -34,11 +34,11 @@ use ieee.std_logic_1164.all;
 
 package pkg_project is
 
-  constant pkg_DAC_SPI_CPOL     : std_logic := '0';  --! DAC SPI: Clock polarity
-  constant pkg_DAC_SPI_CPHA     : std_logic := '0';  --! DAC SPI: Clock phase
-  constant pkg_DAC_SPI_SER_WD_S : integer   := 32;  --! DAC SPI: Data bus size
-  constant pkg_DAC_SPI_SCLK_L   : integer   := 24;  --! DAC SPI: Number of clock period for elaborating SPI Serial Clock low level
-  constant pkg_DAC_SPI_SCLK_H   : integer   := 2;  --! DAC SPI: Number of clock period for elaborating SPI Serial Clock high level
-  constant pkg_SPI_PAUSE        : positive  := 3;  --! DAC SPI: Number of clock period between two SPI communication. Should be >2
+  constant pkg_SPI_CPOL     : std_logic := '0';  --! SPI: Clock polarity
+  constant pkg_SPI_CPHA     : std_logic := '0';  --! SPI: Clock phase
+  constant pkg_SPI_SER_WD_S : integer   := 32;  --! SPI: Data bus size
+  constant pkg_SPI_SCLK_L   : integer   := 24;  --! SPI: Number of clock period for elaborating SPI Serial Clock low level
+  constant pkg_SPI_SCLK_H   : integer   := 2;  --! SPI: Number of clock period for elaborating SPI Serial Clock high level
+  constant pkg_SPI_PAUSE    : positive  := 3;  --! SPI: Number of clock period between two SPI communication. Should be >2
 
 end pkg_project;

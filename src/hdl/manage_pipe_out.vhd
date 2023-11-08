@@ -25,7 +25,7 @@
 -- -------------------------------------------------------------------------------------------------------------
 --!   @details
 --
---             Build the Science status register (number of words to read)
+--    compute the number of science usb packets
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ use ieee.std_logic_1164.all;
 entity manage_pipe_out is
   port(
     --  clock
-    i_okClk : in std_logic;
+    i_ok_clk : in std_logic;
     --  reset
     i_rst   : in std_logic;
 
@@ -55,9 +55,9 @@ architecture RTL of manage_pipe_out is
 begin
 
   -- compute the number of packet of 4 words of 32 bits
-  p_reshape : process (i_okClk)
+  p_reshape : process (i_ok_clk)
   begin
-    if rising_edge(i_okClk) then
+    if rising_edge(i_ok_clk) then
       if i_rst = '1' then
         o_result <= (others => '0');
       else

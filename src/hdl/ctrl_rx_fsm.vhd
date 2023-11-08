@@ -19,15 +19,16 @@
 --    email                   kenji.delarosa@alten.com
 --!   @file                   ctrl_rx_fsm.vhd
 --    reference design        Paul MARBEAU (IRAP Toulouse)
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 --    Automatic Generation    No
 --    Code Rules Reference    SOC of design and VHDL handbook for VLSI development, CNES Edition (v2.1)
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 --!   @details
 --
---            Control State Machine.
+--    This module deserialized the input science control bit in order to build the output science control word
+--    by checking the science ctrl synchro bits.
 --
--- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -36,7 +37,7 @@ use ieee.numeric_std.all;
 entity ctrl_rx_fsm is
   port (
     -- reset
-    i_rst_n       : in std_logic;
+    i_rst         : in std_logic;
     -- science clock
     i_clk_science : in std_logic;
 
@@ -106,7 +107,7 @@ begin
   p_data_rate : process(i_clk_science)
   begin
     if rising_edge(i_clk_science) then
-      if i_rst_n = '0' then
+      if i_rst = '1' then
         science_ctrl_r3 <= '0';
       else
         if i_data_rate_en = '1' then
@@ -124,7 +125,7 @@ begin
   p_FSM : process(i_clk_science)
   begin
     if rising_edge(i_clk_science) then
-      if i_rst_n = '0' then
+      if i_rst = '1' then
         sm_state_rx_r1   <= E_WAIT1_START;
         N_r1             <= 0;
         o_start_detected <= '0';

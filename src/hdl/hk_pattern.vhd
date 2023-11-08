@@ -25,7 +25,7 @@
 -- -------------------------------------------------------------------------------------------------------------
 --!   @details
 --
---             Build the HK status register (number of words to read)
+--     Compute the number of read HK words.
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -55,7 +55,7 @@ architecture RTL of hk_pattern is
 begin
 
   -- compute the number of HK words of 32 bits.
-  p_fsm_hk : process(i_rst, i_okClk)
+  p_fsm_hk : process(i_okClk)
   begin
     if rising_edge(i_okClk) then
       if i_rst = '1' then
