@@ -17,7 +17,7 @@
 --                            along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -- -------------------------------------------------------------------------------------------------------------
 --    email                   kenji.delarosa@alten.com
---    @file                   pipeliner_with_init.vhd
+--    @file                   synchronizer.vhd
 -- -------------------------------------------------------------------------------------------------------------
 --    Automatic Generation    No
 --    Code Rules Reference    SOC of design and VHDL handbook for VLSI development, CNES Edition (v2.1)
@@ -47,21 +47,28 @@ use ieee.std_logic_1164.all;
 
 entity synchronizer is
   generic(
-    g_INIT            : std_logic := '0';  -- Initial value of synchronizer registers upon startup, 1'b0 or 1'b1.
-    g_SYNC_STAGES     : natural   := 3;  -- Integer value for number of synchronizing registers, must be 2 or higher
-    g_PIPELINE_STAGES : natural   := 1;  -- Integer value for number of registers on the output of the synchronizer for the purpose of improving performance. Possible values: [1; integer max value [
-    g_DATA_WIDTH      : integer   := 1  -- data width expressed in bits
+    -- Initial value of synchronizer registers upon startup, 1'b0 or 1'b1.
+    g_INIT            : std_logic := '0';
+    -- Integer value. Number of synchronizing registers, must be 2 or higher
+    g_SYNC_STAGES     : natural   := 3;
+    -- Integer value. Number of registers at the output of the synchronizer for the purpose of improving performance. Possible values: [1; integer max value [
+    g_PIPELINE_STAGES : natural   := 1;
+    -- data width expressed in bits
+    g_DATA_WIDTH      : integer   := 1
     );
   port(
     ---------------------------------------------------------------------
     -- input
     ---------------------------------------------------------------------
-    i_async_data : in  std_logic_vector(g_DATA_WIDTH - 1 downto 0);  -- async input
+    -- async input
+    i_async_data : in  std_logic_vector(g_DATA_WIDTH - 1 downto 0);
     ---------------------------------------------------------------------
     -- output
-    -----------------------------------------------------------------------
-    i_clk        : in  std_logic;       -- output clock signal
-    o_data       : out std_logic_vector(g_DATA_WIDTH - 1 downto 0)  -- output data with/without delay
+    ---------------------------------------------------------------------
+    -- output clock
+    i_clk        : in  std_logic;
+    -- output data with/without delay
+    o_data       : out std_logic_vector(g_DATA_WIDTH - 1 downto 0)
     );
 end entity synchronizer;
 
