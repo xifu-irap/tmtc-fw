@@ -17,7 +17,7 @@
 --                            along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -- -------------------------------------------------------------------------------------------------------------
 --    email                   kenji.delarosa@alten.com
---!   @file                   drive_interface_ddr3_ctrl.vhd
+--    @file                   science_ddr3.vhd
 --    reference design        Bernard Bertrand (IRAP Toulouse)
 -- -------------------------------------------------------------------------------------------------------------
 --    Automatic Generation    No
@@ -34,7 +34,7 @@ use ieee.std_logic_unsigned.all;
 use ieee.std_logic_arith.all;
 
 
-entity drive_interface_ddr3_ctrl is
+entity science_ddr3_ctrl is
   port(
 
     -- clock
@@ -108,7 +108,7 @@ entity drive_interface_ddr3_ctrl is
     );
 end entity;
 
-architecture RTL of drive_interface_ddr3_ctrl is
+architecture RTL of science_ddr3_ctrl is
 
   -- fsm type declaration
   type t_fsm_state_manager is (E_IDLE, E_WRITE_DDR3, E_READ_DDR3);
