@@ -1,7 +1,7 @@
 fmc_loc;fmc_pin_name;fmc_io_standard;fpga_port_name;fpga_pin;;;
 G1;;;;;;;
-G2;SCIENCE_CLOCK_01_P;LVDS_25;i_clk_science_p[0];E11;;;check voltage
-G3;SCIENCE_CLOCK_01_N;LVDS_25;i_clk_science_n[0];D11;;;check voltage
+G2;SCIENCE_CLOCK_01_P;LVDS_25;i_science_clk_p[0];E11;;;check voltage
+G3;SCIENCE_CLOCK_01_N;LVDS_25;i_science_clk_n[0];D11;;;check voltage
 G4;;;;;;;
 G5;;;;;;;
 G6;;;;H17;;;
@@ -10,7 +10,7 @@ G8;;;;;;;
 G9;;;;A18;;;
 G10;;;;A19;;;
 G11;;;;;;;
-G12;TC-HK_MISO;LVCMOS25;i_miso;F19;;;
+G12;TC-HK_MISO;LVCMOS25;i_spi_miso;F19;;;
 G13;;;;E20;;;
 G14;;;;;;;
 G15;;;;H19;;;
@@ -34,8 +34,8 @@ G32;;;;;;;
 G33;;;;J11;;;
 G34;;;;J10;;;
 G35;;;;;;;
-G36;DMX0_TC-HK_CSn;LVCMOS25;o_cs_n[1];F9;;;
-G37;TC-HK_SCLK;LVCMOS25;o_sclk;F8;;;
+G36;DMX0_TC-HK_CSn;LVCMOS25;o_spi_cs_n[1];F9;;;
+G37;TC-HK_SCLK;LVCMOS25;o_spi_sclk;F8;;;
 G38;;;;;;;
 G39;VADJ;;;;;;
 G40;;;;;;;

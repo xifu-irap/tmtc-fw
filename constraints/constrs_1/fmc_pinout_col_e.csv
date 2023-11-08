@@ -1,6 +1,6 @@
 fmc_loc;fmc_pin_name;fmc_io_standard;fpga_port_name;fpga_pin
 E1;;;;
-E2;RAS_TC-HK_CSn;LVCMOS25;o_cs_n[0];Y23
+E2;RAS_TC-HK_CSn;LVCMOS25;o_spi_cs_n[0];Y23
 E3;SEL_MAINn;LVCMOS25;o_sel_main_n;AA24
 E4;;;;
 E5;;;;
