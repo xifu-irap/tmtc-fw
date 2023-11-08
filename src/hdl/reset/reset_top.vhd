@@ -124,6 +124,7 @@ begin
 
     inst_pipeliner_with_init_optional_sys_rst : entity work.pipeliner_with_init
       generic map(
+        g_INIT       => '0',
         g_NB_PIPES   => 1,
         g_DATA_WIDTH => data_tmp0'length
         )
