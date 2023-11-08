@@ -265,64 +265,73 @@ begin
 ---------------------------------------------------------------------
 -- science_ddr3_ctrl
 ---------------------------------------------------------------------
+
   inst_science_ddr3_ctrl : entity work.science_ddr3_ctrl
     port map(
-      -- input clock
+      -- clock
       i_clk                         => i_clk,
-      -- input reset
+      -- reset
       i_rst                         => i_rst,
       ---------------------------------------------------------------------
-      -- from/to DDR controller (PHY) @ i_clk
+      -- DDR status
       ---------------------------------------------------------------------
-      -- PHY asserts init_calib_complete when calibration is finished
-      i_init_calib_complete         => i_init_calib_complete,
-      -- addr of the current request
-      o_app_addr                    => o_app_addr,
-      -- command for the current request
-      o_app_cmd                     => o_app_cmd,
+      -- DDR calibration is done
+      i_calib_done                  => i_init_calib_complete,
+      ---------------------------------------------------------------------
+      -- input FIFO
+      ---------------------------------------------------------------------
+      -- FIFO input read
+      o_pipe_in_read                => rd1,
+      -- input FIFO data
+      i_pipe_in_data                => data_tmp1,
+      -- input FIFO data valid
+      i_pipe_in_valid               => data_valid1,
+      -- input FIFO data empty
+      i_pipe_in_empty               => empty1,
+      -- input FIFO data prog empty
+      i_prog_empty                  => '0',  -- TODO
+      ---------------------------------------------------------------------
+      -- output FIFO
+      ---------------------------------------------------------------------
+      -- output FIFO write enable
+      o_pipe_out_write              => wr_tmp2,
+      -- output FIFO write data
+      o_pipe_out_data               => wr_data_tmp2,
+      -- output FIFO full
+      i_pipe_out_full               => wr_prog_full2,
+      ---------------------------------------------------------------------
+      -- DDR data
+      ---------------------------------------------------------------------
+      -- indicates that the UI is ready to accept commands.
+      i_app_rdy                     => i_app_rdy,
       -- active-High strobe for the app_addr[], app_cmd[2:0], app_sz, and app_hi_pri inputs
       o_app_en                      => o_app_en,
-      --  data for write commands.
-      o_app_wdf_data                => o_app_wdf_data,
-      -- active-High input indicates that the current clock cycle is the last cycle of input data on app_wdf_data[].
-      o_app_wdf_end                 => o_app_wdf_end,
-      -- active-High strobe for app_wdf_data[].
-      o_app_wdf_wren                => o_app_wdf_wren,
+      -- selects the command for the current request.
+      o_app_cmd                     => o_app_cmd,
+      -- address of the current request
+      o_app_addr                    => o_app_addr,
       -- data from read commands
       i_app_rd_data                 => i_app_rd_data,
-      -- active-High output indicates that the current clock cycle is the last cycle of output data on app_rd_data[]. This is valid only
-      -- when app_rd_data_valid is active-High.
-      i_app_rd_data_end             => i_app_rd_data_end,
-      -- active-High output indicates that app_rd_data[] is valid.
+      -- indicates app_rd_data is valid
       i_app_rd_data_valid           => i_app_rd_data_valid,
-      -- output indicates that the UI is ready to accept commands.If the signal is deasserted when app_en is enabled, the current
-      -- app_cmd and app_addr must be retried until app_rdy is asserted.
-      i_app_rdy                     => i_app_rdy,
-      -- This output indicates that the write data FIFO is ready to receive data. Write data is accepted when app_wdf_rdy = 1’b1 and app_wdf_wren = 1’b1.
+      -- indicates that the write data FIFO is ready to receive data
       i_app_wdf_rdy                 => i_app_wdf_rdy,
-      -- mask for app_wdf_data[].
+      -- active-High strobe for app_wdf_data
+      o_app_wdf_wren                => o_app_wdf_wren,
+      -- data for write commands.
+      o_app_wdf_data                => o_app_wdf_data,
+      -- indicates that the current clock cycle is the last cycle of input data on app_wdf_data[
+      o_app_wdf_end                 => o_app_wdf_end,
+      -- mask for app_wdf_data
       o_app_wdf_mask                => o_app_wdf_mask,
       ---------------------------------------------------------------------
-      -- input data
+      -- Status
       ---------------------------------------------------------------------
-      o_fifo_rd                     => rd1,
-      i_fifo_data                   => data_tmp1,
-      i_fifo_data_valid             => data_valid1,
-      i_fifo_empty                  => empty1,
-      i_fifo_prog_empty             => '0',  -- TODO
-      ---------------------------------------------------------------------
-      -- output output
-      ---------------------------------------------------------------------
-      o_fifo_data_valid             => wr_tmp2,
-      o_fifo_data                   => wr_data_tmp2,
-      i_fifo_full                   => wr_prog_full2,
-      ---------------------------------------------------------------------
-      -- status
-      ---------------------------------------------------------------------
+      -- wr address (expressed in bytes)
       o_buffer_new_cmd_byte_addr_wr => buffer_new_cmd_byte_addr_wr,
+      -- rd address (expressed in bytes)
       o_buffer_new_cmd_byte_addr_rd => buffer_new_cmd_byte_addr_rd
       );
-
 
 
 ---------------------------------------------------------------------
