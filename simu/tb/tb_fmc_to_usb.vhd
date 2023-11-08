@@ -69,7 +69,6 @@ architecture Simulation of tb_fmc_to_usb is
   signal i_sys_clkp       : std_logic;
   signal i_sys_clkn       : std_logic;
   --sys_clk           : in    STD_LOGIC;
-  signal o_leds_fmc       : std_logic_vector(3 downto 0);
   signal o_leds           : std_logic_vector(3 downto 0);
   signal ddr3_dq          : std_logic_vector (DQ_WIDTH-1 downto 0);
   signal ddr3_addr        : std_logic_vector (ROW_WIDTH-1 downto 0);
@@ -203,7 +202,6 @@ begin
       i_sys_clkp => i_sys_clkp,
       i_sys_clkn => i_sys_clkn,
       --sys_clk           : in    STD_LOGIC;
-      o_leds_fmc => o_leds_fmc,
       o_leds     => o_leds,
 
       ddr3_dq          => ddr3_dq,
