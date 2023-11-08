@@ -33,6 +33,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
+use work.pkg_system_tmtc.all;
+
 library unisim;
 
 entity io_spi is
@@ -111,7 +113,7 @@ begin
   inst_pipeliner_optional_input_miso : entity work.pipeliner_with_init
     generic map(
       g_INIT       => '0',
-      g_NB_PIPES   => 1,  -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_NB_PIPES   => pkg_IO_SPI_MISO_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
       g_DATA_WIDTH => data_pipe_tmp0'length  -- width of the input/output data.  Possibles values: [1, integer max value[
       )
     port map(
@@ -191,7 +193,7 @@ begin
   inst_pipeliner_optional_output_data : entity work.pipeliner_with_init
     generic map(
       g_INIT       => '1',
-      g_NB_PIPES   => 1,  -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_NB_PIPES   => pkg_IO_SPI_MOSI_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
       g_DATA_WIDTH => data_pipe_tmp2'length  -- width of the input/output data.  Possibles values: [1, integer max value[
       )
     port map(
