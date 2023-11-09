@@ -103,7 +103,7 @@ begin
           cpt0_r1 <= cpt0_r1 + 1;
           if i_science_sync = '1' then
             -- count the number of frame
-            start_r1 <= start_r1 +'1';
+            start_r1 <= start_r1 + 1;
           end if;
 
           if cpt0_r1 = c_CNT_MAX then
