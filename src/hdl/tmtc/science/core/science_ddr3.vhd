@@ -121,7 +121,9 @@ architecture RTL of science_ddr3 is
   constant c_FIFO_IDX0_H : integer := c_FIFO_IDX0_L + i_data'length - 1;
 
   -- FIFO depth (expressed in number of words)
-  constant c_FIFO_DEPTH0 : integer := 1024;
+  constant c_FIFO_DEPTH0 : integer := 128;
+  -- FIFO prog full (expressed in number of words)
+  constant c_FIFO_PROG_FULL0 : integer := c_FIFO_DEPTH0 - 64;
   -- FIFO width (expressed in bits)
   constant c_FIFO_WIDTH0 : integer := c_FIFO_IDX0_H + 1;
 
@@ -134,6 +136,8 @@ architecture RTL of science_ddr3 is
   signal wr_data_tmp0 : std_logic_vector(c_FIFO_WIDTH0 - 1 downto 0);
   -- fifo full flag
   -- signal wr_full0      : std_logic;
+  -- fifo prog full
+  signal wr_prog_full0 : std_logic;
   -- fifo rst_busy flag
   -- signal wr_rst_busy0  : std_logic;
 
@@ -227,11 +231,12 @@ begin
   wr_tmp0                                          <= i_data_valid;
   wr_data_tmp0(c_FIFO_IDX0_H downto c_FIFO_IDX0_L) <= i_data;
 
-  inst_fifo_sync_with_error : entity work.fifo_sync_with_error
+  inst_fifo_sync_with_error : entity work.fifo_sync_with_error_prog_full
     generic map(
       g_FIFO_MEMORY_TYPE  => "auto",
       g_FIFO_READ_LATENCY => 1,
       g_FIFO_WRITE_DEPTH  => c_FIFO_DEPTH0,
+      g_PROG_FULL_THRESH  => c_FIFO_PROG_FULL0,
       g_READ_DATA_WIDTH   => wr_data_tmp0'length,
       g_READ_MODE         => "std",
       g_WRITE_DATA_WIDTH  => wr_data_tmp0'length
@@ -245,6 +250,7 @@ begin
       i_wr_en         => wr_tmp0,
       i_wr_din        => wr_data_tmp0,
       o_wr_full       => open,
+      o_wr_prog_full  => wr_prog_full0,
       o_wr_rst_busy   => open,
       ---------------------------------------------------------------------
       -- read side
@@ -288,8 +294,8 @@ begin
       i_pipe_in_valid               => data_valid1,
       -- input FIFO data empty
       i_pipe_in_empty               => empty1,
-      -- input FIFO data prog empty
-      i_prog_empty                  => '0',  -- TODO
+      -- input FIFO data prog full
+      i_prog_full                  => wr_prog_full0,
       ---------------------------------------------------------------------
       -- output FIFO
       ---------------------------------------------------------------------

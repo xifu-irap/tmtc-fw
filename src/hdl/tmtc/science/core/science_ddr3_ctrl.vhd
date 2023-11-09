@@ -58,8 +58,8 @@ entity science_ddr3_ctrl is
     i_pipe_in_valid  : in  std_logic;
     -- input FIFO data empty
     i_pipe_in_empty  : in  std_logic;
-    -- input FIFO data prog empty
-    i_prog_empty     : in  std_logic;
+    -- input FIFO data prog full
+    i_prog_full     : in  std_logic;
     ---------------------------------------------------------------------
     -- output FIFO
     ---------------------------------------------------------------------
@@ -177,7 +177,7 @@ begin
 
           when E_IDLE =>
             if i_calib_done = '1' then
-              if i_prog_empty = '1' and (new_cmd_byte_addr_wr_r1 /= new_cmd_byte_addr_rd_r1) and i_pipe_out_full = '0' then
+              if i_prog_full = '0' and (new_cmd_byte_addr_wr_r1 /= new_cmd_byte_addr_rd_r1) and i_pipe_out_full = '0' then
                 sm_state_manager_r1 <= E_READ_DDR3;
               else
                 sm_state_manager_r1 <= E_WRITE_DDR3;
@@ -187,7 +187,7 @@ begin
           when E_WRITE_DDR3 =>
 
             if write_mode_r1 = '0' then
-              if (i_prog_empty = '0' or (new_cmd_byte_addr_wr_r1 = new_cmd_byte_addr_rd_r1) or i_pipe_out_full = '1') and i_pipe_in_empty = '0' then
+              if (i_prog_full = '1' or (new_cmd_byte_addr_wr_r1 = new_cmd_byte_addr_rd_r1) or i_pipe_out_full = '1') and i_pipe_in_empty = '0' then
                 read_mode_r1  <= '0';
                 write_mode_r1 <= '1';   --  remote write in ddr3
               else
@@ -205,7 +205,7 @@ begin
           when E_READ_DDR3 =>
 
             if read_mode_r1 = '0' then
-              if i_prog_empty = '1' and i_pipe_out_full = '0' then
+              if i_prog_full = '0' and i_pipe_out_full = '0' then
                 read_mode_r1  <= '1';
                 write_mode_r1 <= '0';
                 if (new_cmd_byte_addr_wr_r1 = new_cmd_byte_addr_rd_r1) then

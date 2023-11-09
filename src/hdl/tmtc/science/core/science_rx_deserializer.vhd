@@ -31,6 +31,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.pkg_utils;
+
 entity science_rx_deserializer is
   generic (
     -- define the number of links (input data width)
@@ -74,12 +76,17 @@ architecture RTL of science_rx_deserializer is
 
   -- auto-computed the number of output words
   constant c_NB_WORDS : integer := i_science_data'length;
+  -- define the counter width (for the bits)
+  constant c_CNT_BIT_WIDTH : integer := work.pkg_utils.pkg_width_from_value(i_value=> g_DATA_WIDTH_BY_LINK);
+
+  -- max bit counter value:
+  constant c_CNT_MAX : unsigned(c_CNT_BIT_WIDTH - 1 downto 0):= to_unsigned(g_DATA_WIDTH_BY_LINK - 1,c_CNT_BIT_WIDTH);
 
   -- array of data
-  type t_array_data is array (c_NB_WORDS - 1 downto 0) of std_logic_vector(g_DATA_WIDTH_BY_LINK - 1 downto 0);
+  type t_array_data is array (g_DATA_WIDTH_BY_LINK - 1 downto 0) of std_logic_vector(c_NB_WORDS - 1 downto 0);
 
 -- fsm type declaration
-  type t_state is (E_RST, E_WAIT_HEADER0, E_WAIT_HEADER2, E_WAIT_HEADER3, E_DECODE);
+  type t_state is (E_RST, E_WAIT_HEADER0, E_WAIT_HEADER1, E_WAIT_HEADER2, E_DECODE);
 
   -- state
   signal sm_state_next : t_state;
@@ -96,10 +103,10 @@ architecture RTL of science_rx_deserializer is
   -- detect the end of the synchro word (0-1-1) registered
   signal sync_word_eof_r1   : std_logic;
 
-  -- shift register used as counter
-  signal shift_cnt_array_next : std_logic_vector(o_ctrl_word'range);
-  -- shift register used as counter (registered)
-  signal shift_cnt_array_r1   : std_logic_vector(o_ctrl_word'range);
+  -- bit counter
+  signal cnt_bit_next : unsigned(c_CNT_BIT_WIDTH - 1 downto 0);
+  -- bit counter registered
+  signal cnt_bit_r1   : unsigned(c_CNT_BIT_WIDTH - 1 downto 0);
 
   -- data shift register
   signal data_array_next : t_array_data;
@@ -116,67 +123,65 @@ begin
 
 -- this FSM deserializes the input data stream (ctrl,data) by decoding the control bits
   p_decode_state : process (ctrl_array_r1, data_array_r1, i_science_ctrl, i_science_data,
-                            i_science_data_valid, shift_cnt_array_r1,
-                            sm_state_r1) is
+                            i_science_data_valid,
+                            sm_state_r1,cnt_bit_r1) is
   begin
     data_valid_next      <= '0';
     sync_word_eof_next   <= '0';
     data_array_next      <= data_array_r1;
     ctrl_array_next      <= ctrl_array_r1;
-    shift_cnt_array_next <= shift_cnt_array_r1;
+    cnt_bit_next         <= cnt_bit_r1;
 
     case sm_state_r1 is
       when E_RST =>
+        cnt_bit_next      <= (others => '0');
         sm_state_next <= E_WAIT_HEADER0;
 
       when E_WAIT_HEADER0 =>
         if i_science_ctrl = '0' and i_science_data_valid = '1' then
-          sm_state_next <= E_WAIT_HEADER2;
+          sm_state_next <= E_WAIT_HEADER1;
         else
           sm_state_next <= E_WAIT_HEADER0;
         end if;
 
-      when E_WAIT_HEADER2 =>
+      when E_WAIT_HEADER1 =>
         if i_science_ctrl = '1' and i_science_data_valid = '1' then
-          -- init the counter
-          shift_cnt_array_next <= std_logic_vector(to_unsigned(1, shift_cnt_array_next'length));
+          cnt_bit_next     <= cnt_bit_r1 + 1;
+          ctrl_array_next  <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
+          data_array_next  <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
+          sm_state_next <= E_WAIT_HEADER2;
+        else
+          sm_state_next <= E_WAIT_HEADER1;
+        end if;
 
-          -- shift to left
-          ctrl_array_next <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
-          data_array_next <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
+      when E_WAIT_HEADER2 =>
 
-          sm_state_next <= E_WAIT_HEADER3;
+        if i_science_ctrl = '1' and i_science_data_valid = '1' then
+          cnt_bit_next <= cnt_bit_r1 + 1;
+          ctrl_array_next  <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
+          data_array_next  <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
+          -- detect sync_word
+          sync_word_eof_next <= '1';
+
+          sm_state_next <= E_DECODE;
         else
           sm_state_next <= E_WAIT_HEADER2;
         end if;
 
-      when E_WAIT_HEADER3 =>
-
-        if i_science_ctrl = '1' and i_science_data_valid = '1' then
-          -- detect sync_word
-          sync_word_eof_next <= '1';
-
-          -- shift to left
-          shift_cnt_array_next <= shift_cnt_array_r1(shift_cnt_array_r1'high - 1 downto 0) & '0';
-          ctrl_array_next      <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
-          data_array_next      <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
-
-          sm_state_next <= E_DECODE;
-        else
-          sm_state_next <= E_WAIT_HEADER3;
-        end if;
-
       when E_DECODE =>
         if i_science_data_valid = '1' then
+          cnt_bit_next     <= cnt_bit_r1 + 1;
+          ctrl_array_next  <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
+          data_array_next  <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
 
-          -- shift to left
-          shift_cnt_array_next <= shift_cnt_array_r1(shift_cnt_array_r1'high - 1 downto 0) & '0';
-          ctrl_array_next      <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
-          data_array_next      <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
-
-          if shift_cnt_array_r1(shift_cnt_array_r1'high) = '1' then
+          if cnt_bit_r1 = c_CNT_MAX then
             data_valid_next <= '1';
-            sm_state_next   <= E_WAIT_HEADER0;
+            cnt_bit_next    <= (others => '0');
+            if i_science_ctrl = '0' then
+              sm_state_next   <= E_WAIT_HEADER1;
+            else
+              sm_state_next   <= E_WAIT_HEADER0;
+            end if;
           else
             sm_state_next <= E_DECODE;
           end if;
@@ -202,7 +207,12 @@ begin
       sync_word_eof_r1   <= sync_word_eof_next;
       data_array_r1      <= data_array_next;
       ctrl_array_r1      <= ctrl_array_next;
-      shift_cnt_array_r1 <= shift_cnt_array_next;
+      cnt_bit_r1         <= cnt_bit_next;
+
+      --if i_science_data_valid = '1' then
+      --  ctrl_array_r1  <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
+      --  data_array_r1  <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
+      --end if;
 
     end if;
   end process p_state;
@@ -215,7 +225,7 @@ begin
   o_ctrl_word     <= ctrl_array_r1;
 
   gen_extracted_word : for i in data_array_next'range generate
-    o_data_words(g_DATA_WIDTH_BY_LINK*(i+1)-1 downto g_DATA_WIDTH_BY_LINK*i) <= data_array_r1(i);
+    o_data_words(g_DATA_WIDTH_BY_LINK*(i+1)-1 downto g_DATA_WIDTH_BY_LINK*i) <= data_array_r1(i)(7 downto 0);
   end generate gen_extracted_word;
 
 
