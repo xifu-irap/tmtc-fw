@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_system_tmtc_top_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="mappings" />
+            <top_module name="parameters" />
+            <top_module name="pkg_regdecode" />
+            <top_module name="pkg_system_tmtc" />
+            <top_module name="pkg_system_tmtc_debug" />
+            <top_module name="pkg_utils" />
+            <top_module name="tb_system_tmtc_top" />
+            <top_module name="vcomponents" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="116.194807944 us"></ZoomStartTime>
+      <ZoomEndTime time="116.572807945 us"></ZoomEndTime>
+      <Cursor1Time time="116.362500000 us"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="276"></NameColumnWidth>
+      <ValueColumnWidth column_width="96"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="7" />
+   <wvobject fp_name="group179" type="group">
+      <obj_property name="label">tb</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="group128" type="group">
+         <obj_property name="label">usb</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/usb_clk" type="logic">
+            <obj_property name="ElementShortName">usb_clk</obj_property>
+            <obj_property name="ObjectShortName">usb_clk</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/i_okUH" type="array">
+            <obj_property name="ElementShortName">i_okUH[4:0]</obj_property>
+            <obj_property name="ObjectShortName">i_okUH[4:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/o_okHU" type="array">
+            <obj_property name="ElementShortName">o_okHU[2:0]</obj_property>
+            <obj_property name="ObjectShortName">o_okHU[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/b_okUHU" type="array">
+            <obj_property name="ElementShortName">b_okUHU[31:0]</obj_property>
+            <obj_property name="ObjectShortName">b_okUHU[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/b_okAA" type="logic">
+            <obj_property name="ElementShortName">b_okAA</obj_property>
+            <obj_property name="ObjectShortName">b_okAA</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/o_leds" type="array">
+         <obj_property name="ElementShortName">o_leds[3:0]</obj_property>
+         <obj_property name="ObjectShortName">o_leds[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/i_sys_clk_p" type="logic">
+         <obj_property name="ElementShortName">i_sys_clk_p</obj_property>
+         <obj_property name="ObjectShortName">i_sys_clk_p</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/i_sys_clk_n" type="logic">
+         <obj_property name="ElementShortName">i_sys_clk_n</obj_property>
+         <obj_property name="ObjectShortName">i_sys_clk_n</obj_property>
+      </wvobject>
+      <wvobject fp_name="group125" type="group">
+         <obj_property name="label">ddr</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_dq" type="array">
+            <obj_property name="ElementShortName">ddr3_dq[15:0]</obj_property>
+            <obj_property name="ObjectShortName">ddr3_dq[15:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_addr" type="array">
+            <obj_property name="ElementShortName">ddr3_addr[14:0]</obj_property>
+            <obj_property name="ObjectShortName">ddr3_addr[14:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_ba" type="array">
+            <obj_property name="ElementShortName">ddr3_ba[2:0]</obj_property>
+            <obj_property name="ObjectShortName">ddr3_ba[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_ck_p" type="array">
+            <obj_property name="ElementShortName">ddr3_ck_p[0:0]</obj_property>
+            <obj_property name="ObjectShortName">ddr3_ck_p[0:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_ck_n" type="array">
+            <obj_property name="ElementShortName">ddr3_ck_n[0:0]</obj_property>
+            <obj_property name="ObjectShortName">ddr3_ck_n[0:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_cke" type="array">
+            <obj_property name="ElementShortName">ddr3_cke[0:0]</obj_property>
+            <obj_property name="ObjectShortName">ddr3_cke[0:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_cs_n" type="array">
+            <obj_property name="ElementShortName">ddr3_cs_n[0:0]</obj_property>
+            <obj_property name="ObjectShortName">ddr3_cs_n[0:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_cas_n" type="logic">
+            <obj_property name="ElementShortName">ddr3_cas_n</obj_property>
+            <obj_property name="ObjectShortName">ddr3_cas_n</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_ras_n" type="logic">
+            <obj_property name="ElementShortName">ddr3_ras_n</obj_property>
+            <obj_property name="ObjectShortName">ddr3_ras_n</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_we_n" type="logic">
+            <obj_property name="ElementShortName">ddr3_we_n</obj_property>
+            <obj_property name="ObjectShortName">ddr3_we_n</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_odt" type="array">
+            <obj_property name="ElementShortName">ddr3_odt[0:0]</obj_property>
+            <obj_property name="ObjectShortName">ddr3_odt[0:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_dm" type="array">
+            <obj_property name="ElementShortName">ddr3_dm[1:0]</obj_property>
+            <obj_property name="ObjectShortName">ddr3_dm[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_dqs_p" type="array">
+            <obj_property name="ElementShortName">ddr3_dqs_p[1:0]</obj_property>
+            <obj_property name="ObjectShortName">ddr3_dqs_p[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_dqs_n" type="array">
+            <obj_property name="ElementShortName">ddr3_dqs_n[1:0]</obj_property>
+            <obj_property name="ObjectShortName">ddr3_dqs_n[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/tdqs_n" type="array">
+            <obj_property name="ElementShortName">tdqs_n[1:0]</obj_property>
+            <obj_property name="ObjectShortName">tdqs_n[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/ddr3_reset_n" type="logic">
+            <obj_property name="ElementShortName">ddr3_reset_n</obj_property>
+            <obj_property name="ObjectShortName">ddr3_reset_n</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/sys_clk" type="logic">
+            <obj_property name="ElementShortName">sys_clk</obj_property>
+            <obj_property name="ObjectShortName">sys_clk</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group126" type="group">
+         <obj_property name="label">science</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/i_science_clk_p" type="array">
+            <obj_property name="ElementShortName">i_science_clk_p[1:0]</obj_property>
+            <obj_property name="ObjectShortName">i_science_clk_p[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/i_science_clk_n" type="array">
+            <obj_property name="ElementShortName">i_science_clk_n[1:0]</obj_property>
+            <obj_property name="ObjectShortName">i_science_clk_n[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/i_science_ctrl_p" type="array">
+            <obj_property name="ElementShortName">i_science_ctrl_p[1:0]</obj_property>
+            <obj_property name="ObjectShortName">i_science_ctrl_p[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/i_science_ctrl_n" type="array">
+            <obj_property name="ElementShortName">i_science_ctrl_n[1:0]</obj_property>
+            <obj_property name="ObjectShortName">i_science_ctrl_n[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/i_science_data_p" type="array">
+            <obj_property name="ElementShortName">i_science_data_p[7:0]</obj_property>
+            <obj_property name="ObjectShortName">i_science_data_p[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/i_science_data_n" type="array">
+            <obj_property name="ElementShortName">i_science_data_n[7:0]</obj_property>
+            <obj_property name="ObjectShortName">i_science_data_n[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/clk_science" type="logic">
+            <obj_property name="ElementShortName">clk_science</obj_property>
+            <obj_property name="ObjectShortName">clk_science</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group127" type="group">
+         <obj_property name="label">spi</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/i_spi_miso" type="logic">
+            <obj_property name="ElementShortName">i_spi_miso</obj_property>
+            <obj_property name="ObjectShortName">i_spi_miso</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/o_spi_mosi" type="logic">
+            <obj_property name="ElementShortName">o_spi_mosi</obj_property>
+            <obj_property name="ObjectShortName">o_spi_mosi</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/o_spi_sclk" type="logic">
+            <obj_property name="ElementShortName">o_spi_sclk</obj_property>
+            <obj_property name="ObjectShortName">o_spi_sclk</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/o_spi_cs_n" type="array">
+            <obj_property name="ElementShortName">o_spi_cs_n[1:0]</obj_property>
+            <obj_property name="ObjectShortName">o_spi_cs_n[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/o_sel_main_n" type="logic">
+            <obj_property name="ElementShortName">o_sel_main_n</obj_property>
+            <obj_property name="ObjectShortName">o_sel_main_n</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/science_ctrl_vect" type="array">
+         <obj_property name="ElementShortName">science_ctrl_vect[7:0]</obj_property>
+         <obj_property name="ObjectShortName">science_ctrl_vect[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/science_data" type="array">
+         <obj_property name="ElementShortName">science_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">science_data[7:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group144" type="group">
+      <obj_property name="label">reset_top</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_reset_top/i_usb_clk" type="logic">
+         <obj_property name="ElementShortName">i_usb_clk</obj_property>
+         <obj_property name="ObjectShortName">i_usb_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_reset_top/i_usb_rst" type="logic">
+         <obj_property name="ElementShortName">i_usb_rst</obj_property>
+         <obj_property name="ObjectShortName">i_usb_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_reset_top/o_ddr_ctrl_rst" type="logic">
+         <obj_property name="ElementShortName">o_ddr_ctrl_rst</obj_property>
+         <obj_property name="ObjectShortName">o_ddr_ctrl_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_reset_top/i_sys_clk" type="logic">
+         <obj_property name="ElementShortName">i_sys_clk</obj_property>
+         <obj_property name="ObjectShortName">i_sys_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_reset_top/i_sys_rst" type="logic">
+         <obj_property name="ElementShortName">i_sys_rst</obj_property>
+         <obj_property name="ObjectShortName">i_sys_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_reset_top/o_sys_rst" type="logic">
+         <obj_property name="ElementShortName">o_sys_rst</obj_property>
+         <obj_property name="ObjectShortName">o_sys_rst</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group161" type="group">
+      <obj_property name="label">science_top</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/i_clk" type="logic">
+         <obj_property name="ElementShortName">i_clk</obj_property>
+         <obj_property name="ObjectShortName">i_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/i_rst" type="logic">
+         <obj_property name="ElementShortName">i_rst</obj_property>
+         <obj_property name="ObjectShortName">i_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/i_rst_status" type="logic">
+         <obj_property name="ElementShortName">i_rst_status</obj_property>
+         <obj_property name="ObjectShortName">i_rst_status</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/i_debug_pulse" type="logic">
+         <obj_property name="ElementShortName">i_debug_pulse</obj_property>
+         <obj_property name="ObjectShortName">i_debug_pulse</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/i_init_calib_complete" type="logic">
+         <obj_property name="ElementShortName">i_init_calib_complete</obj_property>
+         <obj_property name="ObjectShortName">i_init_calib_complete</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/i_science_data_valid" type="logic">
+         <obj_property name="ElementShortName">i_science_data_valid</obj_property>
+         <obj_property name="ObjectShortName">i_science_data_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/i_science_ctrl" type="logic">
+         <obj_property name="ElementShortName">i_science_ctrl</obj_property>
+         <obj_property name="ObjectShortName">i_science_ctrl</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/i_science_data" type="array">
+         <obj_property name="ElementShortName">i_science_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">i_science_data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/i_fifo_prog_full" type="logic">
+         <obj_property name="ElementShortName">i_fifo_prog_full</obj_property>
+         <obj_property name="ObjectShortName">i_fifo_prog_full</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/o_fifo_data_valid" type="logic">
+         <obj_property name="ElementShortName">o_fifo_data_valid</obj_property>
+         <obj_property name="ObjectShortName">o_fifo_data_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/o_fifo_data" type="array">
+         <obj_property name="ElementShortName">o_fifo_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">o_fifo_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/o_ddr_stamp" type="array">
+         <obj_property name="ElementShortName">o_ddr_stamp[31:0]</obj_property>
+         <obj_property name="ObjectShortName">o_ddr_stamp[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/o_science_data_valid" type="logic">
+         <obj_property name="ElementShortName">o_science_data_valid</obj_property>
+         <obj_property name="ObjectShortName">o_science_data_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/o_science_synchro_word" type="logic">
+         <obj_property name="ElementShortName">o_science_synchro_word</obj_property>
+         <obj_property name="ObjectShortName">o_science_synchro_word</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/o_errors" type="array">
+         <obj_property name="ElementShortName">o_errors[15:0]</obj_property>
+         <obj_property name="ObjectShortName">o_errors[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/o_status" type="array">
+         <obj_property name="ElementShortName">o_status[7:0]</obj_property>
+         <obj_property name="ObjectShortName">o_status[7:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group178" type="group">
+      <obj_property name="label">spi_top</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_clk" type="logic">
+         <obj_property name="ElementShortName">i_clk</obj_property>
+         <obj_property name="ObjectShortName">i_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_rst" type="logic">
+         <obj_property name="ElementShortName">i_rst</obj_property>
+         <obj_property name="ObjectShortName">i_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_rst_status" type="logic">
+         <obj_property name="ElementShortName">i_rst_status</obj_property>
+         <obj_property name="ObjectShortName">i_rst_status</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_debug_pulse" type="logic">
+         <obj_property name="ElementShortName">i_debug_pulse</obj_property>
+         <obj_property name="ObjectShortName">i_debug_pulse</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_spi_select" type="logic">
+         <obj_property name="ElementShortName">i_spi_select</obj_property>
+         <obj_property name="ObjectShortName">i_spi_select</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_spi_wr_en" type="logic">
+         <obj_property name="ElementShortName">i_spi_wr_en</obj_property>
+         <obj_property name="ObjectShortName">i_spi_wr_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_spi_wr_data" type="array">
+         <obj_property name="ElementShortName">i_spi_wr_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_spi_wr_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_rd_data_valid" type="logic">
+         <obj_property name="ElementShortName">o_spi_rd_data_valid</obj_property>
+         <obj_property name="ObjectShortName">o_spi_rd_data_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_rd_data" type="array">
+         <obj_property name="ElementShortName">o_spi_rd_data[31:0]</obj_property>
+         <obj_property name="ObjectShortName">o_spi_rd_data[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_ready" type="logic">
+         <obj_property name="ElementShortName">o_spi_ready</obj_property>
+         <obj_property name="ObjectShortName">o_spi_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_spi_miso" type="logic">
+         <obj_property name="ElementShortName">i_spi_miso</obj_property>
+         <obj_property name="ObjectShortName">i_spi_miso</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_mosi" type="logic">
+         <obj_property name="ElementShortName">o_spi_mosi</obj_property>
+         <obj_property name="ObjectShortName">o_spi_mosi</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_sclk" type="logic">
+         <obj_property name="ElementShortName">o_spi_sclk</obj_property>
+         <obj_property name="ObjectShortName">o_spi_sclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_cs_n" type="array">
+         <obj_property name="ElementShortName">o_spi_cs_n[1:0]</obj_property>
+         <obj_property name="ObjectShortName">o_spi_cs_n[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_errors" type="array">
+         <obj_property name="ElementShortName">o_errors[15:0]</obj_property>
+         <obj_property name="ObjectShortName">o_errors[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_status" type="array">
+         <obj_property name="ElementShortName">o_status[7:0]</obj_property>
+         <obj_property name="ObjectShortName">o_status[7:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group209" type="group">
+      <obj_property name="label">science_rx_deserializer</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/i_clk" type="logic">
+         <obj_property name="ElementShortName">i_clk</obj_property>
+         <obj_property name="ObjectShortName">i_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/i_rst" type="logic">
+         <obj_property name="ElementShortName">i_rst</obj_property>
+         <obj_property name="ObjectShortName">i_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="group211" type="group">
+         <obj_property name="label">in</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/i_science_data_valid" type="logic">
+            <obj_property name="ElementShortName">i_science_data_valid</obj_property>
+            <obj_property name="ObjectShortName">i_science_data_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/i_science_ctrl" type="logic">
+            <obj_property name="ElementShortName">i_science_ctrl</obj_property>
+            <obj_property name="ObjectShortName">i_science_ctrl</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/i_science_data" type="array">
+            <obj_property name="ElementShortName">i_science_data[7:0]</obj_property>
+            <obj_property name="ObjectShortName">i_science_data[7:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group210" type="group">
+         <obj_property name="label">step1</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/sm_state_r1" type="other">
+            <obj_property name="ElementShortName">sm_state_r1</obj_property>
+            <obj_property name="ObjectShortName">sm_state_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/data_valid_r1" type="logic">
+            <obj_property name="ElementShortName">data_valid_r1</obj_property>
+            <obj_property name="ObjectShortName">data_valid_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/sync_word_eof_r1" type="logic">
+            <obj_property name="ElementShortName">sync_word_eof_r1</obj_property>
+            <obj_property name="ObjectShortName">sync_word_eof_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/shift_cnt_array_r1" type="array">
+            <obj_property name="ElementShortName">shift_cnt_array_r1[7:0]</obj_property>
+            <obj_property name="ObjectShortName">shift_cnt_array_r1[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/data_array_r1" type="array">
+            <obj_property name="ElementShortName">data_array_r1[7:0][7:0]</obj_property>
+            <obj_property name="ObjectShortName">data_array_r1[7:0][7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/ctrl_array_r1" type="array">
+            <obj_property name="ElementShortName">ctrl_array_r1[7:0]</obj_property>
+            <obj_property name="ObjectShortName">ctrl_array_r1[7:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group212" type="group">
+         <obj_property name="label">out</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/o_sync_word_eof" type="logic">
+            <obj_property name="ElementShortName">o_sync_word_eof</obj_property>
+            <obj_property name="ObjectShortName">o_sync_word_eof</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/o_data_valid" type="logic">
+            <obj_property name="ElementShortName">o_data_valid</obj_property>
+            <obj_property name="ObjectShortName">o_data_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/o_ctrl_word" type="array">
+            <obj_property name="ElementShortName">o_ctrl_word[7:0]</obj_property>
+            <obj_property name="ObjectShortName">o_ctrl_word[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/o_data_words" type="array">
+            <obj_property name="ElementShortName">o_data_words[63:0]</obj_property>
+            <obj_property name="ObjectShortName">o_data_words[63:0]</obj_property>
+         </wvobject>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group233" type="group">
+      <obj_property name="label">science_rx_frame</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_clk" type="logic">
+         <obj_property name="ElementShortName">i_clk</obj_property>
+         <obj_property name="ObjectShortName">i_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_rst" type="logic">
+         <obj_property name="ElementShortName">i_rst</obj_property>
+         <obj_property name="ObjectShortName">i_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="group234" type="group">
+         <obj_property name="label">in</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_valid" type="logic">
+            <obj_property name="ElementShortName">i_data_valid</obj_property>
+            <obj_property name="ObjectShortName">i_data_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_ctrl_word" type="array">
+            <obj_property name="ElementShortName">i_ctrl_word[7:0]</obj_property>
+            <obj_property name="ObjectShortName">i_ctrl_word[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words" type="array">
+            <obj_property name="ElementShortName">i_data_words[63:0]</obj_property>
+            <obj_property name="ObjectShortName">i_data_words[63:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group235" type="group">
+         <obj_property name="label">out</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/o_data_valid" type="logic">
+            <obj_property name="ElementShortName">o_data_valid</obj_property>
+            <obj_property name="ObjectShortName">o_data_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/o_data" type="array">
+            <obj_property name="ElementShortName">o_data[127:0]</obj_property>
+            <obj_property name="ObjectShortName">o_data[127:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group236" type="group">
+         <obj_property name="label">step1</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/data_array" type="array">
+            <obj_property name="ElementShortName">data_array[0:7][7:0]</obj_property>
+            <obj_property name="ObjectShortName">data_array[0:7][7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/frame_tmp" type="array">
+            <obj_property name="ElementShortName">frame_tmp[95:0]</obj_property>
+            <obj_property name="ObjectShortName">frame_tmp[95:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/sm_state_r1" type="other">
+            <obj_property name="ElementShortName">sm_state_r1</obj_property>
+            <obj_property name="ObjectShortName">sm_state_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/frame_array_r1" type="array">
+            <obj_property name="ElementShortName">frame_array_r1[0:3][95:0]</obj_property>
+            <obj_property name="ObjectShortName">frame_array_r1[0:3][95:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/data_valid_r1" type="logic">
+            <obj_property name="ElementShortName">data_valid_r1</obj_property>
+            <obj_property name="ObjectShortName">data_valid_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/sel_r1" type="array">
+            <obj_property name="ElementShortName">sel_r1[1:0]</obj_property>
+            <obj_property name="ObjectShortName">sel_r1[1:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group237" type="group">
+         <obj_property name="label">step2</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/data_valid_r2" type="logic">
+            <obj_property name="ElementShortName">data_valid_r2</obj_property>
+            <obj_property name="ObjectShortName">data_valid_r2</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/data_r2" type="array">
+            <obj_property name="ElementShortName">data_r2[127:0]</obj_property>
+            <obj_property name="ObjectShortName">data_r2[127:0]</obj_property>
+         </wvobject>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group289" type="group">
+      <obj_property name="label">science_ddr3_ctrl</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_clk" type="logic">
+         <obj_property name="ElementShortName">i_clk</obj_property>
+         <obj_property name="ObjectShortName">i_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_rst" type="logic">
+         <obj_property name="ElementShortName">i_rst</obj_property>
+         <obj_property name="ObjectShortName">i_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_calib_done" type="logic">
+         <obj_property name="ElementShortName">i_calib_done</obj_property>
+         <obj_property name="ObjectShortName">i_calib_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="group290" type="group">
+         <obj_property name="label">fifo_in</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_pipe_in_read" type="logic">
+            <obj_property name="ElementShortName">o_pipe_in_read</obj_property>
+            <obj_property name="ObjectShortName">o_pipe_in_read</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_pipe_in_data" type="array">
+            <obj_property name="ElementShortName">i_pipe_in_data[127:0]</obj_property>
+            <obj_property name="ObjectShortName">i_pipe_in_data[127:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_pipe_in_valid" type="logic">
+            <obj_property name="ElementShortName">i_pipe_in_valid</obj_property>
+            <obj_property name="ObjectShortName">i_pipe_in_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_pipe_in_empty" type="logic">
+            <obj_property name="ElementShortName">i_pipe_in_empty</obj_property>
+            <obj_property name="ObjectShortName">i_pipe_in_empty</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_prog_empty" type="logic">
+            <obj_property name="ElementShortName">i_prog_empty</obj_property>
+            <obj_property name="ObjectShortName">i_prog_empty</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group291" type="group">
+         <obj_property name="label">fifo_out</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_pipe_out_write" type="logic">
+            <obj_property name="ElementShortName">o_pipe_out_write</obj_property>
+            <obj_property name="ObjectShortName">o_pipe_out_write</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_pipe_out_data" type="array">
+            <obj_property name="ElementShortName">o_pipe_out_data[127:0]</obj_property>
+            <obj_property name="ObjectShortName">o_pipe_out_data[127:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_pipe_out_full" type="logic">
+            <obj_property name="ElementShortName">i_pipe_out_full</obj_property>
+            <obj_property name="ObjectShortName">i_pipe_out_full</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group292" type="group">
+         <obj_property name="label">ddr</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_app_rdy" type="logic">
+            <obj_property name="ElementShortName">i_app_rdy</obj_property>
+            <obj_property name="ObjectShortName">i_app_rdy</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_app_en" type="logic">
+            <obj_property name="ElementShortName">o_app_en</obj_property>
+            <obj_property name="ObjectShortName">o_app_en</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_app_cmd" type="array">
+            <obj_property name="ElementShortName">o_app_cmd[2:0]</obj_property>
+            <obj_property name="ObjectShortName">o_app_cmd[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_app_addr" type="array">
+            <obj_property name="ElementShortName">o_app_addr[28:0]</obj_property>
+            <obj_property name="ObjectShortName">o_app_addr[28:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_app_rd_data" type="array">
+            <obj_property name="ElementShortName">i_app_rd_data[127:0]</obj_property>
+            <obj_property name="ObjectShortName">i_app_rd_data[127:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_app_rd_data_valid" type="logic">
+            <obj_property name="ElementShortName">i_app_rd_data_valid</obj_property>
+            <obj_property name="ObjectShortName">i_app_rd_data_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_app_wdf_rdy" type="logic">
+            <obj_property name="ElementShortName">i_app_wdf_rdy</obj_property>
+            <obj_property name="ObjectShortName">i_app_wdf_rdy</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_app_wdf_wren" type="logic">
+            <obj_property name="ElementShortName">o_app_wdf_wren</obj_property>
+            <obj_property name="ObjectShortName">o_app_wdf_wren</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_app_wdf_data" type="array">
+            <obj_property name="ElementShortName">o_app_wdf_data[127:0]</obj_property>
+            <obj_property name="ObjectShortName">o_app_wdf_data[127:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_app_wdf_end" type="logic">
+            <obj_property name="ElementShortName">o_app_wdf_end</obj_property>
+            <obj_property name="ObjectShortName">o_app_wdf_end</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_app_wdf_mask" type="array">
+            <obj_property name="ElementShortName">o_app_wdf_mask[15:0]</obj_property>
+            <obj_property name="ObjectShortName">o_app_wdf_mask[15:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group293" type="group">
+         <obj_property name="label">status_out</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_buffer_new_cmd_byte_addr_rd" type="array">
+            <obj_property name="ElementShortName">o_buffer_new_cmd_byte_addr_rd[54:0]</obj_property>
+            <obj_property name="ObjectShortName">o_buffer_new_cmd_byte_addr_rd[54:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_buffer_new_cmd_byte_addr_wr" type="array">
+            <obj_property name="ElementShortName">o_buffer_new_cmd_byte_addr_wr[54:0]</obj_property>
+            <obj_property name="ObjectShortName">o_buffer_new_cmd_byte_addr_wr[54:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group294" type="group">
+         <obj_property name="label">step1</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/sm_state_manager_r1" type="other">
+            <obj_property name="ElementShortName">sm_state_manager_r1</obj_property>
+            <obj_property name="ObjectShortName">sm_state_manager_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/new_cmd_byte_addr_wr_r1" type="array">
+            <obj_property name="ElementShortName">new_cmd_byte_addr_wr_r1[54:0]</obj_property>
+            <obj_property name="ObjectShortName">new_cmd_byte_addr_wr_r1[54:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/new_cmd_byte_addr_rd_r1" type="array">
+            <obj_property name="ElementShortName">new_cmd_byte_addr_rd_r1[54:0]</obj_property>
+            <obj_property name="ObjectShortName">new_cmd_byte_addr_rd_r1[54:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/cmd_byte_addr_wr_r1" type="array">
+            <obj_property name="ElementShortName">cmd_byte_addr_wr_r1[57:0]</obj_property>
+            <obj_property name="ObjectShortName">cmd_byte_addr_wr_r1[57:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/cmd_byte_addr_rd_r1" type="array">
+            <obj_property name="ElementShortName">cmd_byte_addr_rd_r1[57:0]</obj_property>
+            <obj_property name="ObjectShortName">cmd_byte_addr_rd_r1[57:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/write_mode_r1" type="logic">
+            <obj_property name="ElementShortName">write_mode_r1</obj_property>
+            <obj_property name="ObjectShortName">write_mode_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/ack_write_mode_r1" type="logic">
+            <obj_property name="ElementShortName">ack_write_mode_r1</obj_property>
+            <obj_property name="ObjectShortName">ack_write_mode_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/read_mode_r1" type="logic">
+            <obj_property name="ElementShortName">read_mode_r1</obj_property>
+            <obj_property name="ObjectShortName">read_mode_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/ack_read_mode_r1" type="logic">
+            <obj_property name="ElementShortName">ack_read_mode_r1</obj_property>
+            <obj_property name="ObjectShortName">ack_read_mode_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/sm_state_r1" type="other">
+            <obj_property name="ElementShortName">sm_state_r1</obj_property>
+            <obj_property name="ObjectShortName">sm_state_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/max_readed_rest_r1" type="array">
+            <obj_property name="ElementShortName">max_readed_rest_r1[3:0]</obj_property>
+            <obj_property name="ObjectShortName">max_readed_rest_r1[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/cnt_readed_rest_r1" type="array">
+            <obj_property name="ElementShortName">cnt_readed_rest_r1[3:0]</obj_property>
+            <obj_property name="ObjectShortName">cnt_readed_rest_r1[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/app_en_r1" type="logic">
+            <obj_property name="ElementShortName">app_en_r1</obj_property>
+            <obj_property name="ObjectShortName">app_en_r1</obj_property>
+         </wvobject>
+      </wvobject>
+   </wvobject>
+</wave_config>
