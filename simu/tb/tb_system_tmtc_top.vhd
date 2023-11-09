@@ -133,6 +133,9 @@ architecture Simulation of tb_system_tmtc_top is
   signal science_data      : std_logic_vector(7 downto 0) := "10010110";
 
 
+  signal cnt_value : unsigned(7 downto 0);
+  signal cnt_bit : integer;
+  signal data0 : std_logic_vector(7 downto 0);
 begin
 
   ---------------------------------------------------------------------
@@ -178,6 +181,7 @@ begin
   ---------------------------------------------------------------------
   -- generate science control
   ---------------------------------------------------------------------
+  -- loop on valid science ctrl signal
   p_science_ctrl : process is
   begin
     science_ctrl_vect <= science_ctrl_vect(science_ctrl_vect'high - 1 downto 0) & science_ctrl_vect(science_ctrl_vect'high);
@@ -194,8 +198,59 @@ begin
 -- generate science data
 ---------------------------------------------------------------------
   p_science_data : process is
+    constant c_DATA_WIDTH : integer := 8;
+    -- count the number of bits by words
+    variable v_cnt_bit: integer := 8;
+    -- counter value
+    variable v_cnt_value : unsigned(c_DATA_WIDTH - 1 downto 0) := to_unsigned(0,c_DATA_WIDTH);
+    -- shift register
+    variable v_data0 : std_logic_vector(c_DATA_WIDTH - 1 downto 0):= std_logic_vector(to_unsigned(0,c_DATA_WIDTH));
+    variable v_data1 : std_logic_vector(c_DATA_WIDTH - 1 downto 0):= std_logic_vector(to_unsigned(1,c_DATA_WIDTH));
+    variable v_data2 : std_logic_vector(c_DATA_WIDTH - 1 downto 0):= std_logic_vector(to_unsigned(2,c_DATA_WIDTH));
+    variable v_data3 : std_logic_vector(c_DATA_WIDTH - 1 downto 0):= std_logic_vector(to_unsigned(3,c_DATA_WIDTH));
+    variable v_data4 : std_logic_vector(c_DATA_WIDTH - 1 downto 0):= std_logic_vector(to_unsigned(4,c_DATA_WIDTH));
+    variable v_data5 : std_logic_vector(c_DATA_WIDTH - 1 downto 0):= std_logic_vector(to_unsigned(5,c_DATA_WIDTH));
+    variable v_data6 : std_logic_vector(c_DATA_WIDTH - 1 downto 0):= std_logic_vector(to_unsigned(6,c_DATA_WIDTH));
+    variable v_data7 : std_logic_vector(c_DATA_WIDTH - 1 downto 0):= std_logic_vector(to_unsigned(7,c_DATA_WIDTH));
+
+
   begin
-    science_data <= not(science_data);
+    if v_cnt_bit = 8 then
+      v_cnt_bit := 1;
+
+      -- load the shift register
+      v_data0 := std_logic_vector(v_cnt_value + 0);
+      v_data1 := std_logic_vector(v_cnt_value + 1);
+      v_data2 := std_logic_vector(v_cnt_value + 2);
+      v_data3 := std_logic_vector(v_cnt_value + 3);
+      v_data4 := std_logic_vector(v_cnt_value + 4);
+      v_data5 := std_logic_vector(v_cnt_value + 5);
+      v_data6 := std_logic_vector(v_cnt_value + 6);
+      v_data7 := std_logic_vector(v_cnt_value + 7);
+      v_cnt_value := v_cnt_value + 8;
+
+    else
+       v_cnt_bit    := v_cnt_bit + 1;
+       v_data0 := v_data0(v_data0'high - 1 downto 0) & '0';
+       v_data1 := v_data1(v_data1'high - 1 downto 0) & '0';
+       v_data2 := v_data2(v_data2'high - 1 downto 0) & '0';
+       v_data3 := v_data3(v_data3'high - 1 downto 0) & '0';
+       v_data4 := v_data4(v_data4'high - 1 downto 0) & '0';
+       v_data5 := v_data5(v_data5'high - 1 downto 0) & '0';
+       v_data6 := v_data6(v_data6'high - 1 downto 0) & '0';
+       v_data7 := v_data7(v_data7'high - 1 downto 0) & '0';
+    end if;
+    science_data(0) <= v_data0(v_data0'high);
+    science_data(1) <= v_data1(v_data1'high);
+    science_data(2) <= v_data2(v_data2'high);
+    science_data(3) <= v_data3(v_data3'high);
+    science_data(4) <= v_data4(v_data4'high);
+    science_data(5) <= v_data5(v_data5'high);
+    science_data(6) <= v_data6(v_data6'high);
+    science_data(7) <= v_data7(v_data7'high);
+    cnt_value <= v_cnt_value;
+    cnt_bit   <= v_cnt_bit;
+    data0     <= v_data0;
     wait for c_CLK_PERIOD1;
   end process p_science_data;
 
