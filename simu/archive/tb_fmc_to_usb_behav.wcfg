@@ -19,13 +19,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000000000 us"></ZoomStartTime>
-      <ZoomEndTime time="5.539817814 us"></ZoomEndTime>
-      <Cursor1Time time="0.100000000 us"></Cursor1Time>
+      <ZoomStartTime time="106,515.750000 ns"></ZoomStartTime>
+      <ZoomEndTime time="106,847.250001 ns"></ZoomEndTime>
+      <Cursor1Time time="106,792.000000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="276"></NameColumnWidth>
-      <ValueColumnWidth column_width="100"></ValueColumnWidth>
+      <ValueColumnWidth column_width="92"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="8" />
    <wvobject fp_name="group83" type="group">
@@ -279,9 +279,18 @@
    <wvobject fp_name="group191" type="group">
       <obj_property name="label">science_data_rx</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/i_rst" type="logic">
+         <obj_property name="ElementShortName">i_rst</obj_property>
+         <obj_property name="ObjectShortName">i_rst</obj_property>
+      </wvobject>
       <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/i_clk_science" type="array">
          <obj_property name="ElementShortName">i_clk_science[1:0]</obj_property>
          <obj_property name="ObjectShortName">i_clk_science[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/o_start_detected" type="array">
+         <obj_property name="ElementShortName">o_start_detected[1:0]</obj_property>
+         <obj_property name="ObjectShortName">o_start_detected[1:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/i_science_ctrl" type="array">
          <obj_property name="ElementShortName">i_science_ctrl[1:0]</obj_property>
@@ -290,16 +299,24 @@
       <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/i_science_data" type="array">
          <obj_property name="ElementShortName">i_science_data[7:0]</obj_property>
          <obj_property name="ObjectShortName">i_science_data[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/data_ready" type="array">
-         <obj_property name="ElementShortName">data_ready[1:0]</obj_property>
-         <obj_property name="ObjectShortName">data_ready[1:0]</obj_property>
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/i_data_rate_en" type="logic">
+         <obj_property name="ElementShortName">i_data_rate_en</obj_property>
+         <obj_property name="ObjectShortName">i_data_rate_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/o_data_instrument" type="array">
+         <obj_property name="ElementShortName">o_data_instrument[127:0]</obj_property>
+         <obj_property name="ObjectShortName">o_data_instrument[127:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/o_wr_instrument" type="logic">
+         <obj_property name="ElementShortName">o_wr_instrument</obj_property>
+         <obj_property name="ObjectShortName">o_wr_instrument</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group116" type="group">
       <obj_property name="label">drive_interface_ddr3</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/i_calib_done" type="logic">
          <obj_property name="ElementShortName">i_calib_done</obj_property>
          <obj_property name="ObjectShortName">i_calib_done</obj_property>
@@ -324,6 +341,10 @@
             <obj_property name="ElementShortName">i_pipe_in_empty</obj_property>
             <obj_property name="ObjectShortName">i_pipe_in_empty</obj_property>
          </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/i_prog_empty" type="logic">
+            <obj_property name="ElementShortName">i_prog_empty</obj_property>
+            <obj_property name="ObjectShortName">i_prog_empty</obj_property>
+         </wvobject>
       </wvobject>
       <wvobject fp_name="group118" type="group">
          <obj_property name="label">out_science</obj_property>
@@ -342,22 +363,159 @@
             <obj_property name="ObjectShortName">i_pipe_out_full</obj_property>
          </wvobject>
       </wvobject>
+      <wvobject fp_name="group112" type="group">
+         <obj_property name="label">step1</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/sm_state_manager_r1" type="other">
+            <obj_property name="ElementShortName">sm_state_manager_r1</obj_property>
+            <obj_property name="ObjectShortName">sm_state_manager_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/new_cmd_byte_addr_wr_r1" type="array">
+            <obj_property name="ElementShortName">new_cmd_byte_addr_wr_r1[54:0]</obj_property>
+            <obj_property name="ObjectShortName">new_cmd_byte_addr_wr_r1[54:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/new_cmd_byte_addr_rd_r1" type="array">
+            <obj_property name="ElementShortName">new_cmd_byte_addr_rd_r1[54:0]</obj_property>
+            <obj_property name="ObjectShortName">new_cmd_byte_addr_rd_r1[54:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/cmd_byte_addr_wr_r1" type="array">
+            <obj_property name="ElementShortName">cmd_byte_addr_wr_r1[57:0]</obj_property>
+            <obj_property name="ObjectShortName">cmd_byte_addr_wr_r1[57:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/cmd_byte_addr_rd_r1" type="array">
+            <obj_property name="ElementShortName">cmd_byte_addr_rd_r1[57:0]</obj_property>
+            <obj_property name="ObjectShortName">cmd_byte_addr_rd_r1[57:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/write_mode_r1" type="logic">
+            <obj_property name="ElementShortName">write_mode_r1</obj_property>
+            <obj_property name="ObjectShortName">write_mode_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/ack_write_mode_r1" type="logic">
+            <obj_property name="ElementShortName">ack_write_mode_r1</obj_property>
+            <obj_property name="ObjectShortName">ack_write_mode_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/read_mode_r1" type="logic">
+            <obj_property name="ElementShortName">read_mode_r1</obj_property>
+            <obj_property name="ObjectShortName">read_mode_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/ack_read_mode_r1" type="logic">
+            <obj_property name="ElementShortName">ack_read_mode_r1</obj_property>
+            <obj_property name="ObjectShortName">ack_read_mode_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/sm_state_r1" type="other">
+            <obj_property name="ElementShortName">sm_state_r1</obj_property>
+            <obj_property name="ObjectShortName">sm_state_r1</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/max_readed_rest_r1" type="array">
+            <obj_property name="ElementShortName">max_readed_rest_r1[3:0]</obj_property>
+            <obj_property name="ObjectShortName">max_readed_rest_r1[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/cnt_readed_rest_r1" type="array">
+            <obj_property name="ElementShortName">cnt_readed_rest_r1[3:0]</obj_property>
+            <obj_property name="ObjectShortName">cnt_readed_rest_r1[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/app_en_r1" type="logic">
+            <obj_property name="ElementShortName">app_en_r1</obj_property>
+            <obj_property name="ObjectShortName">app_en_r1</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group95" type="group">
+         <obj_property name="label">ddr</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/i_app_rdy" type="logic">
+            <obj_property name="ElementShortName">i_app_rdy</obj_property>
+            <obj_property name="ObjectShortName">i_app_rdy</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/o_app_en" type="logic">
+            <obj_property name="ElementShortName">o_app_en</obj_property>
+            <obj_property name="ObjectShortName">o_app_en</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/o_app_cmd" type="array">
+            <obj_property name="ElementShortName">o_app_cmd[2:0]</obj_property>
+            <obj_property name="ObjectShortName">o_app_cmd[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/o_app_addr" type="array">
+            <obj_property name="ElementShortName">o_app_addr[28:0]</obj_property>
+            <obj_property name="ObjectShortName">o_app_addr[28:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/i_app_rd_data" type="array">
+            <obj_property name="ElementShortName">i_app_rd_data[127:0]</obj_property>
+            <obj_property name="ObjectShortName">i_app_rd_data[127:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/i_app_rd_data_valid" type="logic">
+            <obj_property name="ElementShortName">i_app_rd_data_valid</obj_property>
+            <obj_property name="ObjectShortName">i_app_rd_data_valid</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/i_app_wdf_rdy" type="logic">
+            <obj_property name="ElementShortName">i_app_wdf_rdy</obj_property>
+            <obj_property name="ObjectShortName">i_app_wdf_rdy</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/o_app_wdf_wren" type="logic">
+            <obj_property name="ElementShortName">o_app_wdf_wren</obj_property>
+            <obj_property name="ObjectShortName">o_app_wdf_wren</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/o_app_wdf_data" type="array">
+            <obj_property name="ElementShortName">o_app_wdf_data[127:0]</obj_property>
+            <obj_property name="ObjectShortName">o_app_wdf_data[127:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/o_app_wdf_end" type="logic">
+            <obj_property name="ElementShortName">o_app_wdf_end</obj_property>
+            <obj_property name="ObjectShortName">o_app_wdf_end</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/o_app_wdf_mask" type="array">
+            <obj_property name="ElementShortName">o_app_wdf_mask[15:0]</obj_property>
+            <obj_property name="ObjectShortName">o_app_wdf_mask[15:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group98" type="group">
+         <obj_property name="label">status_out</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/o_buffer_new_cmd_byte_addr_wr" type="array">
+            <obj_property name="ElementShortName">o_buffer_new_cmd_byte_addr_wr[54:0]</obj_property>
+            <obj_property name="ObjectShortName">o_buffer_new_cmd_byte_addr_wr[54:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_drive_interface_ddr3_ctrl/o_buffer_new_cmd_byte_addr_rd" type="array">
+            <obj_property name="ElementShortName">o_buffer_new_cmd_byte_addr_rd[54:0]</obj_property>
+            <obj_property name="ObjectShortName">o_buffer_new_cmd_byte_addr_rd[54:0]</obj_property>
+         </wvobject>
+      </wvobject>
    </wvobject>
-   <wvobject fp_name="group108" type="group">
-      <obj_property name="label">science_data_rx_fsm</obj_property>
+   <wvobject fp_name="group123" type="group">
+      <obj_property name="label">science_data_rx_fsm_link0</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
-      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/\gen_science_data_rx_fsm(1)\/\gen_science_data_rx_fsm_link(3)\/inst_science_data_rx_fsm/i_clk_science" type="logic">
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/\gen_science_data_rx_fsm(1)\/\gen_science_data_rx_fsm_link(0)\/inst_science_data_rx_fsm/i_rst" type="logic">
+         <obj_property name="ElementShortName">i_rst</obj_property>
+         <obj_property name="ObjectShortName">i_rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/\gen_science_data_rx_fsm(1)\/\gen_science_data_rx_fsm_link(0)\/inst_science_data_rx_fsm/i_clk_science" type="logic">
          <obj_property name="ElementShortName">i_clk_science</obj_property>
          <obj_property name="ObjectShortName">i_clk_science</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/\gen_science_data_rx_fsm(1)\/\gen_science_data_rx_fsm_link(3)\/inst_science_data_rx_fsm/i_science_ctrl" type="logic">
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/\gen_science_data_rx_fsm(1)\/\gen_science_data_rx_fsm_link(0)\/inst_science_data_rx_fsm/i_data_rate_en" type="logic">
+         <obj_property name="ElementShortName">i_data_rate_en</obj_property>
+         <obj_property name="ObjectShortName">i_data_rate_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/\gen_science_data_rx_fsm(1)\/\gen_science_data_rx_fsm_link(0)\/inst_science_data_rx_fsm/i_science_ctrl" type="logic">
          <obj_property name="ElementShortName">i_science_ctrl</obj_property>
          <obj_property name="ObjectShortName">i_science_ctrl</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/\gen_science_data_rx_fsm(1)\/\gen_science_data_rx_fsm_link(3)\/inst_science_data_rx_fsm/i_science_data" type="logic">
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/\gen_science_data_rx_fsm(1)\/\gen_science_data_rx_fsm_link(0)\/inst_science_data_rx_fsm/i_science_data" type="logic">
          <obj_property name="ElementShortName">i_science_data</obj_property>
          <obj_property name="ObjectShortName">i_science_data</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/\gen_science_data_rx_fsm(1)\/\gen_science_data_rx_fsm_link(0)\/inst_science_data_rx_fsm/o_ctrl" type="array">
+         <obj_property name="ElementShortName">o_ctrl[7:0]</obj_property>
+         <obj_property name="ObjectShortName">o_ctrl[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/\gen_science_data_rx_fsm(1)\/\gen_science_data_rx_fsm_link(0)\/inst_science_data_rx_fsm/o_data" type="array">
+         <obj_property name="ElementShortName">o_data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">o_data[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_fmc_to_usb/inst_fmc_to_usb/inst_science_data_rx/\gen_science_data_rx_fsm(1)\/\gen_science_data_rx_fsm_link(0)\/inst_science_data_rx_fsm/o_data_ready" type="logic">
+         <obj_property name="ElementShortName">o_data_ready</obj_property>
+         <obj_property name="ObjectShortName">o_data_ready</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>
