@@ -75,12 +75,12 @@ end entity science_rx_deserializer;
 architecture RTL of science_rx_deserializer is
 
   -- auto-computed the number of output words
-  constant c_NB_WORDS : integer := i_science_data'length;
+  constant c_NB_WORDS      : integer := i_science_data'length;
   -- define the counter width (for the bits)
-  constant c_CNT_BIT_WIDTH : integer := work.pkg_utils.pkg_width_from_value(i_value=> g_DATA_WIDTH_BY_LINK);
+  constant c_CNT_BIT_WIDTH : integer := work.pkg_utils.pkg_width_from_value(i_value => g_DATA_WIDTH_BY_LINK);
 
   -- max bit counter value:
-  constant c_CNT_MAX : unsigned(c_CNT_BIT_WIDTH - 1 downto 0):= to_unsigned(g_DATA_WIDTH_BY_LINK - 1,c_CNT_BIT_WIDTH);
+  constant c_CNT_MAX : unsigned(c_CNT_BIT_WIDTH - 1 downto 0) := to_unsigned(g_DATA_WIDTH_BY_LINK - 1, c_CNT_BIT_WIDTH);
 
   -- array of data
   type t_array_data is array (g_DATA_WIDTH_BY_LINK - 1 downto 0) of std_logic_vector(c_NB_WORDS - 1 downto 0);
@@ -118,23 +118,25 @@ architecture RTL of science_rx_deserializer is
   -- ctrl shift register (registered)
   signal ctrl_array_r1   : std_logic_vector(o_ctrl_word'range);
 
+  signal data_valid_array : std_logic_vector(i_science_data'range);
+
 
 begin
 
 -- this FSM deserializes the input data stream (ctrl,data) by decoding the control bits
   p_decode_state : process (ctrl_array_r1, data_array_r1, i_science_ctrl, i_science_data,
                             i_science_data_valid,
-                            sm_state_r1,cnt_bit_r1) is
+                            sm_state_r1, cnt_bit_r1) is
   begin
-    data_valid_next      <= '0';
-    sync_word_eof_next   <= '0';
-    data_array_next      <= data_array_r1;
-    ctrl_array_next      <= ctrl_array_r1;
-    cnt_bit_next         <= cnt_bit_r1;
+    data_valid_next    <= '0';
+    sync_word_eof_next <= '0';
+    data_array_next    <= data_array_r1;
+    ctrl_array_next    <= ctrl_array_r1;
+    cnt_bit_next       <= cnt_bit_r1;
 
     case sm_state_r1 is
       when E_RST =>
-        cnt_bit_next      <= (others => '0');
+        cnt_bit_next  <= (others => '0');
         sm_state_next <= E_WAIT_HEADER0;
 
       when E_WAIT_HEADER0 =>
@@ -146,10 +148,10 @@ begin
 
       when E_WAIT_HEADER1 =>
         if i_science_ctrl = '1' and i_science_data_valid = '1' then
-          cnt_bit_next     <= cnt_bit_r1 + 1;
-          ctrl_array_next  <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
-          data_array_next  <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
-          sm_state_next <= E_WAIT_HEADER2;
+          cnt_bit_next    <= cnt_bit_r1 + 1;
+          ctrl_array_next <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
+          data_array_next <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
+          sm_state_next   <= E_WAIT_HEADER2;
         else
           sm_state_next <= E_WAIT_HEADER1;
         end if;
@@ -157,9 +159,9 @@ begin
       when E_WAIT_HEADER2 =>
 
         if i_science_ctrl = '1' and i_science_data_valid = '1' then
-          cnt_bit_next <= cnt_bit_r1 + 1;
-          ctrl_array_next  <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
-          data_array_next  <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
+          cnt_bit_next       <= cnt_bit_r1 + 1;
+          ctrl_array_next    <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
+          data_array_next    <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
           -- detect sync_word
           sync_word_eof_next <= '1';
 
@@ -170,17 +172,17 @@ begin
 
       when E_DECODE =>
         if i_science_data_valid = '1' then
-          cnt_bit_next     <= cnt_bit_r1 + 1;
-          ctrl_array_next  <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
-          data_array_next  <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
+          cnt_bit_next    <= cnt_bit_r1 + 1;
+          ctrl_array_next <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
+          data_array_next <= data_array_r1(data_array_r1'high - 1 downto 0) & i_science_data;
 
           if cnt_bit_r1 = c_CNT_MAX then
             data_valid_next <= '1';
             cnt_bit_next    <= (others => '0');
             if i_science_ctrl = '0' then
-              sm_state_next   <= E_WAIT_HEADER1;
+              sm_state_next <= E_WAIT_HEADER1;
             else
-              sm_state_next   <= E_WAIT_HEADER0;
+              sm_state_next <= E_WAIT_HEADER0;
             end if;
           else
             sm_state_next <= E_DECODE;
@@ -203,11 +205,11 @@ begin
       else
         sm_state_r1 <= sm_state_next;
       end if;
-      data_valid_r1      <= data_valid_next;
-      sync_word_eof_r1   <= sync_word_eof_next;
-      data_array_r1      <= data_array_next;
-      ctrl_array_r1      <= ctrl_array_next;
-      cnt_bit_r1         <= cnt_bit_next;
+      data_valid_r1    <= data_valid_next;
+      sync_word_eof_r1 <= sync_word_eof_next;
+      --data_array_r1    <= data_array_next;
+      ctrl_array_r1    <= ctrl_array_next;
+      cnt_bit_r1       <= cnt_bit_next;
 
       --if i_science_data_valid = '1' then
       --  ctrl_array_r1  <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
@@ -218,6 +220,41 @@ begin
   end process p_state;
 
 ---------------------------------------------------------------------
+-- deserialize the input data: one word by line
+--  Note: the latency must be equal to the fsm latency (see above)
+---------------------------------------------------------------------
+  gen_deserialize_data : for i in i_science_data'range generate
+    science_rx_deserializer_data_INST : entity work.science_rx_deserializer_data
+      generic map(
+        -- define the number of bits by links in order to build word
+        g_DATA_WIDTH_BY_LINK => g_DATA_WIDTH_BY_LINK
+        )
+      port map(
+        -- input clock
+        i_clk                => i_clk,
+        --  input reset
+        i_rst                => i_rst,
+        ---------------------------------------------------------------------
+        -- input
+        ---------------------------------------------------------------------
+        -- science data valid
+        i_science_data_valid => i_science_data_valid,
+        -- science data (serialized)
+        i_science_data       => i_science_data(i),
+        ---------------------------------------------------------------------
+        -- output
+        ---------------------------------------------------------------------
+        -- valid deserialized word
+        o_data_valid         => data_valid_array(i),  -- not connected
+        -- deserialized data words
+        o_data               => data_array_r1(i)
+        );
+
+  end generate gen_deserialize_data;
+
+
+
+---------------------------------------------------------------------
 -- output
 ---------------------------------------------------------------------
   o_sync_word_eof <= sync_word_eof_r1;
@@ -225,7 +262,8 @@ begin
   o_ctrl_word     <= ctrl_array_r1;
 
   gen_extracted_word : for i in data_array_next'range generate
-    o_data_words(g_DATA_WIDTH_BY_LINK*(i+1)-1 downto g_DATA_WIDTH_BY_LINK*i) <= data_array_r1(i)(7 downto 0);
+
+    o_data_words(g_DATA_WIDTH_BY_LINK*(i+1)-1 downto g_DATA_WIDTH_BY_LINK*i) <= data_array_r1(i);
   end generate gen_extracted_word;
 
 
