@@ -18,19 +18,18 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="37,459.500000 ns"></ZoomStartTime>
-      <ZoomEndTime time="37,741.500001 ns"></ZoomEndTime>
-      <Cursor1Time time="37,602.500000 ns"></Cursor1Time>
+      <ZoomStartTime time="15,103.706337 ns"></ZoomStartTime>
+      <ZoomEndTime time="15,459.564677 ns"></ZoomEndTime>
+      <Cursor1Time time="15,400.254953 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="314"></NameColumnWidth>
-      <ValueColumnWidth column_width="153"></ValueColumnWidth>
+      <NameColumnWidth column_width="236"></NameColumnWidth>
+      <ValueColumnWidth column_width="141"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="7" />
    <wvobject fp_name="group179" type="group">
       <obj_property name="label">tb</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="group128" type="group">
          <obj_property name="label">usb</obj_property>
          <obj_property name="DisplayName">label</obj_property>
@@ -203,6 +202,41 @@
          <obj_property name="ElementShortName">science_data[7:0]</obj_property>
          <obj_property name="ObjectShortName">science_data[7:0]</obj_property>
       </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/data7" type="array">
+         <obj_property name="ElementShortName">data7[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data7[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/data6" type="array">
+         <obj_property name="ElementShortName">data6[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data6[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/data5" type="array">
+         <obj_property name="ElementShortName">data5[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data5[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/data4" type="array">
+         <obj_property name="ElementShortName">data4[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data4[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/data3" type="array">
+         <obj_property name="ElementShortName">data3[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data3[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/data2" type="array">
+         <obj_property name="ElementShortName">data2[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data2[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/data1" type="array">
+         <obj_property name="ElementShortName">data1[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data1[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
       <wvobject fp_name="/tb_system_tmtc_top/data0" type="array">
          <obj_property name="ElementShortName">data0[7:0]</obj_property>
          <obj_property name="ObjectShortName">data0[7:0]</obj_property>
@@ -215,6 +249,7 @@
       <wvobject fp_name="/tb_system_tmtc_top/cnt_value" type="array">
          <obj_property name="ElementShortName">cnt_value[7:0]</obj_property>
          <obj_property name="ObjectShortName">cnt_value[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group144" type="group">
@@ -248,7 +283,6 @@
    <wvobject fp_name="group161" type="group">
       <obj_property name="label">science_top</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/i_clk" type="logic">
          <obj_property name="ElementShortName">i_clk</obj_property>
          <obj_property name="ObjectShortName">i_clk</obj_property>
@@ -304,14 +338,6 @@
       <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/o_science_synchro_word" type="logic">
          <obj_property name="ElementShortName">o_science_synchro_word</obj_property>
          <obj_property name="ObjectShortName">o_science_synchro_word</obj_property>
-      </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/o_errors" type="array">
-         <obj_property name="ElementShortName">o_errors[15:0]</obj_property>
-         <obj_property name="ObjectShortName">o_errors[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/o_status" type="array">
-         <obj_property name="ElementShortName">o_status[7:0]</obj_property>
-         <obj_property name="ObjectShortName">o_status[7:0]</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group178" type="group">
@@ -393,7 +419,6 @@
       <wvobject fp_name="group211" type="group">
          <obj_property name="label">in</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/i_clk" type="logic">
             <obj_property name="ElementShortName">i_clk</obj_property>
             <obj_property name="ObjectShortName">i_clk</obj_property>
@@ -409,13 +434,12 @@
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/i_science_data" type="array">
             <obj_property name="ElementShortName">i_science_data[7:0]</obj_property>
             <obj_property name="ObjectShortName">i_science_data[7:0]</obj_property>
-            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+            <obj_property name="Radix">HEXRADIX</obj_property>
          </wvobject>
       </wvobject>
       <wvobject fp_name="group210" type="group">
          <obj_property name="label">step1</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/sm_state_r1" type="other">
             <obj_property name="ElementShortName">sm_state_r1</obj_property>
             <obj_property name="ObjectShortName">sm_state_r1</obj_property>
@@ -432,23 +456,31 @@
             <obj_property name="ElementShortName">sync_word_eof_r1</obj_property>
             <obj_property name="ObjectShortName">sync_word_eof_r1</obj_property>
          </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/ctrl_array_r1" type="array">
+            <obj_property name="ElementShortName">ctrl_array_r1[7:0]</obj_property>
+            <obj_property name="ObjectShortName">ctrl_array_r1[7:0]</obj_property>
+         </wvobject>
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/data_array_r1" type="array">
             <obj_property name="ElementShortName">data_array_r1[7:0][7:0]</obj_property>
             <obj_property name="ObjectShortName">data_array_r1[7:0][7:0]</obj_property>
             <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-         </wvobject>
-         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/ctrl_array_r1" type="array">
-            <obj_property name="ElementShortName">ctrl_array_r1[7:0]</obj_property>
-            <obj_property name="ObjectShortName">ctrl_array_r1[7:0]</obj_property>
+            <obj_property name="isExpanded"></obj_property>
          </wvobject>
       </wvobject>
       <wvobject fp_name="group212" type="group">
          <obj_property name="label">out</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/o_sync_word_eof" type="logic">
             <obj_property name="ElementShortName">o_sync_word_eof</obj_property>
             <obj_property name="ObjectShortName">o_sync_word_eof</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/o_sof" type="logic">
+            <obj_property name="ElementShortName">o_sof</obj_property>
+            <obj_property name="ObjectShortName">o_sof</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/o_eof" type="logic">
+            <obj_property name="ElementShortName">o_eof</obj_property>
+            <obj_property name="ObjectShortName">o_eof</obj_property>
          </wvobject>
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/o_data_valid" type="logic">
             <obj_property name="ElementShortName">o_data_valid</obj_property>
@@ -758,11 +790,18 @@
                <obj_property name="ObjectShortName">[0]</obj_property>
             </wvobject>
          </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/o_errors" type="array">
+            <obj_property name="ElementShortName">o_errors[15:0]</obj_property>
+            <obj_property name="ObjectShortName">o_errors[15:0]</obj_property>
+            <obj_property name="CustomSignalColor">#FF0000</obj_property>
+            <obj_property name="UseCustomSignalColor">true</obj_property>
+         </wvobject>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group233" type="group">
       <obj_property name="label">science_rx_frame</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_clk" type="logic">
          <obj_property name="ElementShortName">i_clk</obj_property>
          <obj_property name="ObjectShortName">i_clk</obj_property>
@@ -898,41 +937,41 @@
                <obj_property name="ObjectShortName">[40]</obj_property>
             </wvobject>
          </wvobject>
-         <wvobject fp_name="vbus295" type="vbus">
+         <wvobject fp_name="vbus1173" type="vbus">
             <obj_property name="label">data4</obj_property>
             <obj_property name="DisplayName">label</obj_property>
             <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[32]" type="logic">
-               <obj_property name="ElementShortName">[32]</obj_property>
-               <obj_property name="ObjectShortName">[32]</obj_property>
-            </wvobject>
-            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[33]" type="logic">
-               <obj_property name="ElementShortName">[33]</obj_property>
-               <obj_property name="ObjectShortName">[33]</obj_property>
-            </wvobject>
-            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[34]" type="logic">
-               <obj_property name="ElementShortName">[34]</obj_property>
-               <obj_property name="ObjectShortName">[34]</obj_property>
-            </wvobject>
-            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[35]" type="logic">
-               <obj_property name="ElementShortName">[35]</obj_property>
-               <obj_property name="ObjectShortName">[35]</obj_property>
-            </wvobject>
-            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[36]" type="logic">
-               <obj_property name="ElementShortName">[36]</obj_property>
-               <obj_property name="ObjectShortName">[36]</obj_property>
-            </wvobject>
-            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[37]" type="logic">
-               <obj_property name="ElementShortName">[37]</obj_property>
-               <obj_property name="ObjectShortName">[37]</obj_property>
+            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[39]" type="logic">
+               <obj_property name="ElementShortName">[39]</obj_property>
+               <obj_property name="ObjectShortName">[39]</obj_property>
             </wvobject>
             <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[38]" type="logic">
                <obj_property name="ElementShortName">[38]</obj_property>
                <obj_property name="ObjectShortName">[38]</obj_property>
             </wvobject>
-            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[39]" type="logic">
-               <obj_property name="ElementShortName">[39]</obj_property>
-               <obj_property name="ObjectShortName">[39]</obj_property>
+            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[37]" type="logic">
+               <obj_property name="ElementShortName">[37]</obj_property>
+               <obj_property name="ObjectShortName">[37]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[36]" type="logic">
+               <obj_property name="ElementShortName">[36]</obj_property>
+               <obj_property name="ObjectShortName">[36]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[35]" type="logic">
+               <obj_property name="ElementShortName">[35]</obj_property>
+               <obj_property name="ObjectShortName">[35]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[34]" type="logic">
+               <obj_property name="ElementShortName">[34]</obj_property>
+               <obj_property name="ObjectShortName">[34]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[33]" type="logic">
+               <obj_property name="ElementShortName">[33]</obj_property>
+               <obj_property name="ObjectShortName">[33]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_words[32]" type="logic">
+               <obj_property name="ElementShortName">[32]</obj_property>
+               <obj_property name="ObjectShortName">[32]</obj_property>
             </wvobject>
          </wvobject>
          <wvobject fp_name="vbus286" type="vbus">
@@ -1088,6 +1127,14 @@
          <obj_property name="label">out</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/o_sof_frame" type="logic">
+            <obj_property name="ElementShortName">o_sof_frame</obj_property>
+            <obj_property name="ObjectShortName">o_sof_frame</obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/o_eof_frame" type="logic">
+            <obj_property name="ElementShortName">o_eof_frame</obj_property>
+            <obj_property name="ObjectShortName">o_eof_frame</obj_property>
+         </wvobject>
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/o_data_valid" type="logic">
             <obj_property name="ElementShortName">o_data_valid</obj_property>
             <obj_property name="ObjectShortName">o_data_valid</obj_property>
@@ -1141,7 +1188,6 @@
    <wvobject fp_name="group289" type="group">
       <obj_property name="label">science_ddr3_ctrl</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_clk" type="logic">
          <obj_property name="ElementShortName">i_clk</obj_property>
          <obj_property name="ObjectShortName">i_clk</obj_property>

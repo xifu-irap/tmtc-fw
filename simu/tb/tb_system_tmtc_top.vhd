@@ -136,6 +136,14 @@ architecture Simulation of tb_system_tmtc_top is
   signal cnt_value : unsigned(7 downto 0);
   signal cnt_bit : integer;
   signal data0 : std_logic_vector(7 downto 0);
+  signal data1 : std_logic_vector(7 downto 0);
+  signal data2 : std_logic_vector(7 downto 0);
+  signal data3 : std_logic_vector(7 downto 0);
+  signal data4 : std_logic_vector(7 downto 0);
+  signal data5 : std_logic_vector(7 downto 0);
+  signal data6 : std_logic_vector(7 downto 0);
+  signal data7 : std_logic_vector(7 downto 0);
+
 begin
 
   ---------------------------------------------------------------------
@@ -251,6 +259,13 @@ begin
     cnt_value <= v_cnt_value;
     cnt_bit   <= v_cnt_bit;
     data0     <= v_data0;
+    data1     <= v_data1;
+    data2     <= v_data2;
+    data3     <= v_data3;
+    data4     <= v_data4;
+    data5     <= v_data5;
+    data6     <= v_data6;
+    data7     <= v_data7;
     wait for c_CLK_PERIOD1;
   end process p_science_data;
 
