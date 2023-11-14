@@ -112,18 +112,20 @@ entity science_top is
     ---------------------------------------------------------------------
     -- to leds @i_clk
     ---------------------------------------------------------------------
-    -- science data valid (serialized)
-    o_science_data_valid       : out std_logic;
+    -- science data valid (serialized) bit
+    o_science_data_valid   : out std_logic;
     -- detect the last bit of the synchro word
     o_science_synchro_word : out std_logic;
 
     ---------------------------------------------------------------------
     -- errors/status @i_clk
     ---------------------------------------------------------------------
-    -- errors
-    o_errors : out std_logic_vector(15 downto 0);
+    -- errors1
+    o_errors1 : out std_logic_vector(15 downto 0);
+    -- errors0
+    o_errors0 : out std_logic_vector(15 downto 0);
     -- status
-    o_status : out std_logic_vector(7 downto 0)
+    o_status0 : out std_logic_vector(7 downto 0)
 
     );
 end entity science_top;
@@ -136,15 +138,21 @@ architecture RTL of science_top is
 ---------------------------------------------------------------------
 -- detect the last bit of the sync_word
   signal sync_word_eof0 : std_logic;
+-- first bit of a science ctrl bit
+  signal sof0  : std_logic;
+-- last bit of a science ctrl bit
+  signal eof0  : std_logic;
 -- data valid of the deserialized data
   signal data_valid0    : std_logic;
 -- deserialized ctrl word
   signal ctrl_word0     : std_logic_vector(7 downto 0);
 -- deserialized data
   signal data_words0    : std_logic_vector(8*8-1 downto 0);
+-- errors
+  signal errors0        : std_logic_vector(o_errors1'range);
 
 ---------------------------------------------------------------------
--- sync with the science_rx_deserializer
+-- sync with the science_rx_deserializer output
 ---------------------------------------------------------------------
 -- temporary input pipe
   signal data_pipe_tmp0 : std_logic_vector(0 downto 0);
@@ -157,11 +165,35 @@ architecture RTL of science_top is
 ---------------------------------------------------------------------
 -- science_rx_frame
 ---------------------------------------------------------------------
+-- first frame
+  signal sof_frame1 : std_logic;
+-- last frame
+  signal eof_frame1 : std_logic;
 -- fifo data valid
   signal data_valid1 : std_logic;
 -- fifo data
   signal data1       : std_logic_vector(127 downto 0);
 
+
+---------------------------------------------------------------------
+-- sync with the science_rx_frame output
+---------------------------------------------------------------------
+  -- temporary input pipe
+  signal data_pipe_tmp2 : std_logic_vector(1 downto 0);
+-- temporary output pipe
+  signal data_pipe_tmp3 : std_logic_vector(1 downto 0);
+
+-- delayed first bit of a science ctrl bit
+  signal sof1  : std_logic;
+-- delayed last bit of a science ctrl bit
+  signal eof1  : std_logic;
+
+
+  ---------------------------------------------------------------------
+  -- science ddr3
+  ---------------------------------------------------------------------
+  signal ddr_errors : std_logic_vector(o_errors0'range);
+  signal ddr_status : std_logic_vector(o_status0'range);
 
 begin
 
@@ -178,6 +210,12 @@ begin
       i_clk                => i_clk,
       -- input reset
       i_rst                => i_rst,
+
+      -- reset error flag(s) @i_clk
+      i_rst_status         => i_rst_status,
+      -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s) @i_clk
+      i_debug_pulse        => i_debug_pulse,
+
       ---------------------------------------------------------------------
       -- input
       ---------------------------------------------------------------------
@@ -192,14 +230,23 @@ begin
       ---------------------------------------------------------------------
       -- detect the last bit of the synchro word
       o_sync_word_eof      => sync_word_eof0,
+      -- first ctrl bit (for debugging)
+      o_sof                => sof0,
+      -- last ctrl bit (for debugging)
+      o_eof                => eof0,
       -- valid deserialized word
       o_data_valid         => data_valid0,
       -- deserialized control word
       o_ctrl_word          => ctrl_word0,
       -- deserialized data words
-      o_data_words         => data_words0
-      );
+      o_data_words         => data_words0,
 
+      ---------------------------------------------------------------------
+      -- status
+      ---------------------------------------------------------------------
+      o_errors             => errors0
+      );
+o_errors1  <= errors0;
 ---------------------------------------------------------------------
 -- sync with the science_rx_deserializer
 ---------------------------------------------------------------------
@@ -242,9 +289,31 @@ begin
       ---------------------------------------------------------------------
       -- output
       ---------------------------------------------------------------------
+      o_sof_frame  => sof_frame1, -- not connected
+      o_eof_frame  => eof_frame1, -- not connected
       o_data_valid => data_valid1,
       o_data       => data1
       );
+
+---------------------------------------------------------------------
+-- sync with the science_rx_frame output
+---------------------------------------------------------------------
+    data_pipe_tmp2(1) <= sof0;
+    data_pipe_tmp2(0) <= eof0;
+
+  inst_pipeliner_with_init_sync_with_science_rx_frame_out : entity work.pipeliner_with_init
+    generic map(
+      g_INIT       => '0',
+      g_NB_PIPES   => pkg_SC_RX_FRAME,  -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_DATA_WIDTH => data_pipe_tmp2'length  -- width of the input/output data.  Possibles values: [1, integer max value[
+      )
+    port map(
+      i_clk  => i_clk,
+      i_data => data_pipe_tmp2,
+      o_data => data_pipe_tmp3
+      );
+  sof1 <= data_pipe_tmp3(1); -- not connected
+  eof1 <= data_pipe_tmp3(0); -- not connected
 
 ---------------------------------------------------------------------
 -- science_ddr3
@@ -315,10 +384,12 @@ begin
       -- errors/status
       ---------------------------------------------------------------------
       -- errors
-      o_errors              => o_errors,
+      o_errors              => ddr_errors,
       -- status
-      o_status              => o_status
+      o_status              => ddr_status
       );
 
+o_errors0 <= ddr_errors;
+o_status0 <= ddr_status;
 
 end architecture RTL;

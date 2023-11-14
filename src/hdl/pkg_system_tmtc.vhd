@@ -114,10 +114,12 @@ package pkg_system_tmtc is
                                            pkg_IO_SPI_MISO_DELAY;
 
   ---------------------------------------------------------------------
-  -- TMTC/spi_top/spi_master
+  -- TMTC/science
   ---------------------------------------------------------------------
   -- hardcoded : delay of the science_rx_deserializer
   constant pkg_SC_RX_DESERIALIZER: integer := 1;
+  -- hardcoded : delay of the science_rx_frame
+  constant pkg_SC_RX_FRAME: integer := 1;
 
 
 

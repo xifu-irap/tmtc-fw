@@ -52,6 +52,10 @@ entity science_rx_frame is
     ---------------------------------------------------------------------
     -- output
     ---------------------------------------------------------------------
+    -- fist frame
+    o_sof_frame : out std_logic;
+    -- last frame
+    o_eof_frame : out std_logic;
     -- output data valid
     o_data_valid : out std_logic;
     -- output data
@@ -89,6 +93,16 @@ architecture RTL of science_rx_frame is
   -- array of frame (registered)
   signal frame_array_r1   : t_array_frame;
 
+  -- first frame
+  signal sof_frame_next : std_logic;
+  -- delayed first frame
+  signal sof_frame_r1 : std_logic;
+
+  -- last frame
+  signal eof_frame_next : std_logic;
+  -- delayed last frame
+  signal eof_frame_r1 : std_logic;
+
   -- data_valid when an output word is complete
   signal data_valid_next : std_logic;
   -- data_valid when an output word is complete (register)
@@ -102,6 +116,10 @@ architecture RTL of science_rx_frame is
   ---------------------------------------------------------------------
   -- build output word
   ---------------------------------------------------------------------
+  -- delayed first frame
+  signal sof_frame_r2 : std_logic;
+  -- delayed last frame
+  signal eof_frame_r2 : std_logic;
   -- delayed data valid
   signal data_valid_r2 : std_logic;
   -- delayed data
@@ -134,6 +152,8 @@ begin
                             sel_r1, sm_state_r1) is
   begin
     -- default value
+    sof_frame_next   <= '0';
+    eof_frame_next   <= '0';
     data_valid_next  <= '0';
     frame_array_next <= frame_array_r1;
     sel_next         <= sel_r1;
@@ -157,6 +177,7 @@ begin
           -- store frame1
           -- and generate the output word0 (frame0 and frame1 combination)
           data_valid_next     <= '1';
+          sof_frame_next      <= '1';
           frame_array_next(1) <= frame_tmp;
           sel_next            <= "00";
           sm_state_next       <= E_FRAME2;
@@ -178,6 +199,7 @@ begin
 
       when E_FRAME3 =>
         if i_data_valid = '1' then
+          eof_frame_next      <= '1';
           -- store frame3
           -- and generate the output word2 (frame2 and frame3 combination)
           data_valid_next     <= '1';
@@ -202,6 +224,8 @@ begin
       else
         sm_state_r1 <= sm_state_next;
       end if;
+      sof_frame_r1   <= sof_frame_next;
+      eof_frame_r1   <= eof_frame_next;
       data_valid_r1  <= data_valid_next;
       frame_array_r1 <= frame_array_next;
       sel_r1         <= sel_next;
@@ -216,6 +240,8 @@ begin
   p_build_word_out : process (i_clk) is
   begin
     if rising_edge(i_clk) then
+      sof_frame_r2  <= sof_frame_r1;
+      eof_frame_r2  <= eof_frame_r1;
       data_valid_r2 <= data_valid_r1;
       case sel_r1 is
         when "00" =>
@@ -233,6 +259,8 @@ begin
 ---------------------------------------------------------------------
 -- output
 ---------------------------------------------------------------------
+  o_sof_frame  <= sof_frame_r2;
+  o_eof_frame  <= eof_frame_r2;
   o_data_valid <= data_valid_r2;
   o_data       <= data_r2;
 

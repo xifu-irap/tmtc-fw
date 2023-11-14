@@ -175,10 +175,12 @@ architecture RTL of tmtc_top is
   signal science_data       : std_logic_vector(31 downto 0);
   -- number of remaining bytes to read in the DDR
   signal ddr_stamp      : std_logic_vector(31 downto 0);
-  -- science errors
-  signal science_errors : std_logic_vector(15 downto 0);
+  -- science errors1
+  signal science_errors1 : std_logic_vector(15 downto 0);
+  -- science errors0
+  signal science_errors0 : std_logic_vector(15 downto 0);
   -- science status
-  signal science_status : std_logic_vector(7 downto 0);
+  signal science_status0 : std_logic_vector(7 downto 0);
 
   -- science data valid (serialized)
   signal science_data_valid_bit : std_logic;
@@ -309,10 +311,12 @@ begin
       ---------------------------------------------------------------------
       -- errors/status @sys_clk
       ---------------------------------------------------------------------
-      -- errors
-      o_errors    => science_errors,    -- to connect
+      -- errors1
+      o_errors1    => science_errors1,    -- to connect
+      -- errors0
+      o_errors0    => science_errors0,    -- to connect
       -- status
-      o_status    => science_status     -- to connect
+      o_status0    => science_status0     -- to connect
       );
 
 o_fifo_science_data_valid <= science_data_valid;
