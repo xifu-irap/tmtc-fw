@@ -34,6 +34,7 @@ verific -vhdl -lib ./third-party-libraries/ip/vivado/opal_kelly/Front_panel_XEM7
 # Xilinx IP
 #    Top level module (black box for the Linty tool)
 verific -vhdl -lib ./ip/xilinx/coregen/ddr3_256_16/ddr3_256_16_stub.vhdl
+verific -vhdl -lib ./ip/xilinx/coregen/ila_science_top/ila_science_top_stub.vhdl
 # VHDL
 #    Source files
 
