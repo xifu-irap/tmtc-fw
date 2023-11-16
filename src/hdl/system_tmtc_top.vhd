@@ -57,9 +57,9 @@ entity system_tmtc_top is
     -- On board
     ---------------------------------------------------------------------
     -- hardware id register (reading)
-    --i_hardware_id : in std_logic_vector(31 downto 0);
-    -- Opal Kelly LEDs
-    o_leds   : out std_logic_vector(3 downto 0);
+    --i_hardware_id : in std_logic_vector(31 downto 0); -- TODO
+
+
 
     ---------------------------------------------------------------------
     -- DDR input clock
@@ -91,14 +91,14 @@ entity system_tmtc_top is
     -- DEMUX: science interface
     ---------------------------------------------------------------------
     -- differential_p science clock
-    i_science_clk_p : in std_logic_vector(1 downto 0); -- bit1, not used
+    i_science_clk_p : in std_logic_vector(1 downto 0);  -- bit1, not used
     -- differential_n science clock
-    i_science_clk_n : in std_logic_vector(1 downto 0); -- bit1, not used
+    i_science_clk_n : in std_logic_vector(1 downto 0);  -- bit1, not used
 
     -- Differential_p science ctrl
-    i_science_ctrl_p : in std_logic_vector(1 downto 0); -- bit1, not used
+    i_science_ctrl_p : in std_logic_vector(1 downto 0);  -- bit1, not used
     -- Differential_n science ctrl
-    i_science_ctrl_n : in std_logic_vector(1 downto 0); -- bit1, not used
+    i_science_ctrl_n : in std_logic_vector(1 downto 0);  -- bit1, not used
 
     -- Differential_p science data
     i_science_data_p : in std_logic_vector(pkg_SC_LIGN_NUMBER_BY_COL - 1 downto 0);
@@ -122,7 +122,18 @@ entity system_tmtc_top is
     -- ICU: Selection
     ---------------------------------------------------------------------
     -- ICU selection : 0 for main, 1 for redundant
-    o_sel_main_n : out std_logic
+    o_sel_main_n : out std_logic;
+
+    ---------------------------------------------------------------------
+    -- Leds
+    ---------------------------------------------------------------------
+    -- Opal Kelly LEDs
+    o_leds : out std_logic_vector(3 downto 0)
+
+    --o_led_fw       : out std_logic;-- TODO
+    --o_led_science_ready : out std_logic;-- led_pll_lock: TODO
+
+
     );
 end entity system_tmtc_top;
 
@@ -132,18 +143,18 @@ architecture RTL of system_tmtc_top is
 -- regdecode
 ---------------------------------------------------------------------
 -- usb clock
-  signal usb_clk         : std_logic;
+  signal usb_clk : std_logic;
   -- software reset @usb_clk
-  signal usb_rst         : std_logic;
+  signal usb_rst : std_logic;
 
 
   -- reset error flag(s) @sys_clk
-  signal rst_status: std_logic;
-   -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s) @ sys_clk
-  signal debug_pulse: std_logic;
+  signal rst_status  : std_logic;
+  -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s) @ sys_clk
+  signal debug_pulse : std_logic;
 
   --signal hardware_id : std_logic_vector(i_hardware_id'range);
-  signal hardware_id : std_logic_vector(7 downto 0);-- TODO
+  signal hardware_id : std_logic_vector(7 downto 0);  -- TODO
 
 
   -- write enable spi command
@@ -181,15 +192,15 @@ architecture RTL of system_tmtc_top is
   -- extracted bits
   ---------------------------------------------------------------------
   -- spi_select bit
-  signal spi_select  : std_logic;
+  signal spi_select : std_logic;
   -- icu_select bit
-  signal icu_select  : std_logic;
+  signal icu_select : std_logic;
 
   ---------------------------------------------------------------------
   -- science_top
   ---------------------------------------------------------------------
   -- number of remaining bytes to read in the DDR
-  signal reg_ddr_stamp  : std_logic_vector(31 downto 0);
+  signal reg_ddr_stamp : std_logic_vector(31 downto 0);
 
 ---------------------------------------------------------------------
 -- reset_top
@@ -202,6 +213,13 @@ architecture RTL of system_tmtc_top is
   signal ui_sys_rst   : std_logic;
   -- system reset
   signal sys_rst      : std_logic;
+
+  ---------------------------------------------------------------------
+  -- tmtc_top
+  ---------------------------------------------------------------------
+  signal leds         : std_logic_vector(o_leds'range);
+  signal led_fw       : std_logic;
+  signal led_pll_lock : std_logic;
 
   ---------------------------------------------------------------------
   -- DDR3 controller
@@ -258,57 +276,57 @@ architecture RTL of system_tmtc_top is
 begin
 
 --hardware_id <= i_hardware_id; -- TODO
-hardware_id <= (others => '0'); -- TODO
+  hardware_id <= (others => '0');       -- TODO
 ---------------------------------------------------------------------
 -- regdecode
 ---------------------------------------------------------------------
   inst_regdecode_top : entity work.regdecode_top
     port map(
       --  Opal Kelly inouts --
-      i_okUH                  => i_okUH,
-      o_okHU                  => o_okHU,
-      b_okUHU                 => b_okUHU,
-      b_okAA                  => b_okAA,
+      i_okUH  => i_okUH,
+      o_okHU  => o_okHU,
+      b_okUHU => b_okUHU,
+      b_okAA  => b_okAA,
 
       ---------------------------------------------------------------------
       -- from IOs
       ---------------------------------------------------------------------
-      i_hardware_id           => hardware_id,
+      i_hardware_id => hardware_id,
       ---------------------------------------------------------------------
       -- to the user @o_usb_clk
       ---------------------------------------------------------------------
-      o_usb_clk               => usb_clk,
-      o_usb_rst               => usb_rst,
+      o_usb_clk     => usb_clk,
+      o_usb_rst     => usb_rst,
 
       ---------------------------------------------------------------------
       -- from/to the user @i_out_clk
       ---------------------------------------------------------------------
-      i_out_clk               => sys_clk,
-      i_out_rst               => sys_rst,
+      i_out_clk => sys_clk,
+      i_out_rst => sys_rst,
 
       -- HK
       ---------------------------------------------------------------------
       -- pipe_out spi hk(pipe)
-      i_spi_rd_data_valid     => reg_spi_rd_data_valid,
-      i_spi_rd_data           => reg_spi_rd_data,
+      i_spi_rd_data_valid    => reg_spi_rd_data_valid,
+      i_spi_rd_data          => reg_spi_rd_data,
       -- pipe
-      o_reg_spi_wr_cmd_valid  => reg_spi_wr_cmd_valid,
-      o_reg_spi_wr_cmd        => reg_spi_wr_cmd,
+      o_reg_spi_wr_cmd_valid => reg_spi_wr_cmd_valid,
+      o_reg_spi_wr_cmd       => reg_spi_wr_cmd,
       -- wire
-      o_reg_ctrl              => open,
-      o_reg_spi_conf          => reg_spi_conf,
+      o_reg_ctrl             => open,
+      o_reg_spi_conf         => reg_spi_conf,
 
       -- ICU
       ---------------------------------------------------------------------
-      o_reg_icu_conf          => reg_icu_conf,
+      o_reg_icu_conf => reg_icu_conf,
 
       -- science
       ---------------------------------------------------------------------
       -- wire_out:
-      i_reg_science_status    => reg_science_status,     -- to connect
+      i_reg_science_status    => reg_science_status,  -- to connect
       i_reg_science_stamp_lsb => reg_science_stamp_lsb,
-      i_reg_science_debug0    => reg_science_debug0,     -- to connect
-      i_reg_science_debug1    => reg_science_debug1,     -- to connect
+      i_reg_science_debug0    => reg_science_debug0,  -- to connect
+      i_reg_science_debug1    => reg_science_debug1,  -- to connect
       -- from science
       i_science_data_valid    => reg_fifo_science_data_valid,
       i_science_data          => reg_fifo_science_data,
@@ -326,7 +344,7 @@ hardware_id <= (others => '0'); -- TODO
   rst_status  <= reg_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
   debug_pulse <= reg_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
 
- reg_science_stamp_lsb <= reg_ddr_stamp;
+  reg_science_stamp_lsb <= reg_ddr_stamp;
 
 
 
@@ -348,10 +366,10 @@ hardware_id <= (others => '0'); -- TODO
       -- reset the DDR controller
       o_ddr_ctrl_rst => ddr_ctrl_rst,
       ---------------------------------------------------------------------
-    -- from DDR interface @i_sys_clk
-    ---------------------------------------------------------------------
-    -- ddr user side
-    -- system clock
+      -- from DDR interface @i_sys_clk
+      ---------------------------------------------------------------------
+      -- ddr user side
+      -- system clock
       i_sys_clk      => sys_clk,
       -- reset
       i_sys_rst      => ui_sys_rst,
@@ -371,18 +389,18 @@ hardware_id <= (others => '0'); -- TODO
       -- From DDR @i_clk
       ---------------------------------------------------------------------
       -- system clock
-      i_clk             => sys_clk,
+      i_clk         => sys_clk,
       ---------------------------------------------------------------------
       -- from reset @i_clk
       ---------------------------------------------------------------------
       -- system reset
-      i_rst             => sys_rst,
+      i_rst         => sys_rst,
       ---------------------------------------------------------------------
       -- Regdecode
       ---------------------------------------------------------------------
       -- from regdecode
       -- reset error flag(s)
-      i_rst_status => rst_status,
+      i_rst_status  => rst_status,
       -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
       i_debug_pulse => debug_pulse,
 
@@ -390,29 +408,29 @@ hardware_id <= (others => '0'); -- TODO
       -- HK: SPI
       ---------------------------------------------------------------------
       -- spi_select bit
-      i_spi_select  => spi_select,
+      i_spi_select       => spi_select,
       -- write enable spi command
       i_spi_wr_cmd_valid => reg_spi_wr_cmd_valid,
-    -- write spi data command
-      i_spi_wr_cmd => reg_spi_wr_cmd,
+      -- write spi data command
+      i_spi_wr_cmd       => reg_spi_wr_cmd,
 
-        -- spi read data valid
-       o_spi_rd_data_valid => reg_spi_rd_data_valid,
+      -- spi read data valid
+      o_spi_rd_data_valid => reg_spi_rd_data_valid,
       -- spi read data
-       o_spi_rd_data => reg_spi_rd_data,
+      o_spi_rd_data       => reg_spi_rd_data,
 
       -- to regdecode
       -- science
       ---------------------------------------------------------------------
       -- fifo prog full
-      i_fifo_science_prog_full  => '0', -- TODO
+      i_fifo_science_prog_full  => '0',  -- TODO
       -- fifo data valid (write enable)
       o_fifo_science_data_valid => reg_fifo_science_data_valid,
       -- fifo data
       o_fifo_science_data       => reg_fifo_science_data,
 
-       -- status
-       ---------------------------------------------------------------------
+      -- status
+      ---------------------------------------------------------------------
       -- to regdecode
       o_ddr_stamp => reg_ddr_stamp,
 
@@ -461,19 +479,23 @@ hardware_id <= (others => '0'); -- TODO
       -- from/to io: spi @sys_clk
       ---------------------------------------------------------------------
       -- SPI --
-      i_spi_miso            => ui_spi_miso,
-      o_spi_mosi            => ui_spi_mosi,
-      o_spi_sclk            => ui_spi_sclk,
-      o_spi_cs_n            => ui_spi_cs_n,
+      i_spi_miso     => ui_spi_miso,
+      o_spi_mosi     => ui_spi_mosi,
+      o_spi_sclk     => ui_spi_sclk,
+      o_spi_cs_n     => ui_spi_cs_n,
       ---------------------------------------------------------------------
       -- leds
       ---------------------------------------------------------------------
-      o_leds                => o_leds,
-      o_led_fw              => open, --TODO: to connect
-      o_led_pll_lock        => open --TODO: to connect
+      o_leds         => leds,
+      o_led_fw       => led_fw,
+      o_led_pll_lock => led_pll_lock
       );
 
   o_sel_main_n <= icu_select;
+
+  o_leds <= leds;
+  --o_led_fw            <= led_fw; -- TODO
+  --o_led_science_ready <= led_pll_lock; -- TODO
 
 ----------------------------------------------------
 --      Controller DDR3
