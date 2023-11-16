@@ -46,8 +46,7 @@ use work.pkg_utils.all;
 
 entity regdecode_wire_errors is
   generic(
-    g_ERROR_SEL_WIDTH  : integer := 4;  -- define the width of the error selection
-    g_FIFO_WRITE_DEPTH : integer := 16  -- define the depth of the cross clock domaine FIFO
+    g_ERROR_SEL_WIDTH  : integer := 4  -- define the width of the error selection
     );
   port(
     ---------------------------------------------------------------------
@@ -259,16 +258,16 @@ begin
   begin
     if rising_edge(i_clk) then
       case i_error_sel is
-        when "0000" =>
+        when "000" =>
           errors_r1 <= errors_array_tmp(0);
           status_r1 <= status_array_tmp(0);
-        when "0001" =>
+        when "001" =>
           errors_r1 <= errors_array_tmp(1);
           status_r1 <= status_array_tmp(1);
-        when "0010" =>
+        when "010" =>
           errors_r1 <= errors_array_tmp(2);
           status_r1 <= status_array_tmp(2);
-        when "0011" =>
+        when "011" =>
           errors_r1 <= errors_array_tmp(3);
           status_r1 <= status_array_tmp(3);
         when others =>

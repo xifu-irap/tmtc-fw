@@ -191,6 +191,15 @@ architecture RTL of system_tmtc_top is
   -- fifo science prog full
   signal reg_fifo_science_prog_full  : std_logic;
 
+  -- status register: errors1
+  signal reg_wire_errors1 : std_logic_vector(31 downto 0);
+  -- status register: errors0
+  signal reg_wire_errors0 : std_logic_vector(31 downto 0);
+  -- status register: status1
+  signal reg_wire_status1 : std_logic_vector(31 downto 0);
+  -- status register: status0
+  signal reg_wire_status0 : std_logic_vector(31 downto 0);
+
   -- extracted bits
   ---------------------------------------------------------------------
   -- spi_select bit
@@ -341,19 +350,26 @@ begin
       -- science
       ---------------------------------------------------------------------
       -- wire_out:
-      i_reg_science_status    => reg_science_status,  -- to connect
-      i_reg_science_stamp_lsb => reg_science_stamp_lsb,
-      i_reg_science_debug0    => reg_science_debug0,  -- to connect
-      i_reg_science_debug1    => reg_science_debug1,  -- to connect
+      i_reg_science_status      => reg_science_status,  -- to connect
+      i_reg_science_stamp_lsb   => reg_science_stamp_lsb,
+      i_reg_science_debug0      => reg_science_debug0,  -- to connect
+      i_reg_science_debug1      => reg_science_debug1,  -- to connect
       -- from science
-      i_fifo_science_data_valid    => reg_fifo_science_data_valid,
-      i_fifo_science_data          => reg_fifo_science_data,
-      o_fifo_science_prog_full     => reg_fifo_science_prog_full,
+      i_fifo_science_data_valid => reg_fifo_science_data_valid,
+      i_fifo_science_data       => reg_fifo_science_data,
+      o_fifo_science_prog_full  => reg_fifo_science_prog_full,
 
-      -- error/status
+      -- debug_ctrl
       ---------------------------------------------------------------------
       o_reg_debug_ctrl_valid => open,
-      o_reg_debug_ctrl       => reg_debug_ctrl
+      o_reg_debug_ctrl       => reg_debug_ctrl,
+
+      -- errors/status
+      ---------------------------------------------------------------------
+      i_reg_wire_errors1 => reg_wire_errors1,
+      i_reg_wire_errors0 => reg_wire_errors0,
+      i_reg_wire_status1 => reg_wire_status1,
+      i_reg_wire_status0 => reg_wire_status0
       );
 
 
@@ -365,6 +381,24 @@ begin
 
   -- to registers
   reg_science_stamp_lsb <= ddr_stamp;
+
+  -- errors0
+  reg_wire_errors0(31 downto 16) <= science_errors1;
+  reg_wire_errors0(15 downto 0)  <= science_errors0;
+  -- status0
+  reg_wire_status0(31 downto 24) <= (others => '0');
+  reg_wire_status0(23 downto 16) <= science_status1;
+  reg_wire_status0(15 downto 8)  <= (others => '0');
+  reg_wire_status0(7 downto 0)   <= science_status0;
+
+  -- errors1
+  reg_wire_errors1(31 downto 16) <= (others => '0');
+  reg_wire_errors1(15 downto 0)  <= spi_errors;
+  -- status1
+  reg_wire_status1(31 downto 24) <= (others => '0');
+  reg_wire_status1(23 downto 16) <= (others => '0');
+  reg_wire_status1(15 downto 8)  <= (others => '0');
+  reg_wire_status1(7 downto 0)   <= spi_status;
 
 
 
@@ -514,18 +548,18 @@ begin
       -- debug
       ---------------------------------------------------------------------
       -- spi_errors
-    o_spi_errors => spi_errors, -- to connect
-    -- spi_status
-    o_spi_status => spi_status, -- to connect
+      o_spi_errors => spi_errors,
+      -- spi_status
+      o_spi_status => spi_status,
 
-    -- science errors1
-    o_science_errors1 => science_errors1, -- to connect
-    -- science errors0
-    o_science_errors0 => science_errors0, -- to connect
-    -- science status1
-    o_science_status1 => science_status1, -- to connect
-    -- science status0
-    o_science_status0 => science_status0 -- to connect
+      -- science errors1
+      o_science_errors1 => science_errors1,
+      -- science errors0
+      o_science_errors0 => science_errors0,
+      -- science status1
+      o_science_status1 => science_status1,
+      -- science status0
+      o_science_status0 => science_status0
       );
 
   o_sel_main_n <= icu_select;

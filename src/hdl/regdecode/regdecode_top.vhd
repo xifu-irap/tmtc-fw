@@ -72,9 +72,9 @@ entity regdecode_top is
     ---------------------------------------------------------------------
 
     -- pipe_out spi data valid (HK)
-    i_spi_rd_data_valid : in std_logic;
+    i_spi_rd_data_valid    : in  std_logic;
     -- pipe_out spi data (HK)
-    i_spi_rd_data       : in std_logic_vector(31 downto 0);
+    i_spi_rd_data          : in  std_logic_vector(31 downto 0);
     -- pipe
     -- HK pipein data valid
     o_reg_spi_wr_cmd_valid : out std_logic;
@@ -105,19 +105,29 @@ entity regdecode_top is
 
     -- from science
     -- fifo science data valid
-    i_fifo_science_data_valid : in std_logic;
+    i_fifo_science_data_valid : in  std_logic;
     -- fifo science data
-    i_fifo_science_data       : in std_logic_vector(31 downto 0);
+    i_fifo_science_data       : in  std_logic_vector(31 downto 0);
     -- fifo prog full
     o_fifo_science_prog_full  : out std_logic;
 
-    -- error/status
+    -- debug_ctrl
     ---------------------------------------------------------------------
     -- debug_ctrl data valid
     o_reg_debug_ctrl_valid : out std_logic;
     -- debug_ctrl register value
-    o_reg_debug_ctrl       : out std_logic_vector(31 downto 0)
+    o_reg_debug_ctrl       : out std_logic_vector(31 downto 0);
 
+    -- errors/status
+    ---------------------------------------------------------------------
+    -- status register: errors1
+    i_reg_wire_errors1 : in std_logic_vector(31 downto 0);
+    -- status register: errors0
+    i_reg_wire_errors0 : in std_logic_vector(31 downto 0);
+    -- status register: status1
+    i_reg_wire_status1 : in std_logic_vector(31 downto 0);
+    -- status register: status0
+    i_reg_wire_status0 : in std_logic_vector(31 downto 0)
 
     );
 end entity regdecode_top;
@@ -225,6 +235,8 @@ architecture RTL of regdecode_top is
   -- debug_pulse @usb_clk
   signal usb_debug_pulse : std_logic;
 
+  signal sel_errors : std_logic_vector(pkg_ERROR_SEL_WIDTH - 1 downto 0);
+
 
   ---------------------------------------------------------------------
   -- regdecode_science_fifo
@@ -263,11 +275,11 @@ architecture RTL of regdecode_top is
   -- debug_ctrl regdecode_register_to_user
   ---------------------------------------------------------------------
   --signal spi_conf_valid : std_logic;
-  signal spi_conf             : std_logic_vector(o_reg_spi_conf'range);
+  signal spi_conf        : std_logic_vector(o_reg_spi_conf'range);
   -- debug_ctrl errors
-  signal spi_conf_errors    : std_logic_vector(15 downto 0);
+  signal spi_conf_errors : std_logic_vector(15 downto 0);
   -- debug_ctrl status
-  signal spi_conf_status    : std_logic_vector(7 downto 0);
+  signal spi_conf_status : std_logic_vector(7 downto 0);
 
   ---------------------------------------------------------------------
   -- debug_ctrl regdecode_register_to_user
@@ -301,6 +313,29 @@ architecture RTL of regdecode_top is
   signal science_debug1_errors : std_logic_vector(15 downto 0);
   -- science_debug1 status
   signal science_debug1_status : std_logic_vector(7 downto 0);
+
+  ---------------------------------------------------------------------
+  -- build errors/status
+  ---------------------------------------------------------------------
+  -- errors2
+  signal usb_wire_errors2 : std_logic_vector(31 downto 0);
+  -- errors1
+  signal usb_wire_errors1 : std_logic_vector(31 downto 0);
+  -- errors0
+  signal usb_wire_errors0 : std_logic_vector(31 downto 0);
+  -- status2
+  signal usb_wire_status2 : std_logic_vector(31 downto 0);
+  -- status1
+  signal usb_wire_status1 : std_logic_vector(31 downto 0);
+  -- status0
+  signal usb_wire_status0 : std_logic_vector(31 downto 0);
+  ---------------------------------------------------------------------
+  -- regdecode_wire_errors
+  ---------------------------------------------------------------------
+  -- selected wire
+  signal wire_errors : std_logic_vector(31 downto 0);
+  -- selected status
+  signal wire_status : std_logic_vector(31 downto 0);
 
 begin
 
@@ -367,6 +402,7 @@ begin
   usb_rst_status  <= usb_wirein_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
   usb_debug_pulse <= usb_wirein_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
   usb_rst         <= usb_wirein_ctrl(pkg_CTRL_RST_IDX_H);
+  sel_errors      <= usb_wirein_sel_errors(pkg_ERROR_SEL_IDX_H downto pkg_ERROR_SEL_IDX_L);
   ---------------------------------------------------------------------
   -- output @usb_clk
   ---------------------------------------------------------------------
@@ -433,8 +469,8 @@ begin
       i_out_clk                => i_out_clk,
       i_out_rst                => i_out_rst,
       -- data
-      i_fifo_data_valid             => i_fifo_science_data_valid,
-      i_fifo_data                   => i_fifo_science_data,
+      i_fifo_data_valid        => i_fifo_science_data_valid,
+      i_fifo_data              => i_fifo_science_data,
       o_fifo_prog_full         => o_fifo_science_prog_full,
       ---------------------------------------------------------------------
       -- to the usb: @i_clk
@@ -452,8 +488,8 @@ begin
       ---------------------------------------------------------------------
       -- errors/status @ i_clk
       ---------------------------------------------------------------------
-      o_errors                 => science_errors,   -- to connect
-      o_status                 => science_status    -- to connect
+      o_errors                 => science_errors,
+      o_status                 => science_status
       );
   -- count the number of packets with 1 packet = 4 words of 32 bits.
   usb_wireout_science_wr_data_count <= std_logic_vector(resize(unsigned(science_wr_data_count(15 downto 2)), usb_wireout_science_wr_data_count'length));
@@ -488,8 +524,8 @@ begin
       ---------------------------------------------------------------------
       -- errors/status @ i_clk
       ---------------------------------------------------------------------
-      o_errors          => hk_pipe_in_errors,      -- to connect
-      o_status          => hk_pipe_in_status       -- to connect
+      o_errors          => hk_pipe_in_errors,
+      o_status          => hk_pipe_in_status
       );
 
 
@@ -529,8 +565,8 @@ begin
       ---------------------------------------------------------------------
       -- errors/status @ i_clk
       ---------------------------------------------------------------------
-      o_errors                 => hk_pipe_out_errors,  -- to connect
-      o_status                 => hk_pipe_out_status   -- to connect
+      o_errors                 => hk_pipe_out_errors,
+      o_status                 => hk_pipe_out_status
       );
   -- count the number of 32 bit word
   usb_wireout_spi_rd_data_count <= std_logic_vector(resize(unsigned(hk_wr_data_count), usb_wireout_spi_rd_data_count'length));
@@ -565,8 +601,8 @@ begin
       ---------------------------------------------------------------------
       -- errors/status @ i_clk
       ---------------------------------------------------------------------
-      o_errors          => spi_conf_errors,     -- to connect
-      o_status          => spi_conf_status      -- to connect
+      o_errors          => spi_conf_errors,
+      o_status          => spi_conf_status
       );
 
 
@@ -601,8 +637,8 @@ begin
       ---------------------------------------------------------------------
       -- errors/status @ i_clk
       ---------------------------------------------------------------------
-      o_errors          => debug_ctrl_errors,     -- to connect
-      o_status          => debug_ctrl_status      -- to connect
+      o_errors          => debug_ctrl_errors,
+      o_status          => debug_ctrl_status
       );
 
   o_reg_debug_ctrl_valid <= reg_debug_ctrl_valid;
@@ -667,15 +703,91 @@ begin
     usb_wireout_science_debug0    <= reg_tmp1(1);
     usb_wireout_science_debug1    <= reg_tmp1(0);
 
-    science_status_errors    <= errors_tmp1(3); -- to connect
-    science_stamp_lsb_errors <= errors_tmp1(2); -- to connect
-    science_debug0_errors    <= errors_tmp1(1); -- to connect
-    science_debug1_errors    <= errors_tmp1(0); -- to connect
+    science_status_errors    <= errors_tmp1(3);  -- to connect
+    science_stamp_lsb_errors <= errors_tmp1(2);
+    science_debug0_errors    <= errors_tmp1(1);  -- to connect
+    science_debug1_errors    <= errors_tmp1(0);  -- to connect
 
-    science_status_status    <= status_tmp1(3); -- to connect
-    science_stamp_lsb_status <= status_tmp1(2); -- to connect
-    science_debug0_status    <= status_tmp1(1); -- to connect
-    science_debug1_status    <= status_tmp1(0); -- to connect
+    science_status_status    <= status_tmp1(3);  -- to connect
+    science_stamp_lsb_status <= status_tmp1(2);
+    science_debug0_status    <= status_tmp1(1);  -- to connect
+    science_debug1_status    <= status_tmp1(0);  -- to connect
   end generate gen_sync_reg;
+
+  ---------------------------------------------------------------------
+  -- build error/status @usb_clk
+  ---------------------------------------------------------------------
+  -- errors0
+  usb_wire_errors0(31 downto 16) <= hk_pipe_in_errors;
+  usb_wire_errors0(15 downto 0)  <= science_errors;
+
+  -- status0
+  usb_wire_status0(31 downto 24) <= (others => '0');
+  usb_wire_status0(23 downto 16) <= hk_pipe_in_status;
+  usb_wire_status0(15 downto 8)  <= (others => '0');
+  usb_wire_status0(7 downto 0)   <= science_status;
+
+  -- errors1
+  usb_wire_errors1(31 downto 16) <= spi_conf_errors;
+  usb_wire_errors1(15 downto 0)  <= hk_pipe_out_errors;
+
+  -- status1
+  usb_wire_status1(31 downto 24) <= (others => '0');
+  usb_wire_status1(23 downto 16) <= spi_conf_status;
+  usb_wire_status1(15 downto 8)  <= (others => '0');
+  usb_wire_status1(7 downto 0)   <= hk_pipe_out_status;
+
+
+  -- errors2
+  usb_wire_errors2(31 downto 16) <= science_stamp_lsb_errors;
+  usb_wire_errors2(15 downto 0)  <= debug_ctrl_errors;
+
+  -- status2
+  usb_wire_status2(31 downto 24) <= (others => '0');
+  usb_wire_status2(23 downto 16) <= science_stamp_lsb_status;
+  usb_wire_status2(15 downto 8)  <= (others => '0');
+  usb_wire_status2(7 downto 0)   <= debug_ctrl_status;
+
+  ---------------------------------------------------------------------
+  -- errors/status wire
+  ---------------------------------------------------------------------
+  inst_regdecode_wire_errors : entity work.regdecode_wire_errors
+    generic map(
+      g_ERROR_SEL_WIDTH => sel_errors'length  -- define the width of the error selection
+      )
+    port map(
+      ---------------------------------------------------------------------
+      -- input @i_out_clk
+      ---------------------------------------------------------------------
+      i_out_clk          => i_out_clk,  -- clock
+      -- errors
+      i_reg_wire_errors1 => i_reg_wire_errors1,  -- errors value
+      i_reg_wire_errors0 => i_reg_wire_errors0,  -- errors value
+      -- status
+      i_reg_wire_status1 => i_reg_wire_status1,  -- status value
+      i_reg_wire_status0 => i_reg_wire_status0,  -- status value
+      ---------------------------------------------------------------------
+      -- input @i_clk
+      ---------------------------------------------------------------------
+      i_clk              => usb_clk,    -- clock
+      i_error_sel        => sel_errors,  -- select the errors/status to output
+      -- errors
+      i_usb_reg_errors2  => usb_wire_errors2,    -- errors value
+      i_usb_reg_errors1  => usb_wire_errors1,    -- errors value
+      i_usb_reg_errors0  => usb_wire_errors0,    -- errors value
+      -- status
+      i_usb_reg_status2  => usb_wire_status2,    -- status value
+      i_usb_reg_status1  => usb_wire_status1,    -- status value
+      i_usb_reg_status0  => usb_wire_status0,    -- status value
+      ---------------------------------------------------------------------
+      -- output @ i_clk
+      ---------------------------------------------------------------------
+      o_wire_errors      => wire_errors,      -- output errors
+      o_wire_status      => wire_status  -- output status
+      );
+
+  usb_wireout_errors <= wire_errors;
+  usb_wireout_status <= wire_status;
+
 
 end architecture RTL;
