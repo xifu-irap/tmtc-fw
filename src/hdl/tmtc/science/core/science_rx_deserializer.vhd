@@ -91,8 +91,6 @@ end entity science_rx_deserializer;
 
 architecture RTL of science_rx_deserializer is
 
-  -- auto-computed the number of output words
-  constant c_NB_WORDS      : integer := i_science_data'length;
   -- define the counter width (for the bits)
   constant c_CNT_BIT_WIDTH : integer := work.pkg_utils.pkg_width_from_value(i_value => g_DATA_WIDTH_BY_LINK);
 
@@ -100,7 +98,7 @@ architecture RTL of science_rx_deserializer is
   constant c_CNT_MAX : unsigned(c_CNT_BIT_WIDTH - 1 downto 0) := to_unsigned(g_DATA_WIDTH_BY_LINK - 1, c_CNT_BIT_WIDTH);
 
   -- array of data
-  type t_array_data is array (g_DATA_WIDTH_BY_LINK - 1 downto 0) of std_logic_vector(c_NB_WORDS - 1 downto 0);
+  type t_array_data is array (g_DATA_WIDTH - 1 downto 0) of std_logic_vector(g_DATA_WIDTH_BY_LINK - 1 downto 0);
 
 -- fsm type declaration
   type t_state is (E_RST, E_WAIT_HEADER0, E_WAIT_HEADER1, E_WAIT_HEADER2, E_DECODE);
@@ -190,7 +188,7 @@ architecture RTL of science_rx_deserializer is
 begin
 
 -- this FSM deserializes the input stream (ctrl) by decoding the control bits and by generating control bits
-  p_decode_state : process (ctrl_array_r1, i_science_ctrl, i_science_data,
+  p_decode_state : process (ctrl_array_r1, i_science_ctrl,
                             i_science_data_valid,
                             sm_state_r1, cnt_bit_r1, ready_r1) is
   begin
@@ -307,8 +305,6 @@ begin
       port map(
         -- input clock
         i_clk                => i_clk,
-        --  input reset
-        i_rst                => i_rst,
         ---------------------------------------------------------------------
         -- input
         ---------------------------------------------------------------------

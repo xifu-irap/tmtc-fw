@@ -43,8 +43,6 @@ entity science_rx_deserializer_data is
 
     -- input clock
     i_clk : in std_logic;
-    --  input reset
-    i_rst : in std_logic;
 
     ---------------------------------------------------------------------
     -- input

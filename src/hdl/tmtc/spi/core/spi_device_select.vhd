@@ -281,8 +281,7 @@ begin
 --   2. wait the spi engine response (reading)
 ---------------------------------------------------------------------
   p_decode_state : process (empty1, i_spi_cmd_select, rd_data_r1, ready_r1,
-                            sm_state_r1, spi_clk, spi_cs_n_en,
-                             spi_finish, spi_mosi,
+                            sm_state_r1, spi_finish,
                             spi_ras_select_r1, spi_rd_data, spi_rd_data_valid,
                             spi_ready) is
   begin

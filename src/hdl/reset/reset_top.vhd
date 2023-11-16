@@ -77,10 +77,7 @@ architecture RTL of reset_top is
   ---------------------------------------------------------------------
   -- user reset
   ---------------------------------------------------------------------
-  -- synchronized reset @i_sys_clk
-  signal usb_sys_rst : std_logic;
-
-  -- combined reset: usb_sys_rst and i_sys_rst
+  -- delayed i_sys_rst
   signal sys_rst_tmp1 : std_logic;
 
 

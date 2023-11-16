@@ -75,8 +75,6 @@ architecture RTL of leds_top is
   constant c_CNT_MAX : unsigned(31 downto 0) := to_unsigned(10_000_000, 32);
   -- counter: tempo
   signal cpt0_r1     : unsigned(31 downto 0);
-  -- counter: tempo
-  signal cpt1_r1     : unsigned(31 downto 0);
   -- count the number of science frame
   signal start_r1    : unsigned(3 downto 0);
   -- leds (registered)
@@ -96,7 +94,8 @@ begin
     if rising_edge(i_clk) then
       if i_rst = '1' then
         cpt0_r1    <= (others => '0');
-        leds_r1 <= '1';
+        leds_r1    <= '1';
+        start_r1   <= (others => '0');
       else
         -- compute change only when a new bit is received
         if i_science_data_valid = '1' then

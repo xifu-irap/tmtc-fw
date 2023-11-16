@@ -134,7 +134,7 @@ architecture RTL of io_science is
   -- fifo full flag
   --signal full0        : std_logic;
   -- fifo rst_busy flag
-  signal wr_rst_busy0 : std_logic;      -- not used
+  -- signal wr_rst_busy0 : std_logic;      -- not used
 
   -- fifo read side
   -- fifo read
@@ -266,8 +266,8 @@ begin
       i_wr_rst        => wr_rst_tmp0,
       i_wr_en         => wr_tmp0,
       i_wr_din        => data_tmp0,
-      o_wr_full       => open,          -- not connected
-      o_wr_rst_busy   => wr_rst_busy0,
+      o_wr_full       => open,
+      o_wr_rst_busy   => open,
       ---------------------------------------------------------------------
       -- read side
       ---------------------------------------------------------------------
@@ -276,7 +276,7 @@ begin
       o_rd_dout_valid => data_valid_tmp1,
       o_rd_dout       => data_tmp1,
       o_rd_empty      => empty1,
-      o_rd_rst_busy   => rd_rst_busy1   -- not connected
+      o_rd_rst_busy   => rd_rst_busy1
       );
 
   rd1           <= '1' when empty1 = '0' and rd_rst_busy1 = '0' else '0';

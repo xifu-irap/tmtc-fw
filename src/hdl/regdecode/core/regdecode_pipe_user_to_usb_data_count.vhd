@@ -100,8 +100,6 @@ architecture RTL of regdecode_pipe_user_to_usb_data_count is
   constant c_FIFO_DEPTH0          : integer := 16;
   -- FIFO width (expressed in bits)
   constant c_FIFO_WIDTH0          : integer := c_FIFO_IDX0_H + 1;
-  -- FIFO write data count width (expressed in bits)
-  constant c_WR_DATA_COUNT_WIDTH0 : integer := pkg_width_from_value(c_FIFO_DEPTH0) + 1;
 
   -- fifo write side
   -- fifo rst
@@ -110,8 +108,6 @@ architecture RTL of regdecode_pipe_user_to_usb_data_count is
   signal wr_tmp0        : std_logic;
   -- fifo data_in
   signal wr_data_tmp0   : std_logic_vector(c_FIFO_WIDTH0 - 1 downto 0);
-  -- fifo write data count
-  signal wr_data_count0 : std_logic_vector(c_WR_DATA_COUNT_WIDTH0 - 1 downto 0);
   -- fifo full flag
   -- signal wr_full0       : std_logic;
   -- fifo rst_busy flag
@@ -128,9 +124,6 @@ architecture RTL of regdecode_pipe_user_to_usb_data_count is
   signal empty1       : std_logic;
   -- fifo rst_busy flag
   signal rd_rst_busy1 : std_logic;
-
-  -- data
-  signal data1 : std_logic_vector(o_usb_fifo_data'range);
 
   -- fifo resynchronized errors
   signal errors_sync1 : std_logic_vector(3 downto 0);

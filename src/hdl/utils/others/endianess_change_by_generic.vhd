@@ -102,7 +102,7 @@ begin
     data_tmp <= i_data;
   end generate no_endianess_change;
 
-  endianess_change : if g_ENDIANESS_CHANGE = true generate
+  endianess_change : if g_ENDIANESS_CHANGE generate
     swap_byte : for i in 0 to (c_NB_BYTES - 1) generate
       data_tmp(8*(i+1) - 1 downto 8*i) <= i_data((i_data'length - 8*i - 1) downto (i_data'length - 8*(i+1)));
     end generate swap_byte;

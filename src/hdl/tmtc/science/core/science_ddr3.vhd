@@ -151,7 +151,7 @@ architecture RTL of science_ddr3 is
   -- fifo empty flag
   signal empty1       : std_logic;
   -- fifo rst_busy flag
-  signal rd_rst_busy1 : std_logic;
+  -- signal rd_rst_busy1 : std_logic;
 
   -- fifo resynchronized errors
   signal errors_sync1 : std_logic_vector(3 downto 0);
@@ -259,7 +259,7 @@ begin
       o_rd_dout_valid => data_valid1,
       o_rd_dout       => data_tmp1,
       o_rd_empty      => empty1,
-      o_rd_rst_busy   => rd_rst_busy1,
+      o_rd_rst_busy   => open,
       ---------------------------------------------------------------------
       -- resynchronized errors/ empty status
       ---------------------------------------------------------------------
