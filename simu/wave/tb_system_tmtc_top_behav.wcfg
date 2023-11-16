@@ -18,15 +18,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="15,103.706337 ns"></ZoomStartTime>
-      <ZoomEndTime time="15,459.564677 ns"></ZoomEndTime>
-      <Cursor1Time time="15,400.254953 ns"></Cursor1Time>
+      <ZoomStartTime time="140,637.979610 ns"></ZoomStartTime>
+      <ZoomEndTime time="141,072.404078 ns"></ZoomEndTime>
+      <Cursor1Time time="141,000.000000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="236"></NameColumnWidth>
-      <ValueColumnWidth column_width="141"></ValueColumnWidth>
+      <ValueColumnWidth column_width="137"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="7" />
+   <WVObjectSize size="8" />
    <wvobject fp_name="group179" type="group">
       <obj_property name="label">tb</obj_property>
       <obj_property name="DisplayName">label</obj_property>
@@ -464,7 +464,10 @@
             <obj_property name="ElementShortName">data_array_r1[7:0][7:0]</obj_property>
             <obj_property name="ObjectShortName">data_array_r1[7:0][7:0]</obj_property>
             <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-            <obj_property name="isExpanded"></obj_property>
+         </wvobject>
+         <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_deserializer/error_r1" type="logic">
+            <obj_property name="ElementShortName">error_r1</obj_property>
+            <obj_property name="ObjectShortName">error_r1</obj_property>
          </wvobject>
       </wvobject>
       <wvobject fp_name="group212" type="group">
@@ -813,7 +816,6 @@
       <wvobject fp_name="group234" type="group">
          <obj_property name="label">in</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_rx_frame/i_data_valid" type="logic">
             <obj_property name="ElementShortName">i_data_valid</obj_property>
             <obj_property name="ObjectShortName">i_data_valid</obj_property>
@@ -1188,6 +1190,7 @@
    <wvobject fp_name="group289" type="group">
       <obj_property name="label">science_ddr3_ctrl</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_clk" type="logic">
          <obj_property name="ElementShortName">i_clk</obj_property>
          <obj_property name="ObjectShortName">i_clk</obj_property>
@@ -1203,7 +1206,6 @@
       <wvobject fp_name="group290" type="group">
          <obj_property name="label">fifo_in</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_pipe_in_read" type="logic">
             <obj_property name="ElementShortName">o_pipe_in_read</obj_property>
             <obj_property name="ObjectShortName">o_pipe_in_read</obj_property>
@@ -1228,7 +1230,6 @@
       <wvobject fp_name="group291" type="group">
          <obj_property name="label">fifo_out</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_pipe_out_write" type="logic">
             <obj_property name="ElementShortName">o_pipe_out_write</obj_property>
             <obj_property name="ObjectShortName">o_pipe_out_write</obj_property>
@@ -1245,7 +1246,6 @@
       <wvobject fp_name="group292" type="group">
          <obj_property name="label">ddr</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/i_app_rdy" type="logic">
             <obj_property name="ElementShortName">i_app_rdy</obj_property>
             <obj_property name="ObjectShortName">i_app_rdy</obj_property>
@@ -1295,7 +1295,6 @@
       <wvobject fp_name="group293" type="group">
          <obj_property name="label">status_out</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/o_buffer_new_cmd_byte_addr_rd" type="array">
             <obj_property name="ElementShortName">o_buffer_new_cmd_byte_addr_rd[54:0]</obj_property>
             <obj_property name="ObjectShortName">o_buffer_new_cmd_byte_addr_rd[54:0]</obj_property>
@@ -1310,7 +1309,6 @@
       <wvobject fp_name="group294" type="group">
          <obj_property name="label">step1</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_science_top/inst_science_ddr3/inst_science_ddr3_ctrl/sm_state_manager_r1" type="other">
             <obj_property name="ElementShortName">sm_state_manager_r1</obj_property>
             <obj_property name="ObjectShortName">sm_state_manager_r1</obj_property>
@@ -1369,6 +1367,63 @@
             <obj_property name="ElementShortName">app_en_r1</obj_property>
             <obj_property name="ObjectShortName">app_en_r1</obj_property>
          </wvobject>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group338" type="group">
+      <obj_property name="label">regdecode_wire_errors</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_out_clk" type="logic">
+         <obj_property name="ElementShortName">i_out_clk</obj_property>
+         <obj_property name="ObjectShortName">i_out_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_reg_wire_errors1" type="array">
+         <obj_property name="ElementShortName">i_reg_wire_errors1[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_reg_wire_errors1[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_reg_wire_errors0" type="array">
+         <obj_property name="ElementShortName">i_reg_wire_errors0[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_reg_wire_errors0[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_reg_wire_status1" type="array">
+         <obj_property name="ElementShortName">i_reg_wire_status1[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_reg_wire_status1[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_reg_wire_status0" type="array">
+         <obj_property name="ElementShortName">i_reg_wire_status0[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_reg_wire_status0[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_clk" type="logic">
+         <obj_property name="ElementShortName">i_clk</obj_property>
+         <obj_property name="ObjectShortName">i_clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_error_sel" type="array">
+         <obj_property name="ElementShortName">i_error_sel[2:0]</obj_property>
+         <obj_property name="ObjectShortName">i_error_sel[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_usb_reg_errors2" type="array">
+         <obj_property name="ElementShortName">i_usb_reg_errors2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_usb_reg_errors2[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_usb_reg_errors1" type="array">
+         <obj_property name="ElementShortName">i_usb_reg_errors1[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_usb_reg_errors1[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_usb_reg_errors0" type="array">
+         <obj_property name="ElementShortName">i_usb_reg_errors0[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_usb_reg_errors0[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_usb_reg_status2" type="array">
+         <obj_property name="ElementShortName">i_usb_reg_status2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_usb_reg_status2[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_usb_reg_status1" type="array">
+         <obj_property name="ElementShortName">i_usb_reg_status1[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_usb_reg_status1[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_regdecode_top/inst_regdecode_wire_errors/i_usb_reg_status0" type="array">
+         <obj_property name="ElementShortName">i_usb_reg_status0[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_usb_reg_status0[31:0]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>
