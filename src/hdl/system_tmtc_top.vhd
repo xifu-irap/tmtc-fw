@@ -196,11 +196,6 @@ architecture RTL of system_tmtc_top is
   -- icu_select bit
   signal icu_select : std_logic;
 
-  ---------------------------------------------------------------------
-  -- science_top
-  ---------------------------------------------------------------------
-  -- number of remaining bytes to read in the DDR
-  signal reg_ddr_stamp : std_logic_vector(31 downto 0);
 
 ---------------------------------------------------------------------
 -- reset_top
@@ -217,9 +212,30 @@ architecture RTL of system_tmtc_top is
   ---------------------------------------------------------------------
   -- tmtc_top
   ---------------------------------------------------------------------
+  -- number of remaining bytes to read in the DDR
+  signal ddr_stamp : std_logic_vector(31 downto 0);
+
+  -- FPGA board: status leds
   signal leds         : std_logic_vector(o_leds'range);
+  -- FMC firmware led
   signal led_fw       : std_logic;
+  -- FMC PLL lock led
   signal led_pll_lock : std_logic;
+
+  -- spi_errors
+  signal spi_errors : std_logic_vector(15 downto 0);
+  -- spi_status
+  signal spi_status : std_logic_vector(7 downto 0);
+
+  -- science errors1
+  signal science_errors1 : std_logic_vector(15 downto 0);
+  -- science errors0
+  signal science_errors0 : std_logic_vector(15 downto 0);
+  -- science status1
+  signal science_status1 : std_logic_vector(7 downto 0);
+  -- science status0
+  signal science_status0 : std_logic_vector(7 downto 0);
+
 
   ---------------------------------------------------------------------
   -- DDR3 controller
@@ -344,7 +360,8 @@ begin
   rst_status  <= reg_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
   debug_pulse <= reg_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
 
-  reg_science_stamp_lsb <= reg_ddr_stamp;
+  -- to registers
+  reg_science_stamp_lsb <= ddr_stamp;
 
 
 
@@ -432,7 +449,7 @@ begin
       -- status
       ---------------------------------------------------------------------
       -- to regdecode
-      o_ddr_stamp => reg_ddr_stamp,
+      o_ddr_stamp => ddr_stamp,
 
       ---------------------------------------------------------------------
       -- from/to DDR controller @sys_clk
@@ -488,7 +505,24 @@ begin
       ---------------------------------------------------------------------
       o_leds         => leds,
       o_led_fw       => led_fw,
-      o_led_pll_lock => led_pll_lock
+      o_led_pll_lock => led_pll_lock,
+
+      ---------------------------------------------------------------------
+      -- debug
+      ---------------------------------------------------------------------
+      -- spi_errors
+    o_spi_errors => spi_errors, -- to connect
+    -- spi_status
+    o_spi_status => spi_status, -- to connect
+
+    -- science errors1
+    o_science_errors1 => science_errors1, -- to connect
+    -- science errors0
+    o_science_errors0 => science_errors0, -- to connect
+    -- science status1
+    o_science_status1 => science_status1, -- to connect
+    -- science status0
+    o_science_status0 => science_status0 -- to connect
       );
 
   o_sel_main_n <= icu_select;

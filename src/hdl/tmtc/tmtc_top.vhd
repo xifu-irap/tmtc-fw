@@ -46,13 +46,13 @@ entity tmtc_top is
     -- from reset @i_clk
     ---------------------------------------------------------------------
     -- system reset
-    i_rst : in  std_logic;
+    i_rst : in std_logic;
 
     ---------------------------------------------------------------------
     -- Regdecode @sys_clk
     ---------------------------------------------------------------------
     -- reset error flag(s)
-    i_rst_status: in std_logic;
+    i_rst_status  : in std_logic;
     -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
     i_debug_pulse : in std_logic;
 
@@ -60,29 +60,29 @@ entity tmtc_top is
     -- HK: SPI
     ---------------------------------------------------------------------
     -- spi_select bit
-    i_spi_select  : in std_logic;
+    i_spi_select       : in std_logic;
     -- write enable spi command
     i_spi_wr_cmd_valid : in std_logic;
-  -- write spi data command
+    -- write spi data command
     i_spi_wr_cmd       : in std_logic_vector(31 downto 0);
 
-      -- spi read data valid
-     o_spi_rd_data_valid : out std_logic;
+    -- spi read data valid
+    o_spi_rd_data_valid : out std_logic;
     -- spi read data
-     o_spi_rd_data       : out std_logic_vector(31 downto 0);
+    o_spi_rd_data       : out std_logic_vector(31 downto 0);
 
-     -- to regdecode
-     -- science
-     ---------------------------------------------------------------------
-     -- fifo prog full
-    i_fifo_science_prog_full  : in std_logic;
+    -- to regdecode
+    -- science
+    ---------------------------------------------------------------------
+    -- fifo prog full
+    i_fifo_science_prog_full  : in  std_logic;
     -- fifo data valid (write enable)
     o_fifo_science_data_valid : out std_logic;
     -- fifo data
     o_fifo_science_data       : out std_logic_vector(31 downto 0);
 
-     -- status
-     ---------------------------------------------------------------------
+    -- status
+    ---------------------------------------------------------------------
     -- ddr stamp register
     o_ddr_stamp : out std_logic_vector(31 downto 0);
 
@@ -147,12 +147,28 @@ entity tmtc_top is
     -- leds
     ---------------------------------------------------------------------
     -- FPGA board: status leds
-    o_leds : out std_logic_vector(3 downto 0);
+    o_leds         : out std_logic_vector(3 downto 0);
     -- FMC firmware led
     o_led_fw       : out std_logic;
     -- FMC PLL lock led
-    o_led_pll_lock : out std_logic
+    o_led_pll_lock : out std_logic;
 
+    ---------------------------------------------------------------------
+    -- debug
+    ---------------------------------------------------------------------
+    -- spi_errors
+    o_spi_errors : std_logic_vector(15 downto 0);
+    -- spi_status
+    o_spi_status : std_logic_vector(7 downto 0);
+
+    -- science errors1
+    o_science_errors1 : std_logic_vector(15 downto 0);
+    -- science errors0
+    o_science_errors0 : std_logic_vector(15 downto 0);
+    -- science status1
+    o_science_status1 : std_logic_vector(7 downto 0);
+    -- science status0
+    o_science_status0 : std_logic_vector(7 downto 0)
     );
 end entity tmtc_top;
 
@@ -162,30 +178,33 @@ architecture RTL of tmtc_top is
 -- hk management
 ---------------------------------------------------------------------
   -- spi errors
-  signal spi_errors : std_logic_vector(15 downto 0);
+  signal spi_errors : std_logic_vector(o_spi_errors'range);
   -- spi status
-  signal spi_status : std_logic_vector(7 downto 0);
+  signal spi_status : std_logic_vector(o_spi_status'range);
 
   ---------------------------------------------------------------------
   -- science_top
   ---------------------------------------------------------------------
   -- science data valid
-  signal science_data_valid       : std_logic;
+  signal science_data_valid : std_logic;
   -- science data
-  signal science_data       : std_logic_vector(31 downto 0);
+  signal science_data       : std_logic_vector(o_fifo_science_data'range);
   -- number of remaining bytes to read in the DDR
-  signal ddr_stamp      : std_logic_vector(31 downto 0);
+  signal ddr_stamp          : std_logic_vector(o_ddr_stamp'range);
+
   -- science errors1
-  signal science_errors1 : std_logic_vector(15 downto 0);
+  signal science_errors1 : std_logic_vector(o_science_errors1'range);
   -- science errors0
-  signal science_errors0 : std_logic_vector(15 downto 0);
-  -- science status
-  signal science_status0 : std_logic_vector(7 downto 0);
+  signal science_errors0 : std_logic_vector(o_science_errors0'range);
+  -- science status1
+  signal science_status1 : std_logic_vector(o_science_status1'range);
+  -- science status0
+  signal science_status0 : std_logic_vector(o_science_status0'range);
 
   -- science data valid (serialized)
   signal science_data_valid_bit : std_logic;
   -- detect the last bit of the synchro word
-  signal science_synchro_word : std_logic;
+  signal science_synchro_word   : std_logic;
 
 begin
 
@@ -224,9 +243,12 @@ begin
       ---------------------------------------------------------------------
       -- errors status
       ---------------------------------------------------------------------
-      o_errors            => spi_errors,  -- to connect
-      o_status            => spi_status   -- to connect
+      o_errors            => spi_errors,
+      o_status            => spi_status
       );
+
+  o_spi_errors <= spi_errors;
+  o_spi_status <= spi_status;
 
 ---------------------------------------------------------------------
 -- science
@@ -300,28 +322,35 @@ begin
       o_fifo_data           => science_data,
 
       -- number of remaining bytes to read in the DDR
-      o_ddr_stamp => ddr_stamp,
+      o_ddr_stamp            => ddr_stamp,
       ---------------------------------------------------------------------
       -- leds @sys_clk
       ---------------------------------------------------------------------
       -- link leds
-      o_science_data_valid         => science_data_valid_bit,
-      o_science_synchro_word       => science_synchro_word,
+      o_science_data_valid   => science_data_valid_bit,
+      o_science_synchro_word => science_synchro_word,
 
       ---------------------------------------------------------------------
       -- errors/status @sys_clk
       ---------------------------------------------------------------------
       -- errors1
-      o_errors1    => science_errors1,    -- to connect
+      o_errors1 => science_errors1,
       -- errors0
-      o_errors0    => science_errors0,    -- to connect
-      -- status
-      o_status0    => science_status0     -- to connect
+      o_errors0 => science_errors0,
+      -- status1
+      o_status1 => science_status1,
+      -- status0
+      o_status0 => science_status0
       );
 
-o_fifo_science_data_valid <= science_data_valid;
-o_fifo_science_data       <= science_data;
-o_ddr_stamp               <= ddr_stamp;
+  o_fifo_science_data_valid <= science_data_valid;
+  o_fifo_science_data       <= science_data;
+  o_ddr_stamp               <= ddr_stamp;
+
+  o_science_errors1 <= science_errors1;
+  o_science_errors0 <= science_errors0;
+  o_science_status1 <= science_status1;
+  o_science_status0 <= science_status0;
 
 
   ---------------------------------------------------------------------
@@ -333,14 +362,14 @@ o_ddr_stamp               <= ddr_stamp;
       -- input @i_clk
       ---------------------------------------------------------------------
       -- clock
-      i_clk        => i_clk,
+      i_clk                 => i_clk,
       -- reset  @i_clk
-      i_rst        => i_rst,
+      i_rst                 => i_rst,
       ---------------------------------------------------------------------
-       -- from DDR controller @i_clk
+      -- from DDR controller @i_clk
       ---------------------------------------------------------------------
       -- PHY asserts init_calib_complete when calibration is finished
-      i_init_calib_complete  => i_init_calib_complete,
+      i_init_calib_complete => i_init_calib_complete,
 
       ---------------------------------------------------------------------
       -- from science @i_clk
@@ -353,9 +382,9 @@ o_ddr_stamp               <= ddr_stamp;
       -- output @i_clk
       ---------------------------------------------------------------------
       -- output leds
-      o_leds         => o_leds,
-      o_led_fw       => o_led_fw,
-      o_led_pll_lock => o_led_pll_lock
+      o_leds               => o_leds,
+      o_led_fw             => o_led_fw,
+      o_led_pll_lock       => o_led_pll_lock
       );
 
 
