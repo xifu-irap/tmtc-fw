@@ -157,18 +157,18 @@ entity tmtc_top is
     -- debug
     ---------------------------------------------------------------------
     -- spi_errors
-    o_spi_errors : std_logic_vector(15 downto 0);
+    o_spi_errors : out std_logic_vector(15 downto 0);
     -- spi_status
-    o_spi_status : std_logic_vector(7 downto 0);
+    o_spi_status : out std_logic_vector(7 downto 0);
 
     -- science errors1
-    o_science_errors1 : std_logic_vector(15 downto 0);
+    o_science_errors1 : out std_logic_vector(15 downto 0);
     -- science errors0
-    o_science_errors0 : std_logic_vector(15 downto 0);
+    o_science_errors0 : out std_logic_vector(15 downto 0);
     -- science status1
-    o_science_status1 : std_logic_vector(7 downto 0);
+    o_science_status1 : out std_logic_vector(7 downto 0);
     -- science status0
-    o_science_status0 : std_logic_vector(7 downto 0)
+    o_science_status0 : out std_logic_vector(7 downto 0)
     );
 end entity tmtc_top;
 
