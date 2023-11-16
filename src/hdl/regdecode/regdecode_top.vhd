@@ -104,10 +104,12 @@ entity regdecode_top is
     i_reg_science_debug1    : in std_logic_vector(31 downto 0);
 
     -- from science
-    -- science data valid
-    i_science_data_valid : in std_logic;
-    -- science data
-    i_science_data       : in std_logic_vector(31 downto 0);
+    -- fifo science data valid
+    i_fifo_science_data_valid : in std_logic;
+    -- fifo science data
+    i_fifo_science_data       : in std_logic_vector(31 downto 0);
+    -- fifo prog full
+    o_fifo_science_prog_full  : out std_logic;
 
     -- error/status
     ---------------------------------------------------------------------
@@ -422,7 +424,7 @@ begin
   ---------------------------------------------------------------------
   inst_regdecode_science_fifo : entity work.regdecode_science_fifo
     generic map(
-      g_DATA_WIDTH => i_science_data'length
+      g_DATA_WIDTH => i_fifo_science_data'length
       )
     port map(
       ---------------------------------------------------------------------
@@ -431,8 +433,9 @@ begin
       i_out_clk                => i_out_clk,
       i_out_rst                => i_out_rst,
       -- data
-      i_data_valid             => i_science_data_valid,
-      i_data                   => i_science_data,
+      i_fifo_data_valid             => i_fifo_science_data_valid,
+      i_fifo_data                   => i_fifo_science_data,
+      o_fifo_prog_full         => o_fifo_science_prog_full,
       ---------------------------------------------------------------------
       -- to the usb: @i_clk
       ---------------------------------------------------------------------

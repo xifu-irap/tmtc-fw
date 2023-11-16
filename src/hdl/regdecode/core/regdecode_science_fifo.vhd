@@ -52,10 +52,12 @@ entity regdecode_science_fifo is
     -- reset
     i_out_rst : in std_logic;
 
-    -- input data valid
-    i_data_valid : in std_logic;
-    -- input data
-    i_data       : in std_logic_vector(g_DATA_WIDTH - 1 downto 0);
+    -- input fifo data valid
+    i_fifo_data_valid : in std_logic;
+    -- input fifo data
+    i_fifo_data       : in std_logic_vector(g_DATA_WIDTH - 1 downto 0);
+    -- input fifo prog full
+    o_fifo_prog_full  : out std_logic;
 
     ---------------------------------------------------------------------
     -- to the usb: @i_clk
@@ -97,10 +99,12 @@ architecture RTL of regdecode_science_fifo is
   -- index0: low
   constant c_FIFO_IDX0_L : integer := 0;
   -- index0: high
-  constant c_FIFO_IDX0_H : integer := c_FIFO_IDX0_L + i_data'length - 1;
+  constant c_FIFO_IDX0_H : integer := c_FIFO_IDX0_L + i_fifo_data'length - 1;
 
   -- FIFO depth (expressed in number of words)
   constant c_FIFO_DEPTH0 : integer := 16;
+  -- FIFO prog full (expressed in number of words)
+  constant c_FIFO_PROG_FULL0 : integer := c_FIFO_DEPTH0 - 4;
   -- FIFO width (expressed in bits)
   constant c_FIFO_WIDTH0 : integer := c_FIFO_IDX0_H + 1;
 
@@ -113,6 +117,8 @@ architecture RTL of regdecode_science_fifo is
   signal wr_data_tmp0 : std_logic_vector(c_FIFO_WIDTH0 - 1 downto 0);
   -- fifo full flag
   -- signal wr_full0      : std_logic;
+  -- fifo prog full
+  signal wr_prog_full0      : std_logic;
   -- fifo rst_busy flag
   -- signal wr_rst_busy0  : std_logic;
 
@@ -192,15 +198,16 @@ begin
 -- clock cross domain : @i_out_clk -> i_clk
 ---------------------------------------------------------------------
   wr_rst0                                          <= i_out_rst;
-  wr_tmp0                                          <= i_data_valid;
-  wr_data_tmp0(c_FIFO_IDX0_H downto c_FIFO_IDX0_L) <= i_data;
+  wr_tmp0                                          <= i_fifo_data_valid;
+  wr_data_tmp0(c_FIFO_IDX0_H downto c_FIFO_IDX0_L) <= i_fifo_data;
 
-  inst_fifo_async_with_error : entity work.fifo_async_with_error
+  inst_fifo_async_with_error_prog_full : entity work.fifo_async_with_error_prog_full
     generic map(
       g_CDC_SYNC_STAGES   => 2,
       g_FIFO_MEMORY_TYPE  => "auto",
       g_FIFO_READ_LATENCY => 1,
       g_FIFO_WRITE_DEPTH  => c_FIFO_DEPTH0,
+      g_PROG_FULL_THRESH  => c_FIFO_PROG_FULL0,
       g_READ_DATA_WIDTH   => wr_data_tmp0'length,
       g_READ_MODE         => "std",
       g_RELATED_CLOCKS    => 0,
@@ -216,6 +223,7 @@ begin
       i_wr_en         => wr_tmp0,
       i_wr_din        => wr_data_tmp0,
       o_wr_full       => open,
+      o_wr_prog_full  => wr_prog_full0,
       o_wr_rst_busy   => open,
       ---------------------------------------------------------------------
       -- read side
@@ -233,6 +241,7 @@ begin
       o_empty_sync    => empty_sync1
       );
 
+      o_fifo_prog_full <= wr_prog_full0;
 ---------------------------------------------------------------------
 -- output FIFO
 ---------------------------------------------------------------------

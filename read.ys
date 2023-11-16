@@ -52,6 +52,9 @@ verific -vhdl ./src/hdl/utils/others/pipeliner_with_init.vhd
 # xpm
 verific -vhdl ./ip/xilinx/xpm/fifo/fifo_async.vhd
 verific -vhdl ./ip/xilinx/xpm/fifo/fifo_async_with_error.vhd
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_async_with_prog_full.vhd
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_async_with_error_prog_full.vhd
+
 verific -vhdl ./ip/xilinx/xpm/fifo/fifo_sync.vhd
 verific -vhdl ./ip/xilinx/xpm/fifo/fifo_sync_with_error.vhd
 verific -vhdl ./ip/xilinx/xpm/fifo/fifo_sync_with_prog_full.vhd

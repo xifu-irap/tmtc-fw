@@ -184,10 +184,12 @@ architecture RTL of system_tmtc_top is
   -- science_debug1 register value
   signal reg_science_debug1    : std_logic_vector(31 downto 0);
 
-  -- science data valid
+  -- fifo science data valid
   signal reg_fifo_science_data_valid : std_logic;
-  -- science data
+  -- fifo science data
   signal reg_fifo_science_data       : std_logic_vector(31 downto 0);
+  -- fifo science prog full
+  signal reg_fifo_science_prog_full  : std_logic;
 
   -- extracted bits
   ---------------------------------------------------------------------
@@ -344,8 +346,9 @@ begin
       i_reg_science_debug0    => reg_science_debug0,  -- to connect
       i_reg_science_debug1    => reg_science_debug1,  -- to connect
       -- from science
-      i_science_data_valid    => reg_fifo_science_data_valid,
-      i_science_data          => reg_fifo_science_data,
+      i_fifo_science_data_valid    => reg_fifo_science_data_valid,
+      i_fifo_science_data          => reg_fifo_science_data,
+      o_fifo_science_prog_full     => reg_fifo_science_prog_full,
 
       -- error/status
       ---------------------------------------------------------------------
@@ -440,7 +443,7 @@ begin
       -- science
       ---------------------------------------------------------------------
       -- fifo prog full
-      i_fifo_science_prog_full  => '0',  -- TODO
+      i_fifo_science_prog_full  => reg_fifo_science_prog_full,
       -- fifo data valid (write enable)
       o_fifo_science_data_valid => reg_fifo_science_data_valid,
       -- fifo data
