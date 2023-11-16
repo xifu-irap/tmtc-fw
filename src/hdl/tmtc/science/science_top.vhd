@@ -169,6 +169,8 @@ architecture RTL of science_top is
 ---------------------------------------------------------------------
 -- science_rx_frame
 ---------------------------------------------------------------------
+-- combine data_valid and init_calib_complete
+  signal data_valid_tmp0: std_logic;
 -- first frame
   signal sof_frame1  : std_logic;
 -- last frame
@@ -283,6 +285,8 @@ begin
 ---------------------------------------------------------------------
 -- science_rx_frame
 ---------------------------------------------------------------------
+data_valid_tmp0 <= data_valid0 and i_init_calib_complete;
+
   inst_science_rx_frame : entity work.science_rx_frame
     port map(
       -- input clock
@@ -293,7 +297,7 @@ begin
       -- input
       ---------------------------------------------------------------------
       -- valid deserialized word
-      i_data_valid => data_valid0,
+      i_data_valid => data_valid_tmp0,
       -- deserialized control word
       i_ctrl_word  => ctrl_word0,
       -- deserialized data words
