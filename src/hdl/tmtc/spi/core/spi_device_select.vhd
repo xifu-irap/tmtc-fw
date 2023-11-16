@@ -37,6 +37,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.pkg_system_tmtc.all;
+use work.pkg_utils.all;
 
 
 entity spi_device_select is
@@ -98,6 +99,14 @@ end entity spi_device_select;
 
 architecture RTL of spi_device_select is
 
+  constant c_INTER_FRAME_TEMPO : integer := 16;  -- TODO: set the value in the package. Range [1;+inf[)
+
+  -- counter width
+  constant c_CNT_WIDTH : integer := work.pkg_utils.pkg_width_from_value(i_value => c_INTER_FRAME_TEMPO);
+
+  -- counter max value
+  constant c_CNT_MAX : unsigned(c_CNT_WIDTH - 1 downto 0) := to_unsigned(c_INTER_FRAME_TEMPO - 1, c_CNT_WIDTH);
+
   ---------------------------------------------------------------------
   -- input FIFO
   ---------------------------------------------------------------------
@@ -150,7 +159,7 @@ architecture RTL of spi_device_select is
 -- state machine
 ---------------------------------------------------------------------
   -- fsm type declaration
-  type t_state is (E_RST, E_WAIT_CMD, E_RUN_SPI);
+  type t_state is (E_RST, E_WAIT_CMD, E_RUN_SPI, E_INTER_FRAME_TEMPO);
 
   -- state
   signal sm_state_next : t_state;
@@ -167,9 +176,6 @@ architecture RTL of spi_device_select is
   -- select the SPI chip select (registered)
   signal spi_ras_select_r1   : std_logic;
 
-
-
-
   -- read_valid
   signal rd_data_valid_next : std_logic;
   -- read_valid (registered)
@@ -184,6 +190,11 @@ architecture RTL of spi_device_select is
   signal ready_next : std_logic;
   -- ready flag (registered)
   signal ready_r1   : std_logic := '0';
+
+  -- count the number of inter frame sample
+  signal cnt_tempo_next : unsigned(c_CNT_WIDTH - 1 downto 0);
+  -- count the number of inter frame sample (delayed)
+  signal cnt_tempo_r1   : unsigned(c_CNT_WIDTH - 1 downto 0);
 
   ---------------------------------------------------------------------
   -- spi engine
@@ -209,11 +220,11 @@ architecture RTL of spi_device_select is
   -- select spi link
   ---------------------------------------------------------------------
   -- spi: clock (registered)
-  signal spi_clk_r1   : std_logic := '0';
+  signal spi_clk_r1  : std_logic := '0';
   -- spi: mosi (registered)
-  signal spi_mosi_r1   : std_logic := '0';
+  signal spi_mosi_r1 : std_logic := '0';
   -- spi cs_n (registered)
-  signal spi_cs_n_r1   : std_logic_vector(o_spi_cs_n'range);
+  signal spi_cs_n_r1 : std_logic_vector(o_spi_cs_n'range);
 
 ---------------------------------------------------------------------
   -- error latching
@@ -283,13 +294,14 @@ begin
   p_decode_state : process (empty1, i_spi_cmd_select, rd_data_r1, ready_r1,
                             sm_state_r1, spi_finish,
                             spi_ras_select_r1, spi_rd_data, spi_rd_data_valid,
-                            spi_ready) is
+                            spi_ready, cnt_tempo_r1) is
   begin
     rd_next             <= '0';
     spi_ras_select_next <= spi_ras_select_r1;
     rd_data_valid_next  <= '0';
     rd_data_next        <= rd_data_r1;
     ready_next          <= ready_r1;
+    cnt_tempo_next      <= cnt_tempo_r1;
 
     case sm_state_r1 is
       when E_RST =>
@@ -298,6 +310,7 @@ begin
 
       when E_WAIT_CMD =>
         spi_ras_select_next <= i_spi_cmd_select;
+        cnt_tempo_next      <= (others => '0');
 
         if empty1 = '0' and spi_ready = '1' then
           -- read one input command
@@ -320,6 +333,16 @@ begin
           sm_state_next <= E_WAIT_CMD;
         else
           sm_state_next <= E_RUN_SPI;
+        end if;
+
+      when E_INTER_FRAME_TEMPO =>
+
+        cnt_tempo_next <= cnt_tempo_r1 + 1;
+
+        if cnt_tempo_r1 = c_CNT_MAX then
+          sm_state_next <= E_WAIT_CMD;
+        else
+          sm_state_next <= E_INTER_FRAME_TEMPO;
         end if;
 
       when others =>
@@ -347,6 +370,7 @@ begin
       rd_data_valid_r1  <= rd_data_valid_next;
       rd_data_r1        <= rd_data_next;
       ready_r1          <= ready_next;
+      cnt_tempo_r1      <= cnt_tempo_next;
 
     end if;
   end process p_state;
@@ -397,7 +421,7 @@ begin
   ---------------------------------------------------------------------
   -- Select the spi link
   ---------------------------------------------------------------------
-  p_select_spi_link: process (i_clk) is
+  p_select_spi_link : process (i_clk) is
   begin
     if rising_edge(i_clk) then
       spi_clk_r1  <= spi_clk;
