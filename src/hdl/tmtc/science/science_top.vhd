@@ -32,8 +32,12 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 use work.pkg_system_tmtc.all;
+use work.pkg_system_tmtc_debug.all;
 
 entity science_top is
+  generic (
+    g_DEBUG : boolean := pkg_SCIENCE_TOP_DEBUG
+    );
   port (
 
     ---------------------------------------------------------------------
@@ -170,15 +174,15 @@ architecture RTL of science_top is
 -- science_rx_frame
 ---------------------------------------------------------------------
 -- combine data_valid and init_calib_complete
-  signal data_valid_tmp0: std_logic;
+  signal data_valid_tmp0 : std_logic;
 -- first frame
-  signal sof_frame1  : std_logic;
+  signal sof_frame1      : std_logic;
 -- last frame
-  signal eof_frame1  : std_logic;
+  signal eof_frame1      : std_logic;
 -- fifo data valid
-  signal data_valid1 : std_logic;
+  signal data_valid1     : std_logic;
 -- fifo data
-  signal data1       : std_logic_vector(127 downto 0);
+  signal data1           : std_logic_vector(127 downto 0);
 
 
 ---------------------------------------------------------------------
@@ -285,7 +289,7 @@ begin
 ---------------------------------------------------------------------
 -- science_rx_frame
 ---------------------------------------------------------------------
-data_valid_tmp0 <= data_valid0 and i_init_calib_complete;
+  data_valid_tmp0 <= data_valid0 and i_init_calib_complete;
 
   inst_science_rx_frame : entity work.science_rx_frame
     port map(
@@ -305,8 +309,8 @@ data_valid_tmp0 <= data_valid0 and i_init_calib_complete;
       ---------------------------------------------------------------------
       -- output
       ---------------------------------------------------------------------
-      o_sof_frame  => sof_frame1,       -- not connected
-      o_eof_frame  => eof_frame1,       -- not connected
+      o_sof_frame  => sof_frame1,
+      o_eof_frame  => eof_frame1,
       o_data_valid => data_valid1,
       o_data       => data1
       );
@@ -328,8 +332,8 @@ data_valid_tmp0 <= data_valid0 and i_init_calib_complete;
       i_data => data_pipe_tmp2,
       o_data => data_pipe_tmp3
       );
-  sof1 <= data_pipe_tmp3(1);            -- not connected
-  eof1 <= data_pipe_tmp3(0);            -- not connected
+  sof1 <= data_pipe_tmp3(1);
+  eof1 <= data_pipe_tmp3(0);
 
 ---------------------------------------------------------------------
 -- science_ddr3
@@ -410,5 +414,37 @@ data_valid_tmp0 <= data_valid0 and i_init_calib_complete;
 
   o_errors0 <= ddr_errors;
   o_status0 <= ddr_status;
+
+
+  ---------------------------------------------------------------------
+  -- debug
+  ---------------------------------------------------------------------
+  gen_debug : if g_DEBUG generate
+  begin
+
+    inst_ila_science_top : ila_science_top
+      port map (
+        clk => i_clk,
+
+        -- probe0
+        probe0(7) => i_rst,
+        probe0(6) => i_init_calib_complete,
+        probe0(5) => fifo_data_valid,
+        probe0(4) => sof1,
+        probe0(3) => eof1,
+        probe0(2) => sof_frame1,
+        probe0(1) => eof_frame1,
+        probe0(0) => data_valid1,
+
+        -- probe1
+        probe1(159 downto 128) => fifo_data,
+        probe1(127 downto 0)   => data1,
+        -- probe2
+        probe2(63 downto 32)   => errors0,
+        probe2(31 downto 0)    => ddr_status
+        );
+
+
+  end generate gen_debug;
 
 end architecture RTL;

@@ -35,10 +35,10 @@ use ieee.math_real.all;
 package pkg_system_tmtc_debug is
 
   ---------------------------------------------------------------------
-  -- IOs
+  -- SCIENCE_TOP
   ---------------------------------------------------------------------
   -- user-defined: true: to use Xilinx debugging modules (ILA, VIO,..), false: otherwise
-  --constant pkg_SPI_TOP_DEBUG : boolean := false;
+  constant pkg_SCIENCE_TOP_DEBUG : boolean := true;
 
 
 
