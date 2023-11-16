@@ -82,6 +82,9 @@ entity science_rx_deserializer is
     ---------------------------------------------------------------------
     -- errors/status
     ---------------------------------------------------------------------
+    -- status
+    o_status : out std_logic_vector(7  downto 0);
+    -- errors
     o_errors : out std_logic_vector(15 downto 0)
     );
 end entity science_rx_deserializer;
@@ -143,6 +146,11 @@ architecture RTL of science_rx_deserializer is
   -- delayed error on the science ctrl word size
   signal error_r1  : std_logic;
 
+  -- fsm ready
+  signal ready_next : std_logic;
+  -- delayed fsm ready
+  signal ready_r1 : std_logic;
+
 
   ---------------------------------------------------------------------
   --  deserializer of the input data
@@ -184,7 +192,7 @@ begin
 -- this FSM deserializes the input stream (ctrl) by decoding the control bits and by generating control bits
   p_decode_state : process (ctrl_array_r1, i_science_ctrl, i_science_data,
                             i_science_data_valid,
-                            sm_state_r1, cnt_bit_r1) is
+                            sm_state_r1, cnt_bit_r1, ready_r1) is
   begin
     sof_next           <= '0';
     eof_next           <= '0';
@@ -193,6 +201,7 @@ begin
     ctrl_array_next    <= ctrl_array_r1;
     cnt_bit_next       <= cnt_bit_r1;
     error_next         <=  '0';
+    ready_next         <= ready_r1;
 
     case sm_state_r1 is
       when E_RST =>
@@ -210,11 +219,13 @@ begin
       when E_WAIT_HEADER1 =>
         -- detect the 2nd ctrl synchro bit: science_ctrl = 1
         if i_science_ctrl = '1' and i_science_data_valid = '1' then
+          ready_next      <= '0';
           sof_next        <= '1';
           cnt_bit_next    <= cnt_bit_r1 + 1;
           ctrl_array_next <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
           sm_state_next   <= E_WAIT_HEADER2;
         else
+          ready_next      <= '1';
           sm_state_next <= E_WAIT_HEADER1;
         end if;
 
@@ -279,6 +290,7 @@ begin
       ctrl_array_r1    <= ctrl_array_next;
       cnt_bit_r1       <= cnt_bit_next;
       error_r1         <= error_next;
+      ready_r1         <= ready_next;
     end if;
   end process p_state;
 
@@ -365,6 +377,9 @@ end process p_pipe;
 
   o_errors(15 downto 1) <= (others => '0');
   o_errors(0)           <= error_tmp_bis(0);
+
+  o_status(7 downto 1) <= (others => '0');
+  o_status(0)          <= ready_r1;
 
 
   ---------------------------------------------------------------------

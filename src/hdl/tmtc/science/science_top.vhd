@@ -108,7 +108,7 @@ entity science_top is
     o_fifo_data       : out std_logic_vector(31 downto 0);
 
     -- number of remaining bytes to read in the DDR
-    o_ddr_stamp : out std_logic_vector(31 downto 0);
+    o_ddr_stamp            : out std_logic_vector(31 downto 0);
     ---------------------------------------------------------------------
     -- to leds @i_clk
     ---------------------------------------------------------------------
@@ -124,7 +124,9 @@ entity science_top is
     o_errors1 : out std_logic_vector(15 downto 0);
     -- errors0
     o_errors0 : out std_logic_vector(15 downto 0);
-    -- status
+    -- status1
+    o_status1 : out std_logic_vector(7 downto 0);
+    -- status0
     o_status0 : out std_logic_vector(7 downto 0)
 
     );
@@ -139,15 +141,17 @@ architecture RTL of science_top is
 -- detect the last bit of the sync_word
   signal sync_word_eof0 : std_logic;
 -- first bit of a science ctrl bit
-  signal sof0  : std_logic;
+  signal sof0           : std_logic;
 -- last bit of a science ctrl bit
-  signal eof0  : std_logic;
+  signal eof0           : std_logic;
 -- data valid of the deserialized data
   signal data_valid0    : std_logic;
 -- deserialized ctrl word
   signal ctrl_word0     : std_logic_vector(7 downto 0);
 -- deserialized data
   signal data_words0    : std_logic_vector(8*8-1 downto 0);
+-- status
+  signal status0        : std_logic_vector(o_status1'range);
 -- errors
   signal errors0        : std_logic_vector(o_errors1'range);
 
@@ -166,9 +170,9 @@ architecture RTL of science_top is
 -- science_rx_frame
 ---------------------------------------------------------------------
 -- first frame
-  signal sof_frame1 : std_logic;
+  signal sof_frame1  : std_logic;
 -- last frame
-  signal eof_frame1 : std_logic;
+  signal eof_frame1  : std_logic;
 -- fifo data valid
   signal data_valid1 : std_logic;
 -- fifo data
@@ -178,22 +182,28 @@ architecture RTL of science_top is
 ---------------------------------------------------------------------
 -- sync with the science_rx_frame output
 ---------------------------------------------------------------------
-  -- temporary input pipe
+-- temporary input pipe
   signal data_pipe_tmp2 : std_logic_vector(1 downto 0);
 -- temporary output pipe
   signal data_pipe_tmp3 : std_logic_vector(1 downto 0);
 
 -- delayed first bit of a science ctrl bit
-  signal sof1  : std_logic;
+  signal sof1 : std_logic;
 -- delayed last bit of a science ctrl bit
-  signal eof1  : std_logic;
+  signal eof1 : std_logic;
 
 
   ---------------------------------------------------------------------
   -- science ddr3
   ---------------------------------------------------------------------
-  signal ddr_errors : std_logic_vector(o_errors0'range);
-  signal ddr_status : std_logic_vector(o_status0'range);
+  -- output fifo data valid
+  signal fifo_data_valid : std_logic;
+  -- output fifo data
+  signal fifo_data       : std_logic_vector(o_fifo_data'range);
+  -- science ddr errors
+  signal ddr_errors      : std_logic_vector(o_errors0'range);
+  -- science ddr status
+  signal ddr_status      : std_logic_vector(o_status0'range);
 
 begin
 
@@ -207,14 +217,14 @@ begin
       )
     port map(
       -- input clock
-      i_clk                => i_clk,
+      i_clk => i_clk,
       -- input reset
-      i_rst                => i_rst,
+      i_rst => i_rst,
 
       -- reset error flag(s) @i_clk
-      i_rst_status         => i_rst_status,
+      i_rst_status  => i_rst_status,
       -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s) @i_clk
-      i_debug_pulse        => i_debug_pulse,
+      i_debug_pulse => i_debug_pulse,
 
       ---------------------------------------------------------------------
       -- input
@@ -244,9 +254,11 @@ begin
       ---------------------------------------------------------------------
       -- status
       ---------------------------------------------------------------------
-      o_errors             => errors0
+      o_status => status0
+      o_errors => errors0
       );
-o_errors1  <= errors0;
+  o_status1         <= status0;
+  o_errors1         <= errors0;
 ---------------------------------------------------------------------
 -- sync with the science_rx_deserializer
 ---------------------------------------------------------------------
@@ -289,8 +301,8 @@ o_errors1  <= errors0;
       ---------------------------------------------------------------------
       -- output
       ---------------------------------------------------------------------
-      o_sof_frame  => sof_frame1, -- not connected
-      o_eof_frame  => eof_frame1, -- not connected
+      o_sof_frame  => sof_frame1,       -- not connected
+      o_eof_frame  => eof_frame1,       -- not connected
       o_data_valid => data_valid1,
       o_data       => data1
       );
@@ -298,8 +310,8 @@ o_errors1  <= errors0;
 ---------------------------------------------------------------------
 -- sync with the science_rx_frame output
 ---------------------------------------------------------------------
-    data_pipe_tmp2(1) <= sof0;
-    data_pipe_tmp2(0) <= eof0;
+  data_pipe_tmp2(1) <= sof0;
+  data_pipe_tmp2(0) <= eof0;
 
   inst_pipeliner_with_init_sync_with_science_rx_frame_out : entity work.pipeliner_with_init
     generic map(
@@ -312,8 +324,8 @@ o_errors1  <= errors0;
       i_data => data_pipe_tmp2,
       o_data => data_pipe_tmp3
       );
-  sof1 <= data_pipe_tmp3(1); -- not connected
-  eof1 <= data_pipe_tmp3(0); -- not connected
+  sof1 <= data_pipe_tmp3(1);            -- not connected
+  eof1 <= data_pipe_tmp3(0);            -- not connected
 
 ---------------------------------------------------------------------
 -- science_ddr3
@@ -341,9 +353,9 @@ o_errors1  <= errors0;
       -- fifo prog full
       i_fifo_prog_full      => i_fifo_prog_full,
       -- fifo output data valid
-      o_fifo_data_valid     => o_fifo_data_valid,
+      o_fifo_data_valid     => fifo_data_valid,
       -- fifo output data
-      o_fifo_data           => o_fifo_data,
+      o_fifo_data           => fifo_data,
       ---------------------------------------------------------------------
       -- output register
       ---------------------------------------------------------------------
@@ -389,7 +401,10 @@ o_errors1  <= errors0;
       o_status              => ddr_status
       );
 
-o_errors0 <= ddr_errors;
-o_status0 <= ddr_status;
+  o_fifo_data_valid <= fifo_data_valid;
+  o_fifo_data       <= fifo_data;
+
+  o_errors0 <= ddr_errors;
+  o_status0 <= ddr_status;
 
 end architecture RTL;
