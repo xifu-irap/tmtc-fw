@@ -422,7 +422,7 @@ begin
   gen_debug : if g_DEBUG generate
   begin
 
-    inst_ila_science_top : ila_science_top
+    inst_ila_science_top : entity work.ila_science_top
       port map (
         clk => i_clk,
 
@@ -440,8 +440,8 @@ begin
         probe1(159 downto 128) => fifo_data,
         probe1(127 downto 0)   => data1,
         -- probe2
-        probe2(63 downto 32)   => errors0,
-        probe2(31 downto 0)    => ddr_status
+        probe2(31 downto 16)   => errors0,
+        probe2(15 downto 0)    => ddr_errors
         );
 
 
