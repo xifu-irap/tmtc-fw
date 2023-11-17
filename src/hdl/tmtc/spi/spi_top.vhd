@@ -30,11 +30,13 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
 
-use work.pkg_utils;
+use work.pkg_system_tmtc_debug.all;
 
 entity spi_top is
+  generic (
+    g_DEBUG : boolean := pkg_SPI_TOP_DEBUG
+    );
   port (
 
     -- system clock
@@ -62,7 +64,7 @@ entity spi_top is
     ---------------------------------------------------------------------
     -- spi data valid (reading)
     o_spi_rd_data_valid : out std_logic;
-     -- spi data (reading)
+    -- spi data (reading)
     o_spi_rd_data       : out std_logic_vector(31 downto 0);
     -- status
     o_spi_ready         : out std_logic;
@@ -98,6 +100,25 @@ architecture RTL of spi_top is
   signal spi_wr_en   : std_logic;
   -- spi write data
   signal spi_wr_data : std_logic_vector(i_spi_wr_data'range);
+
+  -- read data valid
+  signal spi_rd_data_valid : std_logic;
+  -- read data (device spi register value).
+  signal spi_rd_data       : std_logic_vector(o_spi_rd_data'range);
+  -- 1: all spi links are ready,0: one of the spi link is busy
+  signal spi_ready         : std_logic;
+
+  -- Shared SPI MOSI
+  signal spi_mosi : std_logic;
+  -- Shared SPI clock line
+  signal spi_sclk : std_logic;
+  -- SPI chip select
+  signal spi_cs_n : std_logic_vector(o_spi_cs_n'range);
+
+  -- spi errors
+  signal errors : std_logic_vector(15 downto 0);
+  -- spi status
+  signal status : std_logic_vector(7 downto 0);
 
 begin
 
@@ -140,17 +161,17 @@ begin
       ---------------------------------------------------------------------
       -- input
       i_spi_cmd_select    => i_spi_select,
-      i_spi_cmd_valid     => spi_wr_en,    -- command valid
+      i_spi_cmd_valid     => spi_wr_en,  -- command valid
       i_spi_cmd_wr_data   => spi_wr_data,  -- data to write
       -- output
-      o_spi_rd_data_valid => o_spi_rd_data_valid,  -- read data valid
-      o_spi_rd_data       => o_spi_rd_data,  -- read data (device spi register value).
-      o_spi_ready         => o_spi_ready,  -- 1: all spi links are ready,0: one of the spi link is busy
+      o_spi_rd_data_valid => spi_rd_data_valid,  -- read data valid
+      o_spi_rd_data       => spi_rd_data,  -- read data (device spi register value).
+      o_spi_ready         => spi_ready,  -- 1: all spi links are ready,0: one of the spi link is busy
       ---------------------------------------------------------------------
       -- errors/status
       ---------------------------------------------------------------------
-      o_errors            => o_errors,  -- errors
-      o_status            => o_status,  -- status
+      o_errors            => errors,    -- errors
+      o_status            => status,    -- status
       ---------------------------------------------------------------------
       -- from/to the IOs
       ---------------------------------------------------------------------
@@ -159,10 +180,53 @@ begin
       ---------------------------------------------------------------------
       -- SPI --
       i_spi_miso          => i_spi_miso,   -- Shared SPI MISO
-      o_spi_mosi          => o_spi_mosi,   -- Shared SPI MOSI
-      o_spi_sclk          => o_spi_sclk,   -- Shared SPI clock line
-      o_spi_cs_n          => o_spi_cs_n    -- SPI chip select
+      o_spi_mosi          => spi_mosi,  -- Shared SPI MOSI
+      o_spi_sclk          => spi_sclk,  -- Shared SPI clock line
+      o_spi_cs_n          => spi_cs_n   -- SPI chip select
       );
+
+  o_spi_rd_data_valid <= spi_rd_data_valid;
+  o_spi_rd_data       <= spi_rd_data;
+  o_spi_ready         <= spi_ready;
+
+  o_spi_mosi <= spi_mosi;
+  o_spi_sclk <= spi_sclk;
+  o_spi_cs_n <= spi_cs_n;
+
+  o_errors <= errors;
+  o_status <= status;
+
+---------------------------------------------------------------------
+  -- debug
+  ---------------------------------------------------------------------
+  gen_debug : if g_DEBUG generate
+  begin
+
+    inst_ila_hk_top : entity work.ila_hk_top
+      port map (
+        clk => i_clk,
+
+        -- probe0
+        probe0(4) => i_rst,
+        probe0(3) => spi_wr_en,
+        probe0(2) => spi_ready,
+        probe0(1) => i_spi_select,
+        probe0(0) => spi_rd_data_valid,
+
+        -- probe1
+        probe1(4)          => i_spi_miso,
+        probe1(3)          => spi_mosi,
+        probe1(2)          => spi_sclk,
+        probe1(1 downto 0) => spi_cs_n,
+
+        -- probe2
+        probe2(79 downto 64) => errors,
+        probe2(63 downto 32) => spi_wr_data,
+        probe2(31 downto 0)  => spi_rd_data
+        );
+
+
+  end generate gen_debug;
 
 
 end architecture RTL;
