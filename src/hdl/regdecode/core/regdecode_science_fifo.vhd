@@ -144,6 +144,8 @@ architecture RTL of regdecode_science_fifo is
   ---------------------------------------------------------------------
   -- FIFO depth (expressed in number of words)
   constant c_FIFO_DEPTH2          : integer := pkg_SCIENCE_FIFO_DEPTH;
+  -- FIFO prog full (expressed in number of words)
+  constant c_FIFO_PROG_FULL2 : integer := c_FIFO_DEPTH2 - 4;
   -- FIFO width (expressed in bits)
   constant c_FIFO_WIDTH2          : integer := c_FIFO_IDX0_H + 1;
   -- FIFO write data count width (expressed in bits)
@@ -160,6 +162,8 @@ architecture RTL of regdecode_science_fifo is
   signal wr_data_count2 : std_logic_vector(c_WR_DATA_COUNT_WIDTH2 - 1 downto 0);
   -- fifo full flag
   -- signal wr_full2       : std_logic;
+  -- fifo prog full
+  signal wr_prog_full2      : std_logic;
   -- fifo rst_busy flag
   -- signal wr_rst_busy2   : std_logic;
 
@@ -245,17 +249,18 @@ begin
 ---------------------------------------------------------------------
 -- output FIFO
 ---------------------------------------------------------------------
-  rd1 <= '1' when empty1 = '0' and rd_rst_busy1 = '0' else '0';
+  rd1 <= '1' when empty1 = '0' and rd_rst_busy1 = '0' and wr_prog_full2 = '0' else '0';
 
   wr_rst2      <= i_rst;
   wr_tmp2      <= data_valid1;
   wr_data_tmp2 <= data_tmp1;
 
-  inst_fifo_sync_with_error_wr_count : entity work.fifo_sync_with_error_wr_count
+  inst_fifo_sync_with_error_prog_full_wr_count : entity work.fifo_sync_with_error_prog_full_wr_count
     generic map(
       g_FIFO_MEMORY_TYPE    => "auto",
       g_FIFO_READ_LATENCY   => 1,
       g_FIFO_WRITE_DEPTH    => c_FIFO_DEPTH2,
+      g_PROG_FULL_THRESH    => c_FIFO_PROG_FULL2,
       g_READ_DATA_WIDTH     => wr_data_tmp2'length,
       g_READ_MODE           => "std",
       g_WRITE_DATA_WIDTH    => wr_data_tmp2'length,
@@ -270,6 +275,7 @@ begin
       i_wr_en         => wr_tmp2,
       i_wr_din        => wr_data_tmp2,
       o_wr_full       => open,
+      o_wr_prog_full  => wr_prog_full2,
       o_wr_data_count => wr_data_count2,
       o_wr_rst_busy   => open,
       ---------------------------------------------------------------------
