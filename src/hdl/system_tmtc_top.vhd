@@ -308,6 +308,9 @@ begin
 -- regdecode
 ---------------------------------------------------------------------
   inst_regdecode_top : entity work.regdecode_top
+    generic map(
+      g_DEBUG => pkg_REGDECODE_TOP_DEBUG
+      )
     port map(
       --  Opal Kelly inouts --
       i_okUH  => i_okUH,

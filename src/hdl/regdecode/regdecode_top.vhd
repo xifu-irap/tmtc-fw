@@ -34,6 +34,9 @@ use ieee.numeric_std.all;
 use work.pkg_regdecode.all;
 
 entity regdecode_top is
+  generic (
+    g_DEBUG : boolean := false
+    );
   port (
     --  Opal Kelly inouts --
     -- usb interface signal
@@ -190,9 +193,11 @@ architecture RTL of regdecode_top is
 
   -- Science pipeout
   ---------------------------------------------------------------------
-  -- science pipeout data valid
+  -- science pipeout read enable
+  signal usb_pipeout_science_rd_en         : std_logic;
+  -- science pipeout read data valid
   signal usb_pipeout_science_rd_data_valid : std_logic;
-  -- science pipeout data
+  -- science pipeout read data
   signal usb_pipeout_science_rd_data       : std_logic_vector(31 downto 0);
 
   -- spi pipeout
@@ -372,7 +377,7 @@ begin
       i_usb_wireout_status     => usb_wireout_status,  -- status register (reading)
 
       -- rd science pipe
-      o_usb_pipeout_science_rd_data_valid => usb_pipeout_science_rd_data_valid,
+      o_usb_pipeout_science_rd_data_valid => usb_pipeout_science_rd_en,
       i_usb_pipeout_science_rd_data       => usb_pipeout_science_rd_data,
 
       -- read spi pipe
@@ -480,8 +485,8 @@ begin
       i_rst_status             => usb_rst_status,
       i_debug_pulse            => usb_debug_pulse,
       -- data
-      i_usb_fifo_rd            => usb_pipeout_science_rd_data_valid,
-      o_usb_fifo_data_valid    => open,
+      i_usb_fifo_rd            => usb_pipeout_science_rd_en,
+      o_usb_fifo_data_valid    => usb_pipeout_science_rd_data_valid, -- to debug
       o_usb_fifo_data          => usb_pipeout_science_rd_data,
       o_usb_fifo_empty         => open,
       o_usb_fifo_wr_data_count => science_wr_data_count,
@@ -788,6 +793,61 @@ begin
 
   usb_wireout_errors <= wire_errors;
   usb_wireout_status <= wire_status;
+
+   ---------------------------------------------------------------------
+  -- debug
+  ---------------------------------------------------------------------
+  gen_debug : if g_DEBUG generate
+    -- debug science data valid
+    signal debug_science_data_valid  : std_logic;
+    -- debug science data
+    signal debug_science_data        : std_logic_vector(31 downto 0);
+    -- debug science error (header)
+    signal debug_science_error_valid : std_logic;
+    -- debug science error counter (header)
+    signal debug_science_error_cnt   : std_logic_vector(15 downto 0);
+  begin
+
+    inst_science_check_header_w32 : entity work.science_check_header_w32
+      port map(
+        i_clk                 => usb_clk,
+        ---------------------------------------------------------------------
+        -- from DEMUX: science interface @i_science_clk
+        ---------------------------------------------------------------------
+        i_science_valid       => usb_pipeout_science_rd_data_valid,
+        i_science_data        => usb_pipeout_science_rd_data,
+        ---------------------------------------------------------------------
+        -- to user: science interface @i_sys_clk
+        ---------------------------------------------------------------------
+        o_science_data_valid  => debug_science_data_valid,
+        o_science_data        => debug_science_data,
+        o_science_error_valid => debug_science_error_valid,
+        o_science_error_cnt   => debug_science_error_cnt
+        );
+
+
+    inst_ila_regdecode_top : entity work.ila_regdecode_top
+      port map (
+        clk => usb_clk,
+
+        -- probe0
+        probe0(1) => debug_science_error_valid,
+        probe0(0) => debug_science_data_valid,
+
+        -- probe1
+        probe1(79 downto 64)  => debug_science_error_cnt,
+        probe1(63 downto 32)  => usb_wireout_science_wr_data_count,
+        probe1(31 downto 0)   => debug_science_data,
+
+        -- probe2
+        probe2(127 downto 96)   => usb_wireout_science_stamp_lsb,
+        probe2(95 downto 64)   => usb_wire_errors2,
+        probe2(63 downto 32)   => usb_wire_errors1,
+        probe2(31 downto 0)    => usb_wire_errors0
+        );
+
+
+  end generate gen_debug;
 
 
 end architecture RTL;
