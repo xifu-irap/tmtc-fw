@@ -72,7 +72,7 @@ end entity leds_top;
 architecture RTL of leds_top is
 
   -- counter max value
-  constant c_CNT_MAX : unsigned(31 downto 0) := to_unsigned(10_000_000, 32);
+  constant c_CNT_MAX : unsigned(31 downto 0) := to_unsigned(1_000_000, 32);
   -- counter: tempo
   signal cpt0_r1     : unsigned(31 downto 0);
   -- count the number of science frame
