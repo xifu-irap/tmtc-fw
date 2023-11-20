@@ -32,11 +32,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 use work.pkg_system_tmtc.all;
-use work.pkg_system_tmtc_debug.all;
 
 entity science_top is
   generic (
-    g_DEBUG : boolean := pkg_SCIENCE_TOP_DEBUG
+    g_DEBUG : boolean := false
     );
   port (
 

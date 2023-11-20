@@ -32,6 +32,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 use work.pkg_system_tmtc.all;
+use work.pkg_system_tmtc_debug.all;
 
 entity tmtc_top is
   port (
@@ -213,6 +214,9 @@ begin
 -- hk management
 ---------------------------------------------------------------------
   inst_spi_top : entity work.spi_top
+    generic map(
+      g_DEBUG => pkg_SPI_TOP_DEBUG
+      )
     port map(
       i_clk               => i_clk,
       i_rst               => i_rst,
@@ -254,6 +258,9 @@ begin
 -- science
 ---------------------------------------------------------------------
   inst_science_top : entity work.science_top
+    generic map(
+      g_DEBUG => pkg_SCIENCE_TOP_DEBUG
+      )
     port map(
       ---------------------------------------------------------------------
       -- From DDR @sys_clk
