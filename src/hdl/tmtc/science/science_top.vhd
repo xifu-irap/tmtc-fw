@@ -420,16 +420,43 @@ begin
   -- debug
   ---------------------------------------------------------------------
   gen_debug : if g_DEBUG generate
+    -- debug science data valid
+    signal debug_science_data_valid  : std_logic;
+    -- debug science data
+    signal debug_science_data        : std_logic_vector(31 downto 0);
+    -- debug science error (header)
+    signal debug_science_error_valid : std_logic;
+    -- debug science error counter (header)
+    signal debug_science_error_cnt   : std_logic_vector(15 downto 0);
   begin
+
+    inst_science_check_header_w32 : entity work.science_check_header_w32
+      port map(
+        i_clk                 => i_clk,
+        ---------------------------------------------------------------------
+        -- from DEMUX: science interface @i_science_clk
+        ---------------------------------------------------------------------
+        i_science_valid       => fifo_data_valid,
+        i_science_data        => fifo_data,
+        ---------------------------------------------------------------------
+        -- to user: science interface @i_sys_clk
+        ---------------------------------------------------------------------
+        o_science_data_valid  => debug_science_data_valid,
+        o_science_data        => debug_science_data,
+        o_science_error_valid => debug_science_error_valid,
+        o_science_error_cnt   => debug_science_error_cnt
+        );
+
 
     inst_ila_science_top : entity work.ila_science_top
       port map (
         clk => i_clk,
 
         -- probe0
+        probe0(8) => debug_science_error_valid,
         probe0(7) => i_rst,
         probe0(6) => i_init_calib_complete,
-        probe0(5) => fifo_data_valid,
+        probe0(5) => debug_science_data_valid,
         probe0(4) => sof1,
         probe0(3) => eof1,
         probe0(2) => sof_frame1,
@@ -437,9 +464,10 @@ begin
         probe0(0) => data_valid1,
 
         -- probe1
-        probe1(159 downto 128) => fifo_data,
+        probe1(159 downto 128) => debug_science_data,
         probe1(127 downto 0)   => data1,
         -- probe2
+        probe2(47 downto 32)   => debug_science_error_cnt,
         probe2(31 downto 16)   => errors0,
         probe2(15 downto 0)    => ddr_errors
         );
