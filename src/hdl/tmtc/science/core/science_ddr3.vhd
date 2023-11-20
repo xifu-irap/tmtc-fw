@@ -121,19 +121,19 @@ architecture RTL of science_ddr3 is
   constant c_FIFO_IDX0_H : integer := c_FIFO_IDX0_L + i_data'length - 1;
 
   -- FIFO depth (expressed in number of words)
-  constant c_FIFO_DEPTH0 : integer := 128;
+  constant c_FIFO_DEPTH0     : integer := 128;
   -- FIFO prog full (expressed in number of words)
   constant c_FIFO_PROG_FULL0 : integer := c_FIFO_DEPTH0 - 64;
   -- FIFO width (expressed in bits)
-  constant c_FIFO_WIDTH0 : integer := c_FIFO_IDX0_H + 1;
+  constant c_FIFO_WIDTH0     : integer := c_FIFO_IDX0_H + 1;
 
   -- fifo write side
   -- fifo rst
-  signal wr_rst0      : std_logic;
+  signal wr_rst0       : std_logic;
   -- fifo write
-  signal wr_tmp0      : std_logic;
+  signal wr_tmp0       : std_logic;
   -- fifo data_in
-  signal wr_data_tmp0 : std_logic_vector(c_FIFO_WIDTH0 - 1 downto 0);
+  signal wr_data_tmp0  : std_logic_vector(c_FIFO_WIDTH0 - 1 downto 0);
   -- fifo full flag
   -- signal wr_full0      : std_logic;
   -- fifo prog full
@@ -143,13 +143,13 @@ architecture RTL of science_ddr3 is
 
   -- fifo read side
   -- fifo read
-  signal rd1          : std_logic;
+  signal rd1         : std_logic;
   -- fifo data_valid flag
-  signal data_valid1  : std_logic;
+  signal data_valid1 : std_logic;
   -- fifo data_out
-  signal data_tmp1    : std_logic_vector(c_FIFO_WIDTH0 - 1 downto 0);
+  signal data_tmp1   : std_logic_vector(c_FIFO_WIDTH0 - 1 downto 0);
   -- fifo empty flag
-  signal empty1       : std_logic;
+  signal empty1      : std_logic;
   -- fifo rst_busy flag
   -- signal rd_rst_busy1 : std_logic;
 
@@ -161,6 +161,10 @@ architecture RTL of science_ddr3 is
   ---------------------------------------------------------------------
   -- science_ddr3_ctrl
   ---------------------------------------------------------------------
+  -- output data valid
+  signal data_valid2                 : std_logic;
+  -- output data
+  signal data2                       : std_logic_vector(i_data'range);
   -- ddr write data count
   signal buffer_new_cmd_byte_addr_wr : std_logic_vector(54 downto 0);
   -- ddr read data count
@@ -295,14 +299,14 @@ begin
       -- input FIFO data empty
       i_pipe_in_empty               => empty1,
       -- input FIFO data prog full
-      i_prog_full                  => wr_prog_full0,
+      i_prog_full                   => wr_prog_full0,
       ---------------------------------------------------------------------
       -- output FIFO
       ---------------------------------------------------------------------
       -- output FIFO write enable
-      o_pipe_out_write              => wr_tmp2,
+      o_pipe_out_write              => data_valid2,
       -- output FIFO write data
-      o_pipe_out_data               => wr_data_tmp2,
+      o_pipe_out_data               => data2,
       -- output FIFO full
       i_pipe_out_full               => wr_prog_full2,
       ---------------------------------------------------------------------
@@ -339,15 +343,36 @@ begin
       o_buffer_new_cmd_byte_addr_rd => buffer_new_cmd_byte_addr_rd
       );
 
-
 ---------------------------------------------------------------------
 -- output FIFO: 128 bits -> 32 bits
 ---------------------------------------------------------------------
   wr_rst2 <= i_rst;
+  wr_tmp2 <= data_valid2;
+
+  ---------------------------------------------------------------------
+  -- 32 bit word: Reordering:
+  -- The data2 input has the following structure:
+  --   data2 = dat0 & dat1 & dat2 & dat3 with datx: a 32 bit word
+  -- with wr_data_tmp2 = data2, the output FIFO reading order is:
+  --        0. out0 = wr_data_tmp2(127 downto 96) <=> dat3
+  --        1. out1 = wr_data_tmp2(95 downto 64)  <=> dat2
+  --        2. out2 = wr_data_tmp2(63 downto 32)  <=> dat1
+  --        3. out3 = wr_data_tmp2(31 downto 0)   <=> dat0
+  -- To get the following output FIFO,
+  --        0. out0 = wr_data_tmp2(127 downto 96)  <=> dat0
+  --        1. out1 = wr_data_tmp2(95 downto 64)   <=> dat1
+  --        2. out2 = wr_data_tmp2(63 downto 32)   <=> dat2
+  --        3. out3 = wr_data_tmp2(31 downto 0)    <=> dat3
+  -- The FIFO 32 bit input words must be swapped as below:
+  ---------------------------------------------------------------------
+  wr_data_tmp2(127 downto 96) <= data2(31 downto 0);
+  wr_data_tmp2(95 downto 64)  <= data2(63 downto 32);
+  wr_data_tmp2(63 downto 32)  <= data2(95 downto 64);
+  wr_data_tmp2(31 downto 0)   <= data2(127 downto 96);
 
   inst_fifo_sync_with_error_prog_full : entity work.fifo_sync_with_error_prog_full
     generic map(
-      g_FIFO_MEMORY_TYPE  => "auto",
+      g_FIFO_MEMORY_TYPE  => "block",
       g_FIFO_READ_LATENCY => 1,
       g_FIFO_WRITE_DEPTH  => c_FIFO_DEPTH2,
       g_PROG_FULL_THRESH  => c_FIFO_PROG_FULL2,
