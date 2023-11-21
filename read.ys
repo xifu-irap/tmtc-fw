@@ -37,6 +37,7 @@ verific -vhdl -lib ./ip/xilinx/coregen/ddr3_256_16/ddr3_256_16_stub.vhdl
 verific -vhdl -lib ./ip/xilinx/coregen/ila_science_top/ila_science_top_stub.vhdl
 verific -vhdl -lib ./ip/xilinx/coregen/ila_hk_top/ila_hk_top_stub.vhdl
 verific -vhdl -lib ./ip/xilinx/coregen/ila_spi_select_top/ila_spi_select_top_stub.vhdl
+verific -vhdl -lib ./ip/xilinx/coregen/ila_regdecode_top/ila_regdecode_top_stub.vhdl
 # VHDL
 #    Source files
 
@@ -77,15 +78,6 @@ verific -vhdl ./src/hdl/io/io_top.vhd
 verific -vhdl ./src/hdl/reset/core/reset_ddr_controller.vhd
 verific -vhdl ./src/hdl/reset/reset_top.vhd
 
-# regdecode
-verific -vhdl ./src/hdl/regdecode/usb/usb_opal_kelly.vhd
-verific -vhdl ./src/hdl/regdecode/core/regdecode_pipe_usb_to_user.vhd
-verific -vhdl ./src/hdl/regdecode/core/regdecode_pipe_user_to_usb_data_count.vhd
-verific -vhdl ./src/hdl/regdecode/core/regdecode_register_to_usb.vhd
-verific -vhdl ./src/hdl/regdecode/core/regdecode_register_to_user.vhd
-verific -vhdl ./src/hdl/regdecode/core/regdecode_science_fifo.vhd
-verific -vhdl ./src/hdl/regdecode/core/regdecode_wire_errors.vhd
-verific -vhdl ./src/hdl/regdecode/regdecode_top.vhd
 
 # tmtc/spi
 verific -vhdl ./src/hdl/tmtc/spi/core/spi_master.vhd
@@ -107,6 +99,16 @@ verific -vhdl ./src/hdl/tmtc/led/leds_top.vhd
 
 # tmtc
 verific -vhdl ./src/hdl/tmtc/tmtc_top.vhd
+
+# regdecode
+verific -vhdl ./src/hdl/regdecode/usb/usb_opal_kelly.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_pipe_usb_to_user.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_pipe_user_to_usb_data_count.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_register_to_usb.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_register_to_user.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_science_fifo.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_wire_errors.vhd
+verific -vhdl ./src/hdl/regdecode/regdecode_top.vhd
 
 # system_tmtc
 verific -vhdl ./src/hdl/system_tmtc_top.vhd
