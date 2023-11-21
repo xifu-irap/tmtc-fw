@@ -35,6 +35,7 @@ use work.pkg_system_tmtc.all;
 
 entity science_top is
   generic (
+    -- true: Enable the DEBUG TOOL (ILA, etc.), false: otherwise
     g_DEBUG : boolean := false
     );
   port (

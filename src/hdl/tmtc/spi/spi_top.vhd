@@ -33,6 +33,7 @@ use ieee.std_logic_1164.all;
 
 entity spi_top is
   generic (
+    -- true: Enable the DEBUG TOOL (ILA, etc.), false: otherwise
     g_DEBUG : boolean := false
     );
   port (
@@ -149,6 +150,9 @@ begin
 -- SPI select
 ---------------------------------------------------------------------
   inst_spi_device_select : entity work.spi_device_select
+  generic map(
+      g_DEBUG => true
+      )
     port map(
       i_clk               => i_clk,
       i_rst               => i_rst,
