@@ -330,7 +330,7 @@ begin
 
         -- wait the end of the spi transaction
         if spi_finish = '1' then
-          sm_state_next <= E_WAIT_CMD;
+          sm_state_next <= E_INTER_FRAME_TEMPO;
         else
           sm_state_next <= E_RUN_SPI;
         end if;
