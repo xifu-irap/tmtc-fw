@@ -48,8 +48,9 @@ verific -vhdl ./src/hdl/regdecode/pkg_regdecode.vhd
 
 # utils
 verific -vhdl ./src/hdl/utils/error/one_error_latch.vhd
-verific -vhdl ./src/hdl/utils/others/endianess_change_by_generic.vhd
 verific -vhdl ./src/hdl/utils/others/pipeliner_with_init.vhd
+verific -vhdl ./src/hdl/utils/others/synchronizer.vhd
+verific -vhdl ./src/hdl/utils/others/endianess_change_by_generic.vhd
 
 
 # xpm
@@ -83,6 +84,7 @@ verific -vhdl ./src/hdl/regdecode/core/regdecode_pipe_user_to_usb_data_count.vhd
 verific -vhdl ./src/hdl/regdecode/core/regdecode_register_to_usb.vhd
 verific -vhdl ./src/hdl/regdecode/core/regdecode_register_to_user.vhd
 verific -vhdl ./src/hdl/regdecode/core/regdecode_science_fifo.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_wire_errors.vhd
 verific -vhdl ./src/hdl/regdecode/regdecode_top.vhd
 
 # tmtc/spi
@@ -91,7 +93,8 @@ verific -vhdl ./src/hdl/tmtc/spi/core/spi_device_select.vhd
 verific -vhdl ./src/hdl/tmtc/spi/spi_top.vhd
 
 # tmtc/science
-verific -vhdl ./src/hdl/tmtc/science/core/science_leds.vhd
+verific -vhdl ./src/hdl/tmtc/science/debug/science_check_header_w32.vhd
+verific -vhdl ./src/hdl/tmtc/science/core/science_rx_deserializer_data.vhd
 verific -vhdl ./src/hdl/tmtc/science/core/science_rx_deserializer.vhd
 verific -vhdl ./src/hdl/tmtc/science/core/science_rx_frame.vhd
 verific -vhdl ./src/hdl/tmtc/science/core/science_ddr3_stamp.vhd
