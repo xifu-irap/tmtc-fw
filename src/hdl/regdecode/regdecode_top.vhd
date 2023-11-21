@@ -573,8 +573,10 @@ begin
       o_errors                 => hk_pipe_out_errors,
       o_status                 => hk_pipe_out_status
       );
-  -- count the number of 32 bit word
-  usb_wireout_spi_rd_data_count <= std_logic_vector(resize(unsigned(hk_wr_data_count), usb_wireout_spi_rd_data_count'length));
+  -- authorized values of the read data count: multiple of 4 words of 32 bits (example: 0,4,8,12,16, etc)
+  --   1. convert the number of words into number of USB packets: X= hk_wr_data_count(hk_wr_data_count'high downto 2))
+  --   2. convert the number of USB packets into words of 32 bits: X*4
+  usb_wireout_spi_rd_data_count <= std_logic_vector(resize(unsigned(hk_wr_data_count(hk_wr_data_count'high downto 2)) * 4, usb_wireout_spi_rd_data_count'length));
 
 
 ---------------------------------------------------------------------
