@@ -51,7 +51,7 @@ entity synchronizer is
     g_INIT            : std_logic := '0';
     -- Integer value. Number of synchronizing registers, must be 2 or higher
     g_SYNC_STAGES     : natural   := 3;
-    -- Integer value. Number of registers at the output of the synchronizer for the purpose of improving performance. Possible values: [1; integer max value [
+    -- Integer value. Number of registers at the output of the synchronizer for the purpose of improving performance. Possible values: [0; integer max value [
     g_PIPELINE_STAGES : natural   := 1;
     -- data width expressed in bits
     g_DATA_WIDTH      : integer   := 1

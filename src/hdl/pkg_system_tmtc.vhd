@@ -71,20 +71,18 @@ package pkg_system_tmtc is
   ---------------------------------------------------------------------
   -- IO
   ---------------------------------------------------------------------
-  -- hardcoded : Number of delay clock periods for miso signal between the pads side -> user side
+  -- hardcoded : Number of delay clock periods for miso signal
   constant pkg_IO_SPI_MISO_DELAY : positive := 1;
+  -- hardcoded: Number of resync stage
+  constant pkg_IO_SPI_MISO_RESYNC_DELAY : positive := 2;
+  -- auto-computed: Number of delay clock periods for miso signal between the pads side -> user side
+  constant pkg_SPI_MISO_DELAY : positive := pkg_IO_SPI_MISO_DELAY + pkg_IO_SPI_MISO_RESYNC_DELAY;
   -- hardcoded : Number of delay clock periods for mosi signal between the user side -> pads side
   constant pkg_IO_SPI_MOSI_DELAY : positive := 1;
 
   -- hardcoded: Number of delay clock periods for science_data and science_ctrl signals between the pads side -> user side
   constant pkg_IO_SCIENCE_DELAY : positive := 2;
 
-
-  ---------------------------------------------------------------------
-  -- TMTC/regdecode
-  ---------------------------------------------------------------------
-  -- user-defined : usb_clock frequency
-  constant pkg_USB_SYSTEM_FREQUENCY_HZ : positive := 100_800_000;
 
   ---------------------------------------------------------------------
   -- TMTC/spi_top/spi_device_select
@@ -100,13 +98,13 @@ package pkg_system_tmtc is
   -- user-defined : SPI clock phase
   constant pkg_SPI_CPHA                 : std_logic := '0';
 
-  --! SPI: Data bus size
+  -- SPI: Data bus size
   constant pkg_SPI_SER_WD_S : integer   := 32;
-  --! SPI: Number of clock period for elaborating SPI Serial Clock low level
+  -- SPI: Number of clock period for elaborating SPI Serial Clock low level
   constant pkg_SPI_SCLK_L   : integer   := 24;
-  --! SPI: Number of clock period for elaborating SPI Serial Clock high level
+  -- SPI: Number of clock period for elaborating SPI Serial Clock high level
   constant pkg_SPI_SCLK_H   : integer   := 2;
-  --! SPI: Number of clock period between two SPI communication. Should be >2
+  -- SPI: Number of clock period between two SPI communication. Should be >2
   constant pkg_SPI_PAUSE    : positive  := 3;
 
   ---------------------------------------------------------------------

@@ -403,7 +403,7 @@ begin
       g_CPHA               => pkg_SPI_CPHA,    --! Clock phase
       g_N_CLK_PER_SCLK_L   => pkg_SPI_SCLK_L,  --! Number of clock period for elaborating SPI Serial Clock low  level
       g_N_CLK_PER_SCLK_H   => pkg_SPI_SCLK_H,  --! Number of clock period for elaborating SPI Serial Clock high level
-      g_N_CLK_PER_MISO_DEL => 2,  --! Number of clock period for miso signal delay from spi pin input to spi master input
+      g_N_CLK_PER_MISO_DEL => pkg_SPI_MISO_DELAY,  --! Number of clock period for miso signal delay from spi pin input to spi master input
       g_DATA_S             => pkg_SPI_SER_WD_S  --! Data bus size
       )
     port map(

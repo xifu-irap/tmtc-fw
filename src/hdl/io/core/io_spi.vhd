@@ -83,6 +83,9 @@ architecture RTL of io_spi is
 -- temporary output pipe
   signal data_pipe_tmp1 : std_logic_vector(0 downto 0);
 
+-- temporary resync pipe
+  signal data_pipe_resync_tmp2 : std_logic_vector(0 downto 0);
+
 ---------------------------------------------------------------------
 -- add an optional output pipe
 ---------------------------------------------------------------------
@@ -122,7 +125,34 @@ begin
       o_data => data_pipe_tmp1
       );
 
-  o_ui_spi_miso <= data_pipe_tmp1(0);
+    inst_synchronizer_miso: entity work.synchronizer
+      generic map(
+          -- Initial value of synchronizer registers upon startup, 1'b0 or 1'b1.
+      g_INIT => '0',
+          -- Integer value. Number of synchronizing registers, must be 2 or higher
+      g_SYNC_STAGES => pkg_IO_SPI_MISO_RESYNC_DELAY,
+          -- Integer value. Number of registers at the output of the synchronizer for the purpose of improving performance. Possible values: [1; integer max value [
+      g_PIPELINE_STAGES => 0,
+          -- data width expressed in bits
+      g_DATA_WIDTH => data_pipe_tmp1'length
+      )
+      port map(
+          ---------------------------------------------------------------------
+          -- input
+          ---------------------------------------------------------------------
+          -- async input
+      i_async_data => data_pipe_tmp1,
+          ---------------------------------------------------------------------
+          -- output
+          ---------------------------------------------------------------------
+          -- output clock
+      i_clk => i_sys_spi_clk,
+          -- output data with/without delay
+      o_data => data_pipe_resync_tmp2
+      );
+
+
+  o_ui_spi_miso <= data_pipe_resync_tmp2(0);
 
   ---------------------------------------------------------------------
   -- from the user to the pads
