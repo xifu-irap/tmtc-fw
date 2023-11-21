@@ -225,7 +225,7 @@ begin
   ----------------------------------------------------
   --    Opal Kelly Host
   ----------------------------------------------------
-  inst_Opal_Kelly_Host : entity work.okHost
+  inst_Opal_Kelly_Host : okHost
     port map(
       okUH  => i_okUH,
       okHU  => o_okHU,
@@ -238,7 +238,7 @@ begin
   ----------------------------------------------------
   --    Opal Kelly Wire OR
   ----------------------------------------------------
-  inst_wireor_opak_kelly : entity work.okWireOR
+  inst_wireor_opak_kelly : okWireOR
     generic map(N => c_WIRE_PIPE_TRIG_NUMBER_OUT)  -- N = Number of wires + pipes used
     port map(
       okEH  => okEH,
@@ -279,21 +279,21 @@ begin
   ----------------------------------------------------
   --    Opal Kelly Wire in
   ----------------------------------------------------
-  inst_okwirein_ep00 : entity work.okWireIn
+  inst_okwirein_ep00 : okWireIn
     port map(
       okHE       => okHE,
       ep_addr    => x"00",              -- Endpoint address
       ep_dataout => ep00_wire           -- Endpoint data in 32 bits
       );
 
-  inst_okwirein_ep01 : entity work.okWireIn
+  inst_okwirein_ep01 : okWireIn
     port map(
       okHE       => okHE,
       ep_addr    => x"01",              -- Endpoint address
       ep_dataout => ep01_wire           -- Endpoint data in 32 bits
       );
 
-  inst_okwirein_ep02 : entity work.okWireIn
+  inst_okwirein_ep02 : okWireIn
     port map(
       okHE       => okHE,
       ep_addr    => x"02",              -- Endpoint address
@@ -303,14 +303,14 @@ begin
 
 
 
-  inst_okwirein_ep18 : entity work.okWireIn
+  inst_okwirein_ep18 : okWireIn
     port map(
       okHE       => okHE,
       ep_addr    => x"18",              -- Endpoint address
       ep_dataout => ep18_wire           -- Endpoint data in 32 bits
       );
 
-  inst_okwirein_ep19 : entity work.okWireIn
+  inst_okwirein_ep19 : okWireIn
     port map(
       okHE       => okHE,
       ep_addr    => x"19",              -- Endpoint address
@@ -325,7 +325,7 @@ begin
     okEHx(65*(i+1)-1 downto i*65) <= okEHx_array(i);
   end generate gen_array;
 
-  inst_okwireout_ep21 : entity work.okWireOut
+  inst_okwireout_ep21 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(0),
@@ -333,7 +333,7 @@ begin
       ep_datain => ep21_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep22 : entity work.okWireOut
+  inst_okwireout_ep22 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(1),
@@ -341,7 +341,7 @@ begin
       ep_datain => ep22_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep23 : entity work.okWireOut
+  inst_okwireout_ep23 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(2),
@@ -349,7 +349,7 @@ begin
       ep_datain => ep23_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep24 : entity work.okWireOut
+  inst_okwireout_ep24 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(3),
@@ -357,7 +357,7 @@ begin
       ep_datain => ep24_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep25 : entity work.okWireOut
+  inst_okwireout_ep25 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(4),
@@ -365,7 +365,7 @@ begin
       ep_datain => ep25_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep26 : entity work.okWireOut
+  inst_okwireout_ep26 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(5),
@@ -374,7 +374,7 @@ begin
       );
 
 
-  inst_okwireout_ep27 : entity work.okWireOut
+  inst_okwireout_ep27 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(6),
@@ -382,7 +382,7 @@ begin
       ep_datain => ep27_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep38 : entity work.okWireOut
+  inst_okwireout_ep38 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(7),
@@ -390,7 +390,7 @@ begin
       ep_datain => ep38_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep39 : entity work.okWireOut
+  inst_okwireout_ep39 : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(8),
@@ -398,7 +398,7 @@ begin
       ep_datain => ep39_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep3A : entity work.okWireOut
+  inst_okwireout_ep3A : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(9),
@@ -406,7 +406,7 @@ begin
       ep_datain => ep3A_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep3B : entity work.okWireOut
+  inst_okwireout_ep3B : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(10),
@@ -414,7 +414,7 @@ begin
       ep_datain => ep3B_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep3D : entity work.okWireOut
+  inst_okwireout_ep3D : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(11),
@@ -422,7 +422,7 @@ begin
       ep_datain => ep3D_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep3E : entity work.okWireOut
+  inst_okwireout_ep3E : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(12),
@@ -430,7 +430,7 @@ begin
       ep_datain => ep3E_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep3F : entity work.okWireOut
+  inst_okwireout_ep3F : okWireOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(13),
@@ -443,7 +443,7 @@ begin
   ----------------------------------------------------
   --    Opal Kelly Pipe in
   ----------------------------------------------------
-  inst_okpipein_ep80 : entity work.okPipeIn
+  inst_okpipein_ep80 : okPipeIn
     port map(
       okHE       => okHE,
       okEH       => okEHx_array(14),
@@ -455,7 +455,7 @@ begin
   ----------------------------------------------------
   --    Opal Kelly Pipe out
   ----------------------------------------------------
-  inst_okpipeout_epA0 : entity work.okPipeOut
+  inst_okpipeout_epA0 : okPipeOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(15),
@@ -464,7 +464,7 @@ begin
       ep_datain => epA0_pipe
       );
 
-  inst_okpipeout_epA1 : entity work.okPipeOut
+  inst_okpipeout_epA1 : okPipeOut
     port map(
       okHE      => okHE,
       okEH      => okEHx_array(16),
