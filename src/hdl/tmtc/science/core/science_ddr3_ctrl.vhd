@@ -30,8 +30,7 @@
 -- -------------------------------------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
-use ieee.std_logic_arith.all;
+use ieee.numeric_std.all;
 
 
 entity science_ddr3_ctrl is
@@ -59,7 +58,7 @@ entity science_ddr3_ctrl is
     -- input FIFO data empty
     i_pipe_in_empty  : in  std_logic;
     -- input FIFO data prog full
-    i_prog_full     : in  std_logic;
+    i_prog_full      : in  std_logic;
     ---------------------------------------------------------------------
     -- output FIFO
     ---------------------------------------------------------------------
@@ -116,16 +115,16 @@ architecture RTL of science_ddr3_ctrl is
   signal sm_state_manager_r1   : t_fsm_state_manager;
   -- define the address increment
   --'d8; // UI Address is a word address. BL8 Burst Mode = 8.  Memory Width = 16.
-  constant c_ADDRESS_INCREMENT : std_logic_vector(4 downto 0) := b"01000";
+  constant c_ADDRESS_INCREMENT : integer := 8;
 
   -- wr address (expressed in bytes)
-  signal new_cmd_byte_addr_wr_r1 : std_logic_vector(54 downto 0);
+  signal new_cmd_byte_addr_wr_r1 : unsigned(54 downto 0);
   -- rd address (expressed in bytes)
-  signal new_cmd_byte_addr_rd_r1 : std_logic_vector(54 downto 0);
+  signal new_cmd_byte_addr_rd_r1 : unsigned(54 downto 0);
   -- current wr address
-  signal cmd_byte_addr_wr_r1     : std_logic_vector(57 downto 0);
+  signal cmd_byte_addr_wr_r1     : unsigned(57 downto 0);
   -- current rd address
-  signal cmd_byte_addr_rd_r1     : std_logic_vector(57 downto 0);
+  signal cmd_byte_addr_rd_r1     : unsigned(57 downto 0);
 
   -- define if write mode
   signal write_mode_r1     : std_logic;
@@ -142,21 +141,33 @@ architecture RTL of science_ddr3_ctrl is
   signal sm_state_r1 : t_fsm_state;
 
   --  max readed rest
-  signal max_readed_rest_r1 : std_logic_vector(3 downto 0);
+  signal max_readed_rest_r1 : unsigned(3 downto 0);
   -- count the number of read to do
-  signal cnt_readed_rest_r1 : std_logic_vector(3 downto 0);
+  signal cnt_readed_rest_r1 : unsigned(3 downto 0);
 
   -- active-High strobe for the app_addr[], app_cmd[2:0], app_sz, and app_hi_pri inputs
   signal app_en_r1 : std_logic;
 
+  -- selects the command for the current request.
+  signal app_cmd_r1      : std_logic_vector(o_app_cmd'range);
+  -- address of the current request
+  signal app_addr_r1     : unsigned(o_app_addr'range);
+  -- active-High strobe for app_wdf_data
+  signal app_wdf_wren_r1 : std_logic;
+  -- data for write commands.
+  signal app_wdf_data_r1 : std_logic_vector(o_app_wdf_data'range);
+  -- indicates that the current clock cycle is the last cycle of input data on app_wdf_data[
+  signal app_wdf_end_r1  : std_logic;
+
+  -- FIFO input read
+  signal pipe_in_read_r1   : std_logic;
+  -- output FIFO write enable
+  signal pipe_out_write_r1 : std_logic;
+  -- output FIFO write data
+  signal pipe_out_data_r1  : std_logic_vector(o_pipe_out_data'range);
+
 
 begin
-
-  o_app_wdf_mask <= x"0000";
-
-  o_app_en                      <= app_en_r1;
-  o_buffer_new_cmd_byte_addr_wr <= new_cmd_byte_addr_wr_r1;
-  o_buffer_new_cmd_byte_addr_rd <= new_cmd_byte_addr_rd_r1;
 
 ----------------------------------------
 --  fsm_fsm_manager
@@ -214,12 +225,12 @@ begin
                   sm_state_manager_r1 <= E_IDLE;
                   read_mode_r1        <= '0';
                 else
-                  if (new_cmd_byte_addr_wr_r1 - new_cmd_byte_addr_rd_r1) < x"4" then
+                  if (new_cmd_byte_addr_wr_r1 - new_cmd_byte_addr_rd_r1) < to_unsigned(4, new_cmd_byte_addr_rd_r1'length) then
                     --  write and read adress is almost same
                     max_readed_rest_r1 <= new_cmd_byte_addr_wr_r1(3 downto 0) - new_cmd_byte_addr_rd_r1(3 downto 0);
                   else
                     --  default mode read
-                    max_readed_rest_r1 <= x"4";
+                    max_readed_rest_r1 <= to_unsigned(4, max_readed_rest_r1'length);
                   end if;
                 end if;
               else
@@ -255,28 +266,27 @@ begin
         cmd_byte_addr_wr_r1 <= (others => '0');
         cmd_byte_addr_rd_r1 <= (others => '0');
         app_en_r1           <= '0';
-        o_app_cmd           <= b"000";
-        o_app_addr          <= (others => '0');
-        o_app_wdf_wren      <= '0';
-        o_app_wdf_end       <= '0';
+        app_cmd_r1          <= (others => '0');
+        app_addr_r1         <= (others => '0');
+        app_wdf_wren_r1     <= '0';
+        app_wdf_end_r1      <= '0';
         ack_write_mode_r1   <= '0';
         ack_read_mode_r1    <= '0';
-        o_pipe_in_read      <= '0';
-        o_pipe_out_write    <= '0';
-        o_pipe_out_data     <= (others => '0');
-        o_app_wdf_data      <= (others => '0');
+        pipe_in_read_r1     <= '0';
+        pipe_out_write_r1   <= '0';
+        pipe_out_data_r1    <= (others => '0');
+        app_wdf_data_r1     <= (others => '0');
 
         new_cmd_byte_addr_rd_r1 <= (others => '0');
-
         new_cmd_byte_addr_wr_r1 <= (others => '0');
         cnt_readed_rest_r1      <= (others => '0');
 
       else
         app_en_r1         <= '0';
-        o_app_wdf_wren    <= '0';
-        o_app_wdf_end     <= '0';
-        o_pipe_in_read    <= '0';
-        o_pipe_out_write  <= '0';
+        app_wdf_wren_r1   <= '0';
+        app_wdf_end_r1    <= '0';
+        pipe_in_read_r1   <= '0';
+        pipe_out_write_r1 <= '0';
         ack_write_mode_r1 <= '0';
         ack_read_mode_r1  <= '0';
 
@@ -284,24 +294,24 @@ begin
 
           when E_IDLE =>
             if (i_calib_done = '1' and write_mode_r1 = '1') then  -- read data in pipe_in and write ddr3
-              o_app_addr  <= cmd_byte_addr_wr_r1(28 downto 0);  -- boundary ddr3 adress on 11 bits
+              app_addr_r1 <= cmd_byte_addr_wr_r1(28 downto 0);  -- boundary ddr3 adress on 11 bits
               sm_state_r1 <= E_WRITE0;
             else
               if (i_calib_done = '1' and read_mode_r1 = '1') then  --read data in ddr3 and write in pipe out
-                o_app_addr  <= cmd_byte_addr_rd_r1(28 downto 0);  -- boundary ddr3 adress on 11 bits
+                app_addr_r1 <= cmd_byte_addr_rd_r1(28 downto 0);  -- boundary ddr3 adress on 11 bits
                 sm_state_r1 <= E_READ0;
               end if;
             end if;
 
           when E_WRITE0 =>
-            sm_state_r1    <= E_WRITE1;  -- read data in pipe in
-            o_pipe_in_read <= '1';
+            sm_state_r1     <= E_WRITE1;  -- read data in pipe in
+            pipe_in_read_r1 <= '1';
 
           when E_WRITE1 =>
 
             if i_pipe_in_valid = '1' then  --   transfer data on ddr3 bus
-              o_app_wdf_data <= i_pipe_in_data;
-              sm_state_r1    <= E_WRITE2;
+              app_wdf_data_r1 <= i_pipe_in_data;
+              sm_state_r1     <= E_WRITE2;
             end if;
 
           when E_WRITE2 =>
@@ -312,12 +322,12 @@ begin
 
           when E_WRITE3 =>              -- write data in ddr3
 
-            o_app_wdf_wren <= '1';
-            o_app_wdf_end  <= '1';
+            app_wdf_wren_r1 <= '1';
+            app_wdf_end_r1  <= '1';
 
             if (i_app_wdf_rdy = '1') then  --  acknowledge data is writed in ddr3
               app_en_r1         <= '1';
-              o_app_cmd         <= b"000";
+              app_cmd_r1        <= (others => '0');
               sm_state_r1       <= E_WRITE4;
               ack_write_mode_r1 <= '1';    -- disable remote write
             end if;
@@ -329,14 +339,14 @@ begin
               new_cmd_byte_addr_wr_r1 <= cmd_byte_addr_wr_r1(57 downto 3) + 1;
               sm_state_r1             <= E_IDLE;
             else
-              app_en_r1 <= '1';
-              o_app_cmd <= b"000";
+              app_en_r1  <= '1';
+              app_cmd_r1 <= (others => '0');
             end if;
 
           when E_READ0 =>               -- read data in ddr3
 
             app_en_r1          <= '1';  -- launch first read
-            o_app_cmd          <= b"001";
+            app_cmd_r1         <= "001";
             sm_state_r1        <= E_READ1;
             cnt_readed_rest_r1 <= (others => '0');
 
@@ -347,13 +357,13 @@ begin
             else
               if cnt_readed_rest_r1 < max_readed_rest_r1-1 then
                 if (i_app_rdy = '1') then                -- launch one read
-                  o_app_addr          <= cmd_byte_addr_rd_r1(28 downto 0) + c_ADDRESS_INCREMENT;  -- boundary ddr3 adress on 11 bits
+                  app_addr_r1         <= cmd_byte_addr_rd_r1(28 downto 0) + c_ADDRESS_INCREMENT;  -- boundary ddr3 adress on 11 bits
                   cmd_byte_addr_rd_r1 <= cmd_byte_addr_rd_r1 + c_ADDRESS_INCREMENT;
                   app_en_r1           <= '1';
                   cnt_readed_rest_r1  <= cnt_readed_rest_r1 + 1;
                 else
-                  app_en_r1 <= '1';
-                  o_app_cmd <= b"001";
+                  app_en_r1  <= '1';
+                  app_cmd_r1 <= "001";
                 end if;
               else
                 cmd_byte_addr_rd_r1     <= cmd_byte_addr_rd_r1 + c_ADDRESS_INCREMENT;  --  set address data for next remote read
@@ -364,10 +374,10 @@ begin
             end if;
 
           when E_READ2 =>
-            if cnt_readed_rest_r1 <= max_readed_rest_r1-1 then
+            if cnt_readed_rest_r1 <= max_readed_rest_r1 - 1 then
               if (i_app_rd_data_valid = '1') then  --  incoming valid data
-                o_pipe_out_data    <= i_app_rd_data;
-                o_pipe_out_write   <= '1';         --  write data pipe out
+                pipe_out_data_r1   <= i_app_rd_data;
+                pipe_out_write_r1  <= '1';         --  write data pipe out
                 cnt_readed_rest_r1 <= cnt_readed_rest_r1 + 1;
               end if;
             else
@@ -387,6 +397,26 @@ begin
       end if;
     end if;
   end process p_fsm_interface;
+
+---------------------------------------------------------------------
+-- output
+---------------------------------------------------------------------
+
+  o_pipe_in_read <= pipe_in_read_r1;
+
+  o_pipe_out_write <= pipe_out_write_r1;
+  o_pipe_out_data  <= pipe_out_data_r1;
+
+  o_app_en       <= app_en_r1;
+  o_app_cmd      <= app_cmd_r1;
+  o_app_addr     <= std_logic_vector(app_addr_r1);
+  o_app_wdf_wren <= app_wdf_wren_r1;
+  o_app_wdf_data <= app_wdf_data_r1;
+  o_app_wdf_end  <= app_wdf_end_r1;
+  o_app_wdf_mask <= (others => '0');
+
+  o_buffer_new_cmd_byte_addr_wr <= std_logic_vector(new_cmd_byte_addr_wr_r1);
+  o_buffer_new_cmd_byte_addr_rd <= std_logic_vector(new_cmd_byte_addr_rd_r1);
 
 
 end RTL;
