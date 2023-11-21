@@ -31,6 +31,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
+use work.pkg_system_tmtc_debug.all;
+
 entity spi_top is
   generic (
     -- true: Enable the DEBUG TOOL (ILA, etc.), false: otherwise
@@ -150,8 +152,8 @@ begin
 -- SPI select
 ---------------------------------------------------------------------
   inst_spi_device_select : entity work.spi_device_select
-  generic map(
-      g_DEBUG => true
+    generic map(
+      g_DEBUG => pkg_SPI_DEVICE_SELECT_DEBUG
       )
     port map(
       i_clk               => i_clk,

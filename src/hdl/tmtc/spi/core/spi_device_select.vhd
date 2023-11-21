@@ -41,6 +41,10 @@ use work.pkg_utils.all;
 
 
 entity spi_device_select is
+  generic (
+    -- true: Enable the DEBUG TOOL (ILA, etc.), false: otherwise
+    g_DEBUG : boolean := false
+    );
   port (
     -- clock
     i_clk         : in std_logic;
@@ -99,7 +103,15 @@ end entity spi_device_select;
 
 architecture RTL of spi_device_select is
 
-  constant c_INTER_FRAME_TEMPO : integer := 16;  -- TODO: set the value in the package. Range [1;+inf[)
+  -- define the number of clock cycle between  SPI frame
+  constant c_INTER_FRAME_TEMPO : integer := pkg_SPI_PAUSE;
+
+  --! SPI: Serial word size vector bus size
+  constant c_SPI_SER_WD_S_V_S : integer := work.pkg_utils.pkg_width_from_value(i_value => pkg_SPI_SER_WD_S) + 1;
+  --! SPI: Serial word size vector
+  constant c_SPI_SER_WD_S_V   : std_logic_vector(c_SPI_SER_WD_S_V_S-1 downto 0) :=
+    std_logic_vector(to_unsigned(pkg_SPI_SER_WD_S, c_SPI_SER_WD_S_V_S));
+
 
   -- counter width
   constant c_CNT_WIDTH : integer := work.pkg_utils.pkg_width_from_value(i_value => c_INTER_FRAME_TEMPO);
@@ -212,7 +224,7 @@ architecture RTL of spi_device_select is
   -- SPI clock
   signal spi_clk           : std_logic;
   -- SPI chip select
-  signal spi_cs_n_en       : std_logic;
+  signal spi_cs_n          : std_logic;
   -- SPI MOSI
   signal spi_mosi          : std_logic;
 
@@ -329,7 +341,7 @@ begin
         rd_data_next       <= spi_rd_data;
 
         -- wait the end of the spi transaction
-        if spi_finish = '1' then
+        if spi_rd_data_valid = '1' then
           sm_state_next <= E_INTER_FRAME_TEMPO;
         else
           sm_state_next <= E_RUN_SPI;
@@ -387,34 +399,26 @@ begin
 ---------------------------------------------------------------------
   inst_spi_master_engine0 : entity work.spi_master
     generic map(
-      g_CPOL                 => pkg_SPI_CPOL,        -- clock polarity
-      g_CPHA                 => pkg_SPI_CPHA,        -- clock phase
-      g_SYSTEM_FREQUENCY_HZ  => pkg_SPI_SYSTEM_FREQUENCY_HZ,  -- input system clock frequency  (expressed in Hz). The range is ]2*g_SPI_FREQUENCY_MAX_HZ: max_integer_value]
-      g_SPI_FREQUENCY_MAX_HZ => pkg_SPI_SPI_FREQUENCY_MAX_HZ,  -- output max spi clock frequency (expressed in Hz)
-      g_MOSI_DELAY           => pkg_SPI_MOSI_DELAY,  -- Number of clock period for mosi signal delay from state machine to the output
-      g_MISO_DELAY           => pkg_SPI_MISO_DELAY,  -- Number of clock period for miso signal delay from spi pin input to spi master input
-      g_DATA_WIDTH           => data1'length         -- Data bus size
+      g_CPOL               => pkg_SPI_CPOL,    --! Clock polarity
+      g_CPHA               => pkg_SPI_CPHA,    --! Clock phase
+      g_N_CLK_PER_SCLK_L   => pkg_SPI_SCLK_L,  --! Number of clock period for elaborating SPI Serial Clock low  level
+      g_N_CLK_PER_SCLK_H   => pkg_SPI_SCLK_H,  --! Number of clock period for elaborating SPI Serial Clock high level
+      g_N_CLK_PER_MISO_DEL => 2,  --! Number of clock period for miso signal delay from spi pin input to spi master input
+      g_DATA_S             => pkg_SPI_SER_WD_S  --! Data bus size
       )
     port map(
-      i_clk           => i_clk,         -- Clock
-      i_rst           => i_rst,         -- Reset
-      -- write side
-      i_wr_rd         => '0',  -- 1:wr , 0:rd (generate a reading response)
-      i_tx_msb_first  => '1',  -- 1: MSB bits sent first, 0: LSB bits sent first
-      i_tx_data_valid => data_valid_tmp1,  -- Start transmit ('0' = Inactive, '1' = Active)
-      i_tx_data       => data1,         -- Data to transmit (stall on MSB)
-      o_ready         => spi_ready,  -- Transmit link busy ('0' = Busy, '1' = Not Busy)
-      o_finish        => spi_finish,  -- pulse on finish (end of spi transaction: wr or rd)
-      -- rd side
-      o_rx_data_valid => spi_rd_data_valid,          -- received data valid
-      o_rx_data       => spi_rd_data,  -- received data (device spi register value)
-      ---------------------------------------------------------------------
-      -- spi interface
-      ---------------------------------------------------------------------
-      i_miso          => i_spi_miso,  -- SPI MISO (Master Input - Slave Output)
-      o_sclk          => spi_clk,       -- SPI Serial Clock
-      o_cs_n          => spi_cs_n_en,  -- SPI Chip Select ('0' = Active, '1' = Inactive)
-      o_mosi          => spi_mosi    -- SPI MOSI (Master Output - Slave Input)
+      i_rst         => i_rst,  --! Reset asynchronous assertion, synchronous de-assertion ('0' = Inactive, '1' = Active)
+      i_clk         => i_clk,           --! Clock
+      i_start       => data_valid_tmp1,  --! Start transmit ('0' = Inactive, '1' = Active)
+      i_ser_wd_s    => c_SPI_SER_WD_S_V,   --! Serial word size
+      i_data_tx     => data1,           --! Data to transmit (stall on MSB)
+      o_tx_busy_n   => spi_ready,  --! Transmit link busy ('0' = Busy, '1' = Not Busy)
+      o_data_rx     => spi_rd_data,     --! Receipted data (stall on LSB)
+      o_data_rx_rdy => spi_rd_data_valid,  --! Receipted data ready ('0' = Not ready, '1' = Ready)
+      i_miso        => i_spi_miso,      --! SPI Master Input Slave Output
+      o_mosi        => spi_mosi,        --! SPI Master Output Slave Input
+      o_sclk        => spi_clk,         --! SPI Serial Clock
+      o_cs_n        => spi_cs_n  --! SPI Chip Select ('0' = Active, '1' = Inactive)
       );
 
 
@@ -428,15 +432,15 @@ begin
       spi_mosi_r1 <= spi_mosi;
 
       -- select the SPI device
-        if spi_ras_select_r1 = '1' then
-          -- select the RAS device
-          spi_cs_n_r1(1) <= '1';
-          spi_cs_n_r1(0) <= spi_cs_n_en;
-        else
-          -- select the DEMUX device
-          spi_cs_n_r1(1) <= spi_cs_n_en;
-          spi_cs_n_r1(0) <= '1';
-        end if;
+      if spi_ras_select_r1 = '1' then
+        -- select the RAS device
+        spi_cs_n_r1(1) <= '1';
+        spi_cs_n_r1(0) <= spi_cs_n;
+      else
+        -- select the DEMUX device
+        spi_cs_n_r1(1) <= spi_cs_n;
+        spi_cs_n_r1(0) <= '1';
+      end if;
     end if;
   end process p_select_spi_link;
   ---------------------------------------------------------------------
@@ -479,6 +483,45 @@ begin
   assert not (error_tmp_bis(2) = '1') report "[spi_device_select] => fifo is used before the end of the initialization " severity error;
   assert not (error_tmp_bis(1) = '1') report "[spi_device_select] => fifo read an empty FIFO" severity error;
   assert not (error_tmp_bis(0) = '1') report "[spi_device_select] => fifo write a full FIFO" severity error;
+
+---------------------------------------------------------------------
+-- debug
+---------------------------------------------------------------------
+  gen_debug : if g_DEBUG generate
+  begin
+
+    inst_ila_spi_select_top : entity work.ila_spi_select_top
+      port map (
+        clk => i_clk,
+
+        -- probe0
+        probe0(8) => i_rst,
+        probe0(7) => i_rst_status,
+        probe0(6) => i_debug_pulse,
+        probe0(5) => rd_r1,
+        probe0(4) => ready_r1,
+        probe0(3) => spi_ready,
+        probe0(2) => data_valid_tmp1,
+        probe0(1) => rd_data_valid_r1,
+        probe0(0) => spi_ras_select_r1,
+
+        -- probe1
+        probe1(4)          => i_spi_miso,
+        probe1(3)          => spi_mosi_r1,
+        probe1(2)          => spi_clk_r1,
+        probe1(1 downto 0) => spi_cs_n_r1,
+
+        -- probe2
+        probe2(63 downto 32) => data1,
+        probe2(31 downto 0)  => rd_data_r1,
+
+        -- probe 3
+        probe3(3)          => empty_sync1,
+        probe3(2 downto 0) => error_tmp_bis
+        );
+
+
+  end generate gen_debug;
 
 
 end architecture RTL;

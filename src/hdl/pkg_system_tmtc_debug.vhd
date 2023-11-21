@@ -44,7 +44,14 @@ package pkg_system_tmtc_debug is
   -- SPI_TOP
   ---------------------------------------------------------------------
   -- user-defined: true: to use Xilinx debugging modules (ILA, VIO,..), false: otherwise
-  constant pkg_SPI_TOP_DEBUG : boolean := true;
+  constant pkg_SPI_TOP_DEBUG : boolean := false;
+
+  ---------------------------------------------------------------------
+  -- SPI_TOP
+  ---------------------------------------------------------------------
+  -- user-defined: true: to use Xilinx debugging modules (ILA, VIO,..), false: otherwise
+  constant pkg_SPI_DEVICE_SELECT_DEBUG : boolean := true;
+
 
   ---------------------------------------------------------------------
   -- REGDECODE_TOP

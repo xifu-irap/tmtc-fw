@@ -35,6 +35,8 @@ verific -vhdl -lib ./third-party-libraries/ip/vivado/opal_kelly/Front_panel_XEM7
 #    Top level module (black box for the Linty tool)
 verific -vhdl -lib ./ip/xilinx/coregen/ddr3_256_16/ddr3_256_16_stub.vhdl
 verific -vhdl -lib ./ip/xilinx/coregen/ila_science_top/ila_science_top_stub.vhdl
+verific -vhdl -lib ./ip/xilinx/coregen/ila_hk_top/ila_hk_top_stub.vhdl
+verific -vhdl -lib ./ip/xilinx/coregen/ila_spi_select_top/ila_spi_select_top_stub.vhdl
 # VHDL
 #    Source files
 
@@ -84,7 +86,6 @@ verific -vhdl ./src/hdl/regdecode/core/regdecode_science_fifo.vhd
 verific -vhdl ./src/hdl/regdecode/regdecode_top.vhd
 
 # tmtc/spi
-verific -vhdl ./src/hdl/tmtc/spi/core/spi_master_clock_gen.vhd
 verific -vhdl ./src/hdl/tmtc/spi/core/spi_master.vhd
 verific -vhdl ./src/hdl/tmtc/spi/core/spi_device_select.vhd
 verific -vhdl ./src/hdl/tmtc/spi/spi_top.vhd

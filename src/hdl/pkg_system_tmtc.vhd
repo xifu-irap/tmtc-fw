@@ -99,19 +99,15 @@ package pkg_system_tmtc is
   constant pkg_SPI_CPOL                 : std_logic := '0';
   -- user-defined : SPI clock phase
   constant pkg_SPI_CPHA                 : std_logic := '0';
-  -- auto-computed : input clock frequency of the module (expressed in Hz). (possible values: ]2*g_SPI_FREQUENCY_MAX_HZ: max_integer_value])
-  constant pkg_SPI_SYSTEM_FREQUENCY_HZ  : positive  := pkg_USB_SYSTEM_FREQUENCY_HZ;
-  -- user-defined : spi output clock frequency to generate (expressed in Hz)
-  constant pkg_SPI_SPI_FREQUENCY_MAX_HZ : positive  := 4_000_000;  -- 4 MHz max
-  -- user-defined : Number of clock period for mosi signal between the state machine output to the output ports (spi_master)
-  -- (possible values [0;max_integer_value[)
-  constant pkg_SPI_MOSI_DELAY           : natural   := 0;
-  -- auto-computed : Number of clock period for miso signal by considering the FPGA loopback delay
-  -- (the external device delay is not taken into account): FSM (spi_master) -> IO (out) -> IO (IN). (possible values [0;max_integer_value[)
-  constant pkg_SPI_MISO_DELAY           : natural   := pkg_SPI_MOSI_DELAY +
-                                           pkg_SPI_DEVICE_SELECT_MOSI_DELAY +
-                                           pkg_IO_SPI_MOSI_DELAY +
-                                           pkg_IO_SPI_MISO_DELAY;
+
+  --! SPI: Data bus size
+  constant pkg_SPI_SER_WD_S : integer   := 32;
+  --! SPI: Number of clock period for elaborating SPI Serial Clock low level
+  constant pkg_SPI_SCLK_L   : integer   := 24;
+  --! SPI: Number of clock period for elaborating SPI Serial Clock high level
+  constant pkg_SPI_SCLK_H   : integer   := 2;
+  --! SPI: Number of clock period between two SPI communication. Should be >2
+  constant pkg_SPI_PAUSE    : positive  := 3;
 
   ---------------------------------------------------------------------
   -- TMTC/science
