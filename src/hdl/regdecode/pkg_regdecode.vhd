@@ -116,7 +116,7 @@ package pkg_regdecode is
   -- regdecode_science_fifo
   -----------------------------------------------------------------
   -- user-defined: define the fifo depth (expressed in number of words)
-  constant pkg_SCIENCE_FIFO_DEPTH : integer := 512;  -- TODO
+  constant pkg_SCIENCE_FIFO_DEPTH : integer := 32768;
 
 
 
