@@ -32,7 +32,7 @@
 # xem7350 : system clock
 ###############################################################################################################
 #  Not defined because this clock is already defined in the configuration of the DDR IP
-# create_clock -name sys_clk -period 5 [get_ports sys_clkp]
+# create_clock -name sys_clk -period 5 [get_ports i_sys_clk_p]
 
 ###############################################################################################################
 # usb @100.8 MHz
@@ -42,8 +42,7 @@ create_clock -period 9.920 -name usb_clk_in [get_ports {i_okUH[0]}];
 create_clock -name virt_usb_clk_in -period 9.920;
 
  # 62.5 MHz
-create_clock -period 16 -name science_clk1 [get_ports {i_clk_science_p[0]}];
-create_clock -period 16 -name science_clk2 [get_ports {i_clk_science_p[1]}];
+create_clock -period 16 -name science_clk1 [get_ports {i_science_clk_p[0]}]
 
 # science
 #    create the associated virtual input clock to science_clk1 and science_clk2
@@ -58,8 +57,8 @@ create_clock -period 10  -name virtual_ddr_clk;
 # rename auto-derived clock
 ###############################################################################################################
 # define variables
-set usb_clk_in_pin       [get_pins inst_okHost/mmcm0/CLKIN1];
-set usb_clk_out_pin      [get_pins inst_okHost/mmcm0/CLKOUT0];
+set usb_clk_in_pin [get_pins inst_regdecode_top/inst_usb_opal_kelly/inst_Opal_Kelly_Host/mmcm0/CLKIN1]
+set usb_clk_out_pin  [get_pins inst_regdecode_top/inst_usb_opal_kelly/inst_Opal_Kelly_Host/mmcm0/CLKOUT0]
 set ddr_clk_in_pin       [get_pins inst_ddr3_256_16/u_ddr3_256_16_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKIN1];
 set ddr_clk_user_out_pin [get_pins inst_ddr3_256_16/u_ddr3_256_16_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKFBOUT];
 
@@ -72,15 +71,14 @@ create_generated_clock -name ddr_user_clk  -source $ddr_clk_in_pin $ddr_clk_user
 ###############################################################################################################
 # ODDR : forward clock
 ###############################################################################################################
-# create_generated_clock -name gen_spi_clk -multiply_by 1 -source [get_pins inst_spi_mgt/inst_dac_spi_master/o_sclk*/C] [get_ports {o_sclk}]
-create_generated_clock -name gen_spi_clk -multiply_by 1 -source [get_pins inst_io_spi/gen_user_to_pads_clk.inst_oddr/C] [get_ports {o_sclk}]
+create_generated_clock -name gen_spi_clk -multiply_by 1 -source [get_pins inst_io_top/inst_io_spi/gen_user_to_pads_clk.inst_oddr/C] [get_ports {o_spi_sclk}]
 
 
 ###############################################################################################################
 # usb: constraints register/Q on register/clk
 ###############################################################################################################
-set usb_src  [get_pins inst_okHost/core0/core0/a0/d0/lc4da648cb12eeeb24e4d199c1195ed93_reg[4]/C];
-set usb_dest [get_pins inst_okHost/core0/core0/a0/d0/lc4da648cb12eeeb24e4d199c1195ed93_reg[4]/Q];
+set usb_src [get_pins inst_regdecode_top/inst_usb_opal_kelly/inst_Opal_Kelly_Host/core0/core0/a0/d0/lc4da648cb12eeeb24e4d199c1195ed93_reg[4]/C];
+set usb_dest [get_pins inst_regdecode_top/inst_usb_opal_kelly/inst_Opal_Kelly_Host/core0/core0/a0/d0/lc4da648cb12eeeb24e4d199c1195ed93_reg[4]/Q];
 create_generated_clock -name usb_clk_regQ_on_clk_pin -source $usb_src -divide_by 2 $usb_dest;
 
 ###############################################################################################################
@@ -205,7 +203,7 @@ set tsu          1;           # destination device setup time requirement
 set thd          1;           # destination device hold time requirement
 set trce_dly_max 0.000;            # maximum board trace delay
 set trce_dly_min 0.000;            # minimum board trace delay
-set output_ports {o_mosi o_cs_n};   # list of output ports
+set output_ports {o_spi_mosi o_spi_cs_n[*]};   # list of output ports
 
 # Output Delay Constraints
 set_output_delay -clock $fwclk -max [expr $trce_dly_max + $tsu] [get_ports $output_ports];
@@ -236,7 +234,7 @@ set input_clock         virtual_ddr_clk;      # Name of input clock
 set input_clock_period  5;              # Period of input clock
 set dv_bre              1;          # Data valid before the rising clock edge
 set dv_are              1;          # Data valid after the rising clock edge
-set input_ports         {i_miso};     # List of input ports
+set input_ports         {i_spi_miso};     # List of input ports
 
 # Input Delay Constraint
 set_input_delay -clock $input_clock -max [expr $input_clock_period - $dv_bre] [get_ports $input_ports];
@@ -267,37 +265,7 @@ set input_clock         virtual_science_clk;      # Name of input clock
 set input_clock_period  16;    # Period of input clock
 set dv_bre              2.50;             # Data valid before the rising clock edge
 set dv_are              2.5000;             # Data valid after the rising clock edge
-set input_ports         {i_science_ctrl_p[0] i_science_data_p[0] i_science_data_p[1] i_science_data_p[2] i_science_data_p[3]};     # List of input ports
-
-# Input Delay Constraint
-set_input_delay -clock $input_clock -max [expr $input_clock_period - $dv_bre] [get_ports $input_ports] -add_delay;
-set_input_delay -clock $input_clock -min $dv_are                              [get_ports $input_ports] -add_delay;
-
-###############################################################################################################
-# science2 (input ports)
-###############################################################################################################
-# Center-Aligned Rising Edge Source Synchronous Inputs
-#
-# For a center-aligned Source Synchronous interface, the clock
-# transition is aligned with the center of the data valid window.
-# The same clock edge is used for launching and capturing the
-# data. The constraints below rely on the default timing
-# analysis (setup = 1 cycle, hold = 0 cycle).
-#
-# input    ____           __________
-# clock        |_________|          |_____
-#                        |
-#                 dv_bre | dv_are
-#                <------>|<------>
-#          __    ________|________    __
-# data     __XXXX____Rise_Data____XXXX__
-#
-
-set input_clock         virtual_science_clk;      # Name of input clock
-set input_clock_period  16;    # Period of input clock
-set dv_bre              2.5;             # Data valid before the rising clock edge
-set dv_are              2.500;             # Data valid after the rising clock edge
-set input_ports         {i_science_ctrl_p[1] i_science_data_p[4] i_science_data_p[5] i_science_data_p[6] i_science_data_p[7]};     # List of input ports
+set input_ports         {i_science_ctrl_p[*] i_science_data_p[*]};     # List of input ports
 
 # Input Delay Constraint
 set_input_delay -clock $input_clock -max [expr $input_clock_period - $dv_bre] [get_ports $input_ports] -add_delay;
@@ -333,16 +301,10 @@ set_max_delay -from [get_clocks ddr_user_clk] -to [get_clocks usb_clk] -datapath
 set_clock_groups -name async_mmcm_usb_user_virt -asynchronous -group {usb_clk} -group {virt_usb_clk_in}
 # set_clock_groups -name async_science -group {science_clk1 science_clk2}
 
-
 set_false_path -setup  -rise_from [get_clocks virtual_science_clk] -fall_to [get_clocks science_clk1]
 set_false_path -setup  -fall_from [get_clocks virtual_science_clk] -rise_to [get_clocks science_clk1]
 set_false_path -hold   -rise_from [get_clocks virtual_science_clk] -fall_to [get_clocks science_clk1]
 set_false_path -hold   -fall_from [get_clocks virtual_science_clk] -rise_to [get_clocks science_clk1]
-
-set_false_path -setup  -rise_from [get_clocks virtual_science_clk] -fall_to [get_clocks science_clk2]
-set_false_path -setup  -fall_from [get_clocks virtual_science_clk] -rise_to [get_clocks science_clk2]
-set_false_path -hold   -rise_from [get_clocks virtual_science_clk] -fall_to [get_clocks science_clk2]
-set_false_path -hold   -fall_from [get_clocks virtual_science_clk] -rise_to [get_clocks science_clk2]
 
 set_false_path -setup  -rise_from [get_clocks ddr_user_clk] -fall_to [get_clocks gen_spi_clk]
 set_false_path -setup  -fall_from [get_clocks ddr_user_clk] -rise_to [get_clocks gen_spi_clk]
@@ -360,17 +322,18 @@ set_false_path -hold   -fall_from [get_clocks virtual_ddr_clk] -rise_to [get_clo
 ##################################################################################
 set_false_path -to   [get_ports "o_leds*"];
 set_false_path -to   [get_ports "o_sel_main_n"];
+set_false_path -to   [get_ports "i_hardware_id"];
 
 ##################################################################################
 # SPI: IO
 #   use IO register when possible
 ##################################################################################
 # shared spi links
-set_property IOB true [get_ports o_mosi];
-set_property IOB true [get_ports o_sclk];
-set_property IOB true [get_ports i_miso];
+set_property IOB true [get_ports o_spi_mosi];
+set_property IOB true [get_ports o_spi_sclk];
+set_property IOB true [get_ports i_spi_miso];
 # cs
-set_property IOB true [get_ports o_cs_n];
+set_property IOB true [get_ports o_spi_cs_n[*]];
 
 
 ##################################################################################

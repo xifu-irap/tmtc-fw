@@ -34,29 +34,76 @@ verific -vhdl -lib ./third-party-libraries/ip/vivado/opal_kelly/Front_panel_XEM7
 # Xilinx IP
 #    Top level module (black box for the Linty tool)
 verific -vhdl -lib ./ip/xilinx/coregen/ddr3_256_16/ddr3_256_16_stub.vhdl
-verific -vhdl -lib ./ip/xilinx/coregen/fifo_r32_256_w32_256/fifo_r32_256_w32_256_stub.vhdl
-verific -vhdl -lib ./ip/xilinx/coregen/fifo_r32_256_w32_256_hk/fifo_r32_256_w32_256_hk_stub.vhdl
-verific -vhdl -lib ./ip/xilinx/coregen/fifo_r32_131068_w128_32728/fifo_r32_131068_w128_32728_stub.vhdl
-verific -vhdl -lib ./ip/xilinx/coregen/fifo_w32_131068_r128_32728/fifo_w32_131068_r128_32728_stub.vhdl
-verific -vhdl -lib ./ip/xilinx/coregen/ila_usb/ila_usb_stub.vhdl
-verific -vhdl -lib ./ip/xilinx/coregen/ila_ddr/ila_ddr_stub.vhdl
-
+verific -vhdl -lib ./ip/xilinx/coregen/ila_science_top/ila_science_top_stub.vhdl
+verific -vhdl -lib ./ip/xilinx/coregen/ila_hk_top/ila_hk_top_stub.vhdl
+verific -vhdl -lib ./ip/xilinx/coregen/ila_spi_select_top/ila_spi_select_top_stub.vhdl
 # VHDL
 #    Source files
-verific -vhdl ./src/hdl/synchronizer.vhd
-verific -vhdl ./src/hdl/pipeliner_with_init.vhd
-verific -vhdl ./src/hdl/io_spi.vhd
-verific -vhdl ./src/hdl/spi_master.vhd
-verific -vhdl ./src/hdl/science_data_rx_package.vhd
-verific -vhdl ./src/hdl/science_data_rx_fsm.vhd
-verific -vhdl ./src/hdl/pkg_ram.vhd
-verific -vhdl ./src/hdl/pkg_project.vhd
-verific -vhdl ./src/hdl/pkg_func_math.vhd
-verific -vhdl ./src/hdl/ctrl_rx_fsm.vhd
-verific -vhdl ./src/hdl/spi_mgt.vhd
-verific -vhdl ./src/hdl/science_data_rx.vhd
-verific -vhdl ./src/hdl/manage_pipe_out.vhd
-verific -vhdl ./src/hdl/hk_pattern.vhd
-verific -vhdl ./src/hdl/drive_interface_ddr3_ctrl.vhd
-verific -vhdl ./src/hdl/ddr_stamp.vhd
-verific -vhdl ./src/hdl/fmc_to_usb.vhd
+
+# package
+verific -vhdl ./src/hdl/utils/pkg_utils.vhd
+verific -vhdl ./src/hdl/pkg_system_tmtc.vhd
+verific -vhdl ./src/hdl/pkg_system_tmtc_debug.vhd
+verific -vhdl ./src/hdl/regdecode/pkg_regdecode.vhd
+
+# utils
+verific -vhdl ./src/hdl/utils/error/one_error_latch.vhd
+verific -vhdl ./src/hdl/utils/others/endianess_change_by_generic.vhd
+verific -vhdl ./src/hdl/utils/others/pipeliner_with_init.vhd
+
+
+# xpm
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_async.vhd
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_async_with_error.vhd
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_async_with_prog_full.vhd
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_async_with_error_prog_full.vhd
+
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_sync.vhd
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_sync_with_error.vhd
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_sync_with_prog_full.vhd
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_sync_with_wr_count.vhd
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_sync_with_prog_full_wr_count.vhd
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_sync_with_error.vhd
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_sync_with_error_prog_full.vhd
+verific -vhdl ./ip/xilinx/xpm/fifo/fifo_sync_with_error_prog_full_wr_count.vhd
+
+# IO
+verific -vhdl ./src/hdl/io/core/io_spi.vhd
+verific -vhdl ./src/hdl/io/core/io_science.vhd
+verific -vhdl ./src/hdl/io/io_top.vhd
+
+# reset
+verific -vhdl ./src/hdl/reset/core/reset_ddr_controller.vhd
+verific -vhdl ./src/hdl/reset/reset_top.vhd
+
+# regdecode
+verific -vhdl ./src/hdl/regdecode/usb/usb_opal_kelly.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_pipe_usb_to_user.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_pipe_user_to_usb_data_count.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_register_to_usb.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_register_to_user.vhd
+verific -vhdl ./src/hdl/regdecode/core/regdecode_science_fifo.vhd
+verific -vhdl ./src/hdl/regdecode/regdecode_top.vhd
+
+# tmtc/spi
+verific -vhdl ./src/hdl/tmtc/spi/core/spi_master.vhd
+verific -vhdl ./src/hdl/tmtc/spi/core/spi_device_select.vhd
+verific -vhdl ./src/hdl/tmtc/spi/spi_top.vhd
+
+# tmtc/science
+verific -vhdl ./src/hdl/tmtc/science/core/science_leds.vhd
+verific -vhdl ./src/hdl/tmtc/science/core/science_rx_deserializer.vhd
+verific -vhdl ./src/hdl/tmtc/science/core/science_rx_frame.vhd
+verific -vhdl ./src/hdl/tmtc/science/core/science_ddr3_stamp.vhd
+verific -vhdl ./src/hdl/tmtc/science/core/science_ddr3_ctrl.vhd
+verific -vhdl ./src/hdl/tmtc/science/core/science_ddr3.vhd
+verific -vhdl ./src/hdl/tmtc/science/science_top.vhd
+
+# tmc/leds
+verific -vhdl ./src/hdl/tmtc/led/leds_top.vhd
+
+# tmtc
+verific -vhdl ./src/hdl/tmtc/tmtc_top.vhd
+
+# system_tmtc
+verific -vhdl ./src/hdl/system_tmtc_top.vhd
