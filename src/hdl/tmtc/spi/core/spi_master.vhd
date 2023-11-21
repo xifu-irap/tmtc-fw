@@ -1,7 +1,7 @@
 -- -------------------------------------------------------------------------------------------------------------
---                            Copyright (C) 2023-2030 Ken-ji de la Rosa, IRAP Toulouse.
+--                            Copyright (C) 2021-2030 Sylvain LAURENT, IRAP Toulouse.
 -- -------------------------------------------------------------------------------------------------------------
---                            This file is part of the ATHENA X-IFU DRE Telemetry and Telecommand Firmware.
+--                            This file is part of the ATHENA X-IFU DRE Telemetry and Telecommand (TMTC) Firmware.
 --
 --                            tmtc-fw is free software: you can redistribute it and/or modify
 --                            it under the terms of the GNU General Public License as published by
@@ -16,478 +16,212 @@
 --                            You should have received a copy of the GNU General Public License
 --                            along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -- -------------------------------------------------------------------------------------------------------------
---    email                   kenji.delarosa@alten.com
---    @file                   spi_master.vhd
+--    email                   slaurent@nanoxplore.com
+--!   @file                   spi_master.vhd
 -- -------------------------------------------------------------------------------------------------------------
 --    Automatic Generation    No
 --    Code Rules Reference    SOC of design and VHDL handbook for VLSI development, CNES Edition (v2.1)
 -- -------------------------------------------------------------------------------------------------------------
---    @details
+--!   @details
 --
---    This module does the following tasks:
---      . generate a spi clock from the system clock
---      . perform a spi communication:
---          . data serialization for the writting/reading
---          . data de-serialization for the reading
---
---   Note: (see: https://www.analog.com/en/analog-dialogue/articles/introduction-to-spi-interface.html)
---    SPI_MODE |CPOL|CPHA| clock polarity (idle state)| clock data sampling | clock data shift out
---    0        |  0 | 0  | 0                          | rising_edge         | falling_edge
---    1        |  0 | 1  | 0                          | falling_edge        | rising_edge
---    2        |  1 | 0  | 1                          | rising_edge         | falling_edge
---    3        |  1 | 1  | 1                          | falling_edge        | rising_edge
+--    Manage the SPI protocol.
 --
 -- -------------------------------------------------------------------------------------------------------------
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.math_real.all;
 
 entity spi_master is
-  generic
-    (
-      -- clock polarity
-      g_CPOL                 : std_logic := '0';
-      -- clock phase
-      g_CPHA                 : std_logic := '0';
-      -- input system clock frequency  (expressed in Hz). The range is ]2*g_SPI_FREQUENCY_MAX_HZ: max_integer_value]
-      g_SYSTEM_FREQUENCY_HZ  : natural   := 128_000_000;
-      -- output max spi clock frequency (expressed in Hz)
-      g_SPI_FREQUENCY_MAX_HZ : natural   := 20_000_000;
-      -- Number of clock period for mosi signal delay from state machine to the output
-      g_MOSI_DELAY           : natural   := 0;
-      -- Number of clock period for miso signal delay from spi pin input to spi master input
-      g_MISO_DELAY           : natural   := 0;
-      -- Data bus size
-      g_DATA_WIDTH           : natural   := 16
+  generic(
+    g_CPOL               : std_logic;   --! Clock polarity
+    g_CPHA               : std_logic;   --! Clock phase
+    g_N_CLK_PER_SCLK_L   : integer;  --! Number of clock period for elaborating SPI Serial Clock low  level
+    g_N_CLK_PER_SCLK_H   : integer;  --! Number of clock period for elaborating SPI Serial Clock high level
+    g_N_CLK_PER_MISO_DEL : integer;  --! Number of clock period for miso signal delay from spi pin input to spi master input
+    g_DATA_S             : integer      --! Data bus size
+    );
+  port(
+    i_rst : in std_logic;  --! Reset asynchronous assertion, synchronous de-assertion ('0' = Inactive, '1' = Active)
+    i_clk : in std_logic;               --! Clock
 
-      );
-  port
-    (
-      -- Clock
-      i_clk           : in  std_logic;
-      -- Reset
-      i_rst           : in  std_logic;
-      -- write side
-      -- 1:wr , 0:rd
-      i_wr_rd         : in  std_logic;
-      -- 1: MSB bits sent first, 0: LSB bits sent first
-      i_tx_msb_first  : in  std_logic;
-      -- Start transmit ('0' = Inactive, '1' = Active)
-      i_tx_data_valid : in  std_logic;
-      -- Data to transmit (stall on MSB)
-      i_tx_data       : in  std_logic_vector(g_DATA_WIDTH -1 downto 0);
-      -- Transmit link busy ('0' = Busy, '1' = Not Busy)
-      o_ready         : out std_logic;
-      -- pulse on finish (end of spi transaction: wr or rd)
-      o_finish        : out std_logic;
-      -- rd side
-      -- received data valid
-      o_rx_data_valid : out std_logic;
-      -- received data (device spi register value)
-      o_rx_data       : out std_logic_vector(g_DATA_WIDTH -1 downto 0);
-      ---------------------------------------------------------------------
-      -- spi interface
-      ---------------------------------------------------------------------
-      -- SPI MISO (Master Input - Slave Output)
-      i_miso          : in  std_logic;
-      -- SPI Serial Clock
-      o_sclk          : out std_logic;
-      -- SPI Chip Select ('0' = Active, '1' = Inactive)
-      o_cs_n          : out std_logic;
-      -- SPI MOSI (Master Output - Slave Input)
-      o_mosi          : out std_logic
-      );
+    i_start     : in  std_logic;  --! Start transmit ('0' = Inactive, '1' = Active)
+    i_ser_wd_s  : in  std_logic_vector(integer(ceil(log2(real(g_DATA_S+1))))-1 downto 0);  --! Serial word size
+    i_data_tx   : in  std_logic_vector(g_DATA_S-1 downto 0);  --! Data to transmit (stall on MSB)
+    o_tx_busy_n : out std_logic;  --! Transmit link busy ('0' = Busy, '1' = Not Busy)
+
+    o_data_rx     : out std_logic_vector(g_DATA_S-1 downto 0);  --! Receipted data (stall on LSB)
+    o_data_rx_rdy : out std_logic;  --! Receipted data ready ('0' = Not ready, '1' = Ready)
+
+    i_miso : in  std_logic;             --! SPI Master Input Slave Output
+    o_mosi : out std_logic;             --! SPI Master Output Slave Input
+    o_sclk : out std_logic;             --! SPI Serial Clock
+    o_cs_n : out std_logic   --! SPI Chip Select ('0' = Active, '1' = Inactive)
+    );
 end entity spi_master;
 
 architecture RTL of spi_master is
 
-  -- counter width (expressed in bits)
-  constant c_CNT_BIT_WIDTH : integer := integer(ceil(log2(real(i_tx_data'length))));
-  -- max counter value
-  constant c_CNT_MAX_VALUE : integer := i_tx_data'length - 1;  -- -1 start from 0,
+  -- ------------------------------------------------------------------------------------------------------
+  --! @details   Maximum function
+  -- ------------------------------------------------------------------------------------------------------
+  function max (a, b : integer) return integer is
+  begin
+    if a > b then
+      return a;
+    else
+      return b;
+    end if;
+  end function;
 
----------------------------------------------------------------------
--- clock generator
----------------------------------------------------------------------
-  -- spi clock
-  signal sclk_tmp              : std_logic;
-  -- pulse when the spi data needs to be shifted
-  signal pulse_data_shift_tmp  : std_logic;
-  -- pulse when the spi data needs to be sampled
-  signal pulse_data_sample_tmp : std_logic;
+  constant c_PULSE_GEN_L_MAX_VAL : integer := g_N_CLK_PER_SCLK_L-2;  --! Pulse generator: maximal value for elaborating SPI Serial Clock low  level
+  constant c_PULSE_GEN_H_MAX_VAL : integer := g_N_CLK_PER_SCLK_H-2;  --! Pulse generator: maximal value for elaborating SPI Serial Clock high level
+  constant c_PULSE_GEN_MAX_VAL   : integer := max(1, max(c_PULSE_GEN_H_MAX_VAL, c_PULSE_GEN_L_MAX_VAL));  --! Pulse generator: maximal value
+  constant c_PULSE_GEN_S         : integer := integer(ceil(log2(real(c_PULSE_GEN_MAX_VAL+1))))+1;  --! Pulse generator: size bus (signed)
 
----------------------------------------------------------------------
--- write state machine
----------------------------------------------------------------------
-  -- fsm type declaration
-  type t_wr_state is (E_RST, E_WAIT, E_SET_CS0, E_SET_CS1, E_SHIFT_DATA, E_UNSET_CS);
+  constant c_PLS_STE_CNT_NB_VAL  : integer := 2 * g_DATA_S;  --! Pulse state counter: number of value
+  constant c_PLS_STE_CNT_MAX_VAL : integer := c_PLS_STE_CNT_NB_VAL-1;  --! Pulse state counter: maximal value
+  constant c_PLS_STE_CNT_S       : integer := integer(ceil(log2(real(c_PLS_STE_CNT_MAX_VAL+1))))+1;  --! Pulse state counter: size bus (signed)
 
-  -- state
-  signal sm_wr_state_next : t_wr_state;
-  -- state (registered)
-  signal sm_wr_state_r1   : t_wr_state := E_RST;
+  signal pulse_gen   : std_logic_vector(c_PULSE_GEN_S-1 downto 0);  --! Pulse generator
+  signal pls_ste_cnt : std_logic_vector(c_PLS_STE_CNT_S-1 downto 0);  --! Pulse state counter
 
-  -- tx spi clock
-  signal tx_sclk_next : std_logic;
-  -- tx spi clock (registered)
-  signal tx_sclk_r1   : std_logic := g_CPOL;
+  signal data_tx_ser : std_logic_vector(g_DATA_S-1 downto 0);  --! Data transmit serial
+  signal data_rx_ser : std_logic_vector(g_DATA_S-1 downto 0);  --! Data receipt serial
 
-  -- tx spi chip select
-  signal tx_cs_n_next : std_logic;
-  -- tx spi chip select (registered)
-  signal tx_cs_n_r1   : std_logic := '1';
-
-  -- tx data_valid
-  signal tx_data_valid_next : std_logic;
-  -- tx data_valid (registered)
-  signal tx_data_valid_r1   : std_logic := '0';
-
-  -- tx data
-  signal tx_data_next : std_logic_vector(i_tx_data'range);
-  -- tx data (registered)
-  signal tx_data_r1   : std_logic_vector(i_tx_data'range) := (others => '0');
-
-  -- ready
-  signal ready_next : std_logic;
-  -- ready (registered)
-  signal ready_r1   : std_logic := '0';
-
-  -- pulse finish
-  signal finish_next : std_logic;
-  -- pulse finish (registered)
-  signal finish_r1   : std_logic := '0';
-
-  -- data bit counter
-  signal tx_cnt_bit_next : unsigned(c_CNT_BIT_WIDTH - 1 downto 0);
-  -- data bit counter (registered)
-  signal tx_cnt_bit_r1   : unsigned(c_CNT_BIT_WIDTH - 1 downto 0);
-
-  -- read data_valid
-  signal rx_data_valid_next : std_logic;
-  -- read data_valid (registered)
-  signal rx_data_valid_r1   : std_logic := '0';
-
-  -- spi mode: read enable
-  signal rx_rd_en_next : std_logic;
-  -- spi mode: read enable (registered)
-  signal rx_rd_en_r1   : std_logic := '0';
-
-  -- spi mode
-  signal rd_en_next       : std_logic;
-  -- spi mode (registred)
-  signal rd_en_r1         : std_logic := '0';
----------------------------------------------------------------------
--- optional: tx pipeline
----------------------------------------------------------------------
-  -- delayed: spi mode: read enable
-  signal rx_rd_en_rx      : std_logic;
-   -- delayed: read data valid
-  signal rx_data_valid_rx : std_logic;
-  -- delayed: tx finish
-  signal tx_finish_rx     : std_logic;
-  -- delayed: tx spi clock
-  signal tx_sclk_rx       : std_logic;
-  -- delayed: tx spi chip select
-  signal tx_cs_n_rx       : std_logic;
-  -- delayed: tx data
-  signal tx_data_rx       : std_logic := '0';
-
----------------------------------------------------------------------
--- optional: rx pipeline
----------------------------------------------------------------------
--- delayed: rx finish (from tx version)
-  signal rx_finish_ry     : std_logic;
-  -- delayed: rx data_valid (from tx version)
-  signal rx_data_valid_ry : std_logic;
-  -- delayed: rx read enable (from tx version)
-  signal rx_rd_en_ry      : std_logic;
-
-  -- rx finish
-  signal rx_finish_all_rz : std_logic                         := '0';
-  -- rx read data_valid
-  signal rx_data_valid_rz : std_logic                         := '0';
-  -- rx read data
-  signal rx_data_rz       : std_logic_vector(o_rx_data'range) := (others => '0');
+  signal pls_smp_data_rx_ser : std_logic_vector(g_N_CLK_PER_MISO_DEL+1 downto 0);  --! Pulse for sampling data receipt serial
+  signal data_rx_ser_init    : std_logic_vector(g_N_CLK_PER_MISO_DEL+1 downto 0);  --! Data receipt serial initialization
+  signal data_rx_ser_end     : std_logic_vector(g_N_CLK_PER_MISO_DEL+1 downto 0);  --! Data receipt serial end
 
 begin
 
-  inst_spi_master_clock_gen : entity work.spi_master_clock_gen
-    generic map(
-      g_CPOL                 => g_CPOL,
-      g_CPHA                 => g_CPHA,
-      g_SYSTEM_FREQUENCY_HZ  => g_SYSTEM_FREQUENCY_HZ,
-      g_SPI_FREQUENCY_MAX_HZ => g_SPI_FREQUENCY_MAX_HZ
-      )
-    port map(
-      i_clk               => i_clk,
-      i_rst               => i_rst,
-      ---------------------------------------------------------------------
-      -- output
-      ---------------------------------------------------------------------
-      o_sclk              => sclk_tmp,
-      o_pulse_data_sample => pulse_data_sample_tmp,
-      o_pulse_data_shift  => pulse_data_shift_tmp
-      );
-
----------------------------------------------------------------------
--- Tx: write data
---   According the different SPI mode defined by the (g_CPOL,g_CPHA)
---   it generates the SPI protocol (chip select, data serialization,...)
----------------------------------------------------------------------
-  p_wr_decode_state : process (i_tx_data, i_tx_data_valid, i_tx_msb_first,
-                               i_wr_rd, pulse_data_sample_tmp,
-                               pulse_data_shift_tmp, rd_en_r1, sclk_tmp,
-                               sm_wr_state_r1, ready_r1, tx_cnt_bit_r1,
-                               tx_cs_n_r1, tx_data_r1, tx_sclk_r1) is
+  -- ------------------------------------------------------------------------------------------------------
+  --!   Pulse generator
+  -- ------------------------------------------------------------------------------------------------------
+  P_pulse_gen : process (i_clk)
   begin
-    tx_cnt_bit_next    <= tx_cnt_bit_r1;
-    tx_sclk_next       <= tx_sclk_r1;
-    tx_cs_n_next       <= tx_cs_n_r1;
-    rd_en_next         <= rd_en_r1;
-    tx_data_valid_next <= '0';
-    tx_data_next       <= tx_data_r1;
-    ready_next         <= ready_r1;
-    finish_next        <= '0';
-    rx_data_valid_next <= '0';
-    rx_rd_en_next      <= '0';
 
-    case sm_wr_state_r1 is
-      when E_RST =>
-        tx_cs_n_next     <= '1';
-        tx_sclk_next     <= g_CPOL;
-        tx_cnt_bit_next  <= (others => '0');
-        ready_next       <= '0';
-        sm_wr_state_next <= E_WAIT;
 
-      when E_WAIT =>
-        if i_tx_data_valid = '1' then
-          if i_tx_msb_first = '1' then
-            tx_data_next <= i_tx_data;
+    if rising_edge(i_clk) then
+      if i_rst = '1' then
+        if (g_CPOL xor g_CPHA) = '0' then
+          pulse_gen <= std_logic_vector(to_signed(c_PULSE_GEN_L_MAX_VAL, pulse_gen'length));
+        else
+          pulse_gen <= std_logic_vector(to_signed(c_PULSE_GEN_H_MAX_VAL, pulse_gen'length));
+        end if;
+      else
+        if pls_ste_cnt(pls_ste_cnt'high) = '0' then
+
+          if pulse_gen(pulse_gen'high) = '1' then
+            if (g_CPOL xor g_CPHA xor pls_ste_cnt(0)) = '0' then
+              pulse_gen <= std_logic_vector(to_signed(c_PULSE_GEN_L_MAX_VAL, pulse_gen'length));
+            else
+              pulse_gen <= std_logic_vector(to_signed(c_PULSE_GEN_H_MAX_VAL, pulse_gen'length));
+            end if;
           else
-            -- reverse the bit order: bit(x) -> bit(0), bit(x-1) -> bit1 and so on.
-            for i in i_tx_data'range loop
-              tx_data_next(i_tx_data'high - i) <= i_tx_data(i);
-            end loop;
+            pulse_gen <= std_logic_vector(signed(pulse_gen) - 1);
           end if;
-
-          rd_en_next <= not(i_wr_rd);
-
-          tx_cs_n_next     <= '1';
-          tx_sclk_next     <= g_CPOL;
-          tx_cnt_bit_next  <= (others => '0');
-          ready_next       <= '0';
-          sm_wr_state_next <= E_SET_CS0;
-        else
-          ready_next       <= '1';
-          sm_wr_state_next <= E_WAIT;
         end if;
+      end if;
+    end if;
 
-      when E_SET_CS0 =>
-        tx_cs_n_next <= '0';
-        if pulse_data_shift_tmp = '1' then
-          sm_wr_state_next <= E_SET_CS1;
-        else
-          sm_wr_state_next <= E_SET_CS0;
+  end process P_pulse_gen;
+
+  -- ------------------------------------------------------------------------------------------------------
+  --!   Pulse state counter
+  -- ------------------------------------------------------------------------------------------------------
+  P_pls_ste_cnt : process (i_clk)
+  begin
+
+
+    if rising_edge(i_clk) then
+      if i_rst = '1' then
+        pls_ste_cnt <= (others => '1');
+      else
+        if i_start = '1' and pls_ste_cnt(pls_ste_cnt'high) = '1' then
+          pls_ste_cnt <= std_logic_vector(resize(unsigned(i_ser_wd_s & '0'), pls_ste_cnt'length) - 1);
+        elsif pulse_gen(pulse_gen'high) = '1' and pls_ste_cnt(pls_ste_cnt'high) = '0' then
+          pls_ste_cnt <= std_logic_vector(signed(pls_ste_cnt) - 1);
         end if;
+      end if;
+    end if;
 
-      when E_SET_CS1 =>
-        tx_cs_n_next <= '0';
-        if pulse_data_shift_tmp = '1' then
-          tx_sclk_next     <= sclk_tmp;
-          sm_wr_state_next <= E_SHIFT_DATA;
-        else
-          sm_wr_state_next <= E_SET_CS1;
-        end if;
+  end process P_pls_ste_cnt;
 
-      when E_SHIFT_DATA =>
-
-        if (pulse_data_shift_tmp = '1') then
-          -- shift on the falling edge
-          tx_data_valid_next <= '1';
-          tx_cnt_bit_next    <= tx_cnt_bit_r1 + 1;
-          tx_data_next       <= tx_data_r1(tx_data_r1'high - 1 downto 0) & '0';
-        else
-          tx_data_valid_next <= '0';
-          tx_data_next       <= tx_data_r1;
-          tx_cnt_bit_next    <= tx_cnt_bit_r1;
-        end if;
-        rx_data_valid_next <= pulse_data_sample_tmp;
-
-        if (pulse_data_shift_tmp = '1') then
-          if tx_cnt_bit_r1 = to_unsigned(c_CNT_MAX_VALUE, tx_cnt_bit_r1'length) then
-            tx_sclk_next     <= g_CPOL;
-            --tx_cs_n_next     <= '1';
-            rx_rd_en_next    <= rd_en_r1;
-            sm_wr_state_next <= E_UNSET_CS;
-          else
-            tx_sclk_next     <= sclk_tmp;
-            sm_wr_state_next <= E_SHIFT_DATA;
-          end if;
-        else
-          tx_sclk_next     <= sclk_tmp;
-          sm_wr_state_next <= E_SHIFT_DATA;
-        end if;
-
-      when E_UNSET_CS =>
-        if (pulse_data_shift_tmp = '1') then
-          tx_cs_n_next     <= '1';
-          finish_next      <= '1';
-          sm_wr_state_next <= E_WAIT;
-        else
-          sm_wr_state_next <= E_UNSET_CS;
-        end if;
-
-      when others =>
-        sm_wr_state_next <= E_RST;
-    end case;
-  end process p_wr_decode_state;
-
-
-  ---------------------------------------------------------------------
-  -- State process : register signals
-  ---------------------------------------------------------------------
-  p_wr_state : process (i_clk) is
+  -- ------------------------------------------------------------------------------------------------------
+  --!   Data transmit serial management
+  -- ------------------------------------------------------------------------------------------------------
+  P_data_tx_ser : process (i_clk)
   begin
     if rising_edge(i_clk) then
       if i_rst = '1' then
-        sm_wr_state_r1 <= E_RST;
+        data_tx_ser <= (others => '0');
       else
-        sm_wr_state_r1 <= sm_wr_state_next;
+        if i_start = '1' and pls_ste_cnt(pls_ste_cnt'high) = '1' then
+          data_tx_ser <= i_data_tx;
+        elsif pulse_gen(pulse_gen'high) = '1' and pls_ste_cnt(0) = '0' and pls_ste_cnt(pls_ste_cnt'high) = '0' then
+          data_tx_ser <= data_tx_ser(data_tx_ser'high-1 downto 0) & '0';
+        end if;
       end if;
-      tx_cnt_bit_r1    <= tx_cnt_bit_next;
-      tx_sclk_r1       <= tx_sclk_next;
-      tx_cs_n_r1       <= tx_cs_n_next;
-      tx_data_valid_r1 <= tx_data_valid_next;
-      rd_en_r1         <= rd_en_next;
-      tx_data_r1       <= tx_data_next;
-      ready_r1         <= ready_next;
-      finish_r1        <= finish_next;
-
-      rx_data_valid_r1 <= rx_data_valid_next;
-      rx_rd_en_r1      <= rx_rd_en_next;
-
     end if;
-  end process p_wr_state;
 
-  -- output: to the user
-  o_ready <= ready_r1;
+  end process P_data_tx_ser;
 
-  ---------------------------------------------------------------------
-  -- optional tx pipeline
-  ---------------------------------------------------------------------
-  gen_pipe_tx_no_init : if true generate
-    -- temporary input pipe
-    signal data_tmp0 : std_logic_vector(4 downto 0);
-    -- temporary output pipe
-    signal data_tmp1 : std_logic_vector(4 downto 0);
-  begin
-    data_tmp0(4) <= rx_rd_en_r1;
-    data_tmp0(3) <= rx_data_valid_r1;
-    data_tmp0(2) <= finish_r1;
-    data_tmp0(1) <= tx_sclk_r1;
-    data_tmp0(0) <= tx_data_r1(tx_data_r1'high);
+  o_tx_busy_n <= pls_ste_cnt(pls_ste_cnt'high);
 
-    inst_pipeliner_with_init_tx : entity work.pipeliner_with_init
-      generic map(
-        g_INIT       => '0',
-        g_NB_PIPES   => g_MOSI_DELAY,
-        g_DATA_WIDTH => data_tmp0'length
-        )
-      port map(
-        i_clk  => i_clk,
-        i_data => data_tmp0,
-        o_data => data_tmp1
-        );
-    rx_rd_en_rx      <= data_tmp1(4);
-    rx_data_valid_rx <= data_tmp1(3);
-    tx_finish_rx     <= data_tmp1(2);
-    tx_sclk_rx       <= data_tmp1(1);
-    tx_data_rx       <= data_tmp1(0);
-  end generate gen_pipe_tx_no_init;
-
-  -- pipe with special init value
-  gen_pipe_tx : if true generate
-    -- temporary input pipe
-    signal data_tmp0 : std_logic_vector(0 downto 0);
-    -- temporary output pipe
-    signal data_tmp1 : std_logic_vector(0 downto 0);
-  begin
-    data_tmp0(0) <= tx_cs_n_r1;
-    inst_pipeliner_with_init : entity work.pipeliner_with_init
-      generic map(
-        g_INIT       => '1',
-        g_NB_PIPES   => g_MOSI_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
-        g_DATA_WIDTH => data_tmp0'length  -- width of the input/output data.  Possibles values: [1, integer max value[
-        )
-      port map(
-        i_clk  => i_clk,
-        i_data => data_tmp0,
-        o_data => data_tmp1
-        );
-
-    tx_cs_n_rx <= data_tmp1(0);
-  end generate gen_pipe_tx;
-
-
-  ---------------------------------------------------------------------
-  -- output
-  ---------------------------------------------------------------------
-  -- to the IOs
-  o_sclk <= tx_sclk_rx;
-  o_cs_n <= tx_cs_n_rx;
-  o_mosi <= tx_data_rx;
-
-  ---------------------------------------------------------------------
-  --  compensate the MISO delay from io
-  --
-  --  Note: the delay depends on the IO management
-  ---------------------------------------------------------------------
-  gen_pipe_rx : if true generate
-    -- temporary input pipe
-    signal data_tmp0 : std_logic_vector(2 downto 0);
-    -- temporary output pipe
-    signal data_tmp1 : std_logic_vector(2 downto 0);
-  begin
-    data_tmp0(2) <= rx_rd_en_rx;
-    data_tmp0(1) <= tx_finish_rx;
-    data_tmp0(0) <= rx_data_valid_rx;
-
-    inst_pipeliner_with_init_rx : entity work.pipeliner_with_init
-      generic map(
-        g_INIT       => '0',
-        g_NB_PIPES   => g_MISO_DELAY,
-        g_DATA_WIDTH => data_tmp0'length
-        )
-      port map(
-        i_clk  => i_clk,
-        i_data => data_tmp0,
-        o_data => data_tmp1
-        );
-    rx_rd_en_ry      <= data_tmp1(2);
-    rx_finish_ry     <= data_tmp1(1);
-    rx_data_valid_ry <= data_tmp1(0);
-  end generate gen_pipe_rx;
-
-  ---------------------------------------------------------------------
-  -- Tx Read data
-  ---------------------------------------------------------------------
-  p_read : process (i_clk) is
+  -- ------------------------------------------------------------------------------------------------------
+  --!   Data receipt serial management
+  -- ------------------------------------------------------------------------------------------------------
+  P_data_rx_ser : process (i_clk)
   begin
     if rising_edge(i_clk) then
-      rx_finish_all_rz <= rx_finish_ry;
-      rx_data_valid_rz <= rx_rd_en_ry;
-      if rx_data_valid_ry = '1' then
-        rx_data_rz <= rx_data_rz(rx_data_rz'high - 1 downto 0) & i_miso;
+      if i_rst = '1' then
+        pls_smp_data_rx_ser <= (others => '0');
+        data_rx_ser_init    <= (others => '0');
+        data_rx_ser_end     <= (others => '0');
+        data_rx_ser         <= (others => '0');
+        o_data_rx           <= (others => '0');
+        o_data_rx_rdy       <= '0';
+      else
+        pls_smp_data_rx_ser <= pls_smp_data_rx_ser(pls_smp_data_rx_ser'high-1 downto 0) & (pulse_gen(pulse_gen'high) and not(pls_ste_cnt(0)) and not(pls_ste_cnt(pls_ste_cnt'high)));
+        data_rx_ser_init    <= data_rx_ser_init(data_rx_ser_init'high-1 downto 0) & (i_start and pls_ste_cnt(pls_ste_cnt'high));
+        data_rx_ser_end     <= data_rx_ser_end(data_rx_ser_end'high-1 downto 0) & pls_ste_cnt(pls_ste_cnt'high);
+
+        if data_rx_ser_init(data_rx_ser_init'high-1) = '1' then
+          data_rx_ser <= (others => '0');
+        elsif pls_smp_data_rx_ser(pls_smp_data_rx_ser'high-1) = '1' then
+          data_rx_ser <= data_rx_ser(data_rx_ser'high-1 downto 0) & i_miso;
+        end if;
+
+        if (data_rx_ser_end(data_rx_ser_end'high-1) and not(data_rx_ser_end(data_rx_ser_end'high))) = '1' then
+          o_data_rx <= data_rx_ser;
+        end if;
+
+        o_data_rx_rdy <= data_rx_ser_end(data_rx_ser_end'high-1) and not(data_rx_ser_end(data_rx_ser_end'high));
+
       end if;
     end if;
-  end process p_read;
-  ---------------------------------------------------------------------
-  -- output
-  ---------------------------------------------------------------------
-  o_rx_data_valid <= rx_data_valid_rz;
-  o_rx_data       <= rx_data_rz;
-  o_finish        <= rx_finish_all_rz;
+
+  end process P_data_rx_ser;
+
+  -- ------------------------------------------------------------------------------------------------------
+  --!   SPI management
+  -- ------------------------------------------------------------------------------------------------------
+  P_spi_mgt : process (i_clk)
+  begin
+
+    if rising_edge(i_clk) then
+      if i_rst = '1' then
+        o_mosi <= '0';
+        o_sclk <= g_CPOL;
+        o_cs_n <= '1';
+      else
+        o_mosi <= data_tx_ser(data_tx_ser'high);
+        o_sclk <= not(g_CPHA) xor g_CPOL xor (pls_ste_cnt(0) and not(g_CPHA and pls_ste_cnt(pls_ste_cnt'high)));
+        o_cs_n <= pls_ste_cnt(pls_ste_cnt'high);
+      end if;
+    end if;
+
+  end process P_spi_mgt;
 
 end architecture RTL;
