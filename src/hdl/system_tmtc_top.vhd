@@ -71,20 +71,35 @@ entity system_tmtc_top is
     ---------------------------------------------------------------------
     -- DDR interface
     ---------------------------------------------------------------------
+    -- ddr3 Data Bus
     ddr3_dq      : inout std_logic_vector (pkg_DQ_WIDTH-1 downto 0);
+    -- ddr3 address
     ddr3_addr    : out   std_logic_vector (pkg_ROW_WIDTH-1 downto 0);
+    -- ddr3 Bank Address
     ddr3_ba      : out   std_logic_vector (pkg_BANK_WIDTH-1 downto 0);
+    -- ddr3 differential_n clock
     ddr3_ck_p    : out   std_logic_vector (pkg_CK_WIDTH-1 downto 0);
+    -- ddr3 differential_p clock
     ddr3_ck_n    : out   std_logic_vector (pkg_CK_WIDTH-1 downto 0);
+    -- ddr3 clock enable
     ddr3_cke     : out   std_logic_vector (pkg_CKE_WIDTH-1 downto 0);
+    -- ddr3 chip select
     ddr3_cs_n    : out   std_logic_vector ((pkg_CS_WIDTH*pkg_nCS_PER_RANK)-1 downto 0);
+    -- ddr3 column address select
     ddr3_cas_n   : out   std_logic;
+    -- ddr3 row address select
     ddr3_ras_n   : out   std_logic;
+    -- ddr3 write enable
     ddr3_we_n    : out   std_logic;
+    -- ddr3 On-Die Termination enable
     ddr3_odt     : out   std_logic_vector ((pkg_CS_WIDTH*pkg_nCS_PER_RANK)-1 downto 0);
+    -- ddr3 Data Mask
     ddr3_dm      : out   std_logic_vector (pkg_DM_WIDTH-1 downto 0);
+    -- ddr3 Differential_p Data Strobe
     ddr3_dqs_p   : inout std_logic_vector (pkg_DQS_WIDTH-1 downto 0);
+    -- ddr3 Differential_n Data Strobe
     ddr3_dqs_n   : inout std_logic_vector (pkg_DQS_WIDTH-1 downto 0);
+    -- ddr3 reset_n
     ddr3_reset_n : out   std_logic;
 
     ---------------------------------------------------------------------
