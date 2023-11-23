@@ -266,7 +266,7 @@ begin
 
   ep3D_wire <= i_usb_wireout_hardware_id;
   ep3E_wire <= i_usb_wireout_firmware_name;
-  ep3F_wire <= i_usb_wireout_hardware_id;
+  ep3F_wire <= i_usb_wireout_firmware_id;
 
   -- from/to pipe out
   o_usb_pipeout_science_rd_data_valid <= epA0_pipe_rd;
