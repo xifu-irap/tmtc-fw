@@ -17,7 +17,7 @@
 --                            along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -- -------------------------------------------------------------------------------------------------------------
 --    email                   kenji.delarosa@alten.com
---    @file                   spi_device_select.vhd
+--    @file                   tc_hk_spi_device_select.vhd
 -- -------------------------------------------------------------------------------------------------------------
 --    Automatic Generation    No
 --    Code Rules Reference    SOC of design and VHDL handbook for VLSI development, CNES Edition (v2.1)
@@ -40,7 +40,7 @@ use work.pkg_system_tmtc.all;
 use work.pkg_utils.all;
 
 
-entity spi_device_select is
+entity tc_hk_spi_device_select is
   generic (
     -- true: Enable the DEBUG TOOL (ILA, etc.), false: otherwise
     g_DEBUG : boolean := false
@@ -99,9 +99,9 @@ entity spi_device_select is
     o_spi_cs_n : out std_logic_vector(1 downto 0)
 
     );
-end entity spi_device_select;
+end entity tc_hk_spi_device_select;
 
-architecture RTL of spi_device_select is
+architecture RTL of tc_hk_spi_device_select is
 
   -- define the number of clock cycle between  SPI frame
   constant c_INTER_FRAME_TEMPO : integer := pkg_SPI_PAUSE;
@@ -480,9 +480,9 @@ begin
   ---------------------------------------------------------------------
   -- for simulation only
   ---------------------------------------------------------------------
-  assert not (error_tmp_bis(2) = '1') report "[spi_device_select] => fifo is used before the end of the initialization " severity error;
-  assert not (error_tmp_bis(1) = '1') report "[spi_device_select] => fifo read an empty FIFO" severity error;
-  assert not (error_tmp_bis(0) = '1') report "[spi_device_select] => fifo write a full FIFO" severity error;
+  assert not (error_tmp_bis(2) = '1') report "[tc_hk_spi_device_select] => fifo is used before the end of the initialization " severity error;
+  assert not (error_tmp_bis(1) = '1') report "[tc_hk_spi_device_select] => fifo read an empty FIFO" severity error;
+  assert not (error_tmp_bis(0) = '1') report "[tc_hk_spi_device_select] => fifo write a full FIFO" severity error;
 
 ---------------------------------------------------------------------
 -- debug

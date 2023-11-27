@@ -17,7 +17,7 @@
 --                            along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -- -------------------------------------------------------------------------------------------------------------
 --    email                   kenji.delarosa@alten.com
---    @file                   spi_top.vhd
+--    @file                   tc_hk_top.vhd
 -- -------------------------------------------------------------------------------------------------------------
 --    Automatic Generation    No
 --    Code Rules Reference    SOC of design and VHDL handbook for VLSI development, CNES Edition (v2.1)
@@ -33,7 +33,7 @@ use ieee.std_logic_1164.all;
 
 use work.pkg_system_tmtc_debug.all;
 
-entity spi_top is
+entity tc_hk_top is
   generic (
     -- true: Enable the DEBUG TOOL (ILA, etc.), false: otherwise
     g_DEBUG : boolean := false
@@ -90,9 +90,9 @@ entity spi_top is
     -- status
     o_status : out std_logic_vector(7 downto 0)
     );
-end entity spi_top;
+end entity tc_hk_top;
 
-architecture RTL of spi_top is
+architecture RTL of tc_hk_top is
 
   ---------------------------------------------------------------------
   -- endianness
@@ -151,7 +151,7 @@ begin
 ---------------------------------------------------------------------
 -- SPI select
 ---------------------------------------------------------------------
-  inst_spi_device_select : entity work.spi_device_select
+  isnt_tc_hk_spi_device_select : entity work.tc_hk_spi_device_select
     generic map(
       g_DEBUG => pkg_SPI_DEVICE_SELECT_DEBUG
       )

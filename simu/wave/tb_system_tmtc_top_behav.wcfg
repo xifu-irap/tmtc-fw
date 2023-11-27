@@ -343,69 +343,69 @@
       </wvobject>
    </wvobject>
    <wvobject fp_name="group178" type="group">
-      <obj_property name="label">spi_top</obj_property>
+      <obj_property name="label">tc_hk_top</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_clk" type="logic">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/i_clk" type="logic">
          <obj_property name="ElementShortName">i_clk</obj_property>
          <obj_property name="ObjectShortName">i_clk</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_rst" type="logic">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/i_rst" type="logic">
          <obj_property name="ElementShortName">i_rst</obj_property>
          <obj_property name="ObjectShortName">i_rst</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_rst_status" type="logic">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/i_rst_status" type="logic">
          <obj_property name="ElementShortName">i_rst_status</obj_property>
          <obj_property name="ObjectShortName">i_rst_status</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_debug_pulse" type="logic">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/i_debug_pulse" type="logic">
          <obj_property name="ElementShortName">i_debug_pulse</obj_property>
          <obj_property name="ObjectShortName">i_debug_pulse</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_spi_select" type="logic">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/i_spi_select" type="logic">
          <obj_property name="ElementShortName">i_spi_select</obj_property>
          <obj_property name="ObjectShortName">i_spi_select</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_tc_valid" type="logic">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/i_tc_valid" type="logic">
          <obj_property name="ElementShortName">i_tc_valid</obj_property>
          <obj_property name="ObjectShortName">i_tc_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_tc" type="array">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/i_tc" type="array">
          <obj_property name="ElementShortName">i_tc[31:0]</obj_property>
          <obj_property name="ObjectShortName">i_tc[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_hk_valid" type="logic">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/o_hk_valid" type="logic">
          <obj_property name="ElementShortName">o_hk_valid</obj_property>
          <obj_property name="ObjectShortName">o_hk_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_hk" type="array">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/o_hk" type="array">
          <obj_property name="ElementShortName">o_hk[31:0]</obj_property>
          <obj_property name="ObjectShortName">o_hk[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_ready" type="logic">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/o_spi_ready" type="logic">
          <obj_property name="ElementShortName">o_spi_ready</obj_property>
          <obj_property name="ObjectShortName">o_spi_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_spi_miso" type="logic">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/i_spi_miso" type="logic">
          <obj_property name="ElementShortName">i_spi_miso</obj_property>
          <obj_property name="ObjectShortName">i_spi_miso</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_mosi" type="logic">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/o_spi_mosi" type="logic">
          <obj_property name="ElementShortName">o_spi_mosi</obj_property>
          <obj_property name="ObjectShortName">o_spi_mosi</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_sclk" type="logic">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/o_spi_sclk" type="logic">
          <obj_property name="ElementShortName">o_spi_sclk</obj_property>
          <obj_property name="ObjectShortName">o_spi_sclk</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_cs_n" type="array">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/o_spi_cs_n" type="array">
          <obj_property name="ElementShortName">o_spi_cs_n[1:0]</obj_property>
          <obj_property name="ObjectShortName">o_spi_cs_n[1:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_errors" type="array">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/o_errors" type="array">
          <obj_property name="ElementShortName">o_errors[15:0]</obj_property>
          <obj_property name="ObjectShortName">o_errors[15:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_status" type="array">
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_tc_hk_top/o_status" type="array">
          <obj_property name="ElementShortName">o_status[7:0]</obj_property>
          <obj_property name="ObjectShortName">o_status[7:0]</obj_property>
       </wvobject>

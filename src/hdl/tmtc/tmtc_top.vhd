@@ -213,7 +213,7 @@ begin
 ---------------------------------------------------------------------
 -- hk management
 ---------------------------------------------------------------------
-  inst_spi_top : entity work.spi_top
+  inst_tc_hk_top : entity work.tc_hk_top
     generic map(
       g_DEBUG => pkg_SPI_TOP_DEBUG
       )
