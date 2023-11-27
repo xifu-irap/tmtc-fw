@@ -61,16 +61,16 @@ entity tmtc_top is
     -- HK: SPI
     ---------------------------------------------------------------------
     -- spi_select bit
-    i_spi_select       : in std_logic;
-    -- write enable spi command
-    i_spi_wr_cmd_valid : in std_logic;
-    -- write spi data command
-    i_spi_wr_cmd       : in std_logic_vector(31 downto 0);
+    i_spi_select : in std_logic;
+    -- write enable tc command
+    i_tc_valid   : in std_logic;
+    -- write tc data command
+    i_tc         : in std_logic_vector(31 downto 0);
 
-    -- spi read data valid
-    o_spi_rd_data_valid : out std_logic;
-    -- spi read data
-    o_spi_rd_data       : out std_logic_vector(31 downto 0);
+    -- hk read data valid
+    o_hk_valid : out std_logic;
+    -- hk read data
+    o_hk       : out std_logic_vector(31 downto 0);
 
     -- to regdecode
     -- science
@@ -157,10 +157,10 @@ entity tmtc_top is
     ---------------------------------------------------------------------
     -- debug
     ---------------------------------------------------------------------
-    -- spi_errors
-    o_spi_errors : out std_logic_vector(15 downto 0);
-    -- spi_status
-    o_spi_status : out std_logic_vector(7 downto 0);
+    -- tc_hk_errors
+    o_tc_hk_errors : out std_logic_vector(15 downto 0);
+    -- tc_hk_status
+    o_tc_hk_status : out std_logic_vector(7 downto 0);
 
     -- science errors1
     o_science_errors1 : out std_logic_vector(15 downto 0);
@@ -179,9 +179,9 @@ architecture RTL of tmtc_top is
 -- hk management
 ---------------------------------------------------------------------
   -- spi errors
-  signal spi_errors : std_logic_vector(o_spi_errors'range);
+  signal tc_hk_errors : std_logic_vector(o_tc_hk_errors'range);
   -- spi status
-  signal spi_status : std_logic_vector(o_spi_status'range);
+  signal tc_hk_status : std_logic_vector(o_tc_hk_status'range);
 
   ---------------------------------------------------------------------
   -- science_top
@@ -218,41 +218,41 @@ begin
       g_DEBUG => pkg_SPI_TOP_DEBUG
       )
     port map(
-      i_clk               => i_clk,
-      i_rst               => i_rst,
+      i_clk         => i_clk,
+      i_rst         => i_rst,
       ---------------------------------------------------------------------
       -- from the regdecode @i_clk
       ---------------------------------------------------------------------
-      i_rst_status        => i_rst_status,
-      i_debug_pulse       => i_debug_pulse,
+      i_rst_status  => i_rst_status,
+      i_debug_pulse => i_debug_pulse,
       -- command
-      i_spi_select        => i_spi_select,
-      i_spi_wr_en         => i_spi_wr_cmd_valid,
-      i_spi_wr_data       => i_spi_wr_cmd,
+      i_spi_select  => i_spi_select,
+      i_tc_valid    => i_tc_valid,
+      i_tc          => i_tc,
       ---------------------------------------------------------------------
       -- to regdecode
       ---------------------------------------------------------------------
-      o_spi_rd_data_valid => o_spi_rd_data_valid,
-      o_spi_rd_data       => o_spi_rd_data,
+      o_hk_valid    => o_hk_valid,
+      o_hk          => o_hk,
       -- status
-      o_spi_ready         => open,
+      o_ready       => open,
       ---------------------------------------------------------------------
       -- from/to io: spi @i_clk
       ---------------------------------------------------------------------
       -- SPI --
-      i_spi_miso          => i_spi_miso,
-      o_spi_mosi          => o_spi_mosi,
-      o_spi_sclk          => o_spi_sclk,
-      o_spi_cs_n          => o_spi_cs_n,
+      i_spi_miso    => i_spi_miso,
+      o_spi_mosi    => o_spi_mosi,
+      o_spi_sclk    => o_spi_sclk,
+      o_spi_cs_n    => o_spi_cs_n,
       ---------------------------------------------------------------------
       -- errors status
       ---------------------------------------------------------------------
-      o_errors            => spi_errors,
-      o_status            => spi_status
+      o_errors      => tc_hk_errors,
+      o_status      => tc_hk_status
       );
 
-  o_spi_errors <= spi_errors;
-  o_spi_status <= spi_status;
+  o_tc_hk_errors <= tc_hk_errors;
+  o_tc_hk_status <= tc_hk_status;
 
 ---------------------------------------------------------------------
 -- science

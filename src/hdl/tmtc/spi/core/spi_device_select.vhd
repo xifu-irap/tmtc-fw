@@ -60,19 +60,19 @@ entity spi_device_select is
     ---------------------------------------------------------------------
     -- input
     -- select the SPI chip
-    i_spi_cmd_select  : in std_logic;
-    -- command valid
-    i_spi_cmd_valid   : in std_logic;
-    -- data to write
-    i_spi_cmd_wr_data : in std_logic_vector(31 downto 0);
+    i_spi_select : in std_logic;
+    -- tc write data enable
+    i_tc_valid   : in std_logic;
+    -- tc write data
+    i_tc         : in std_logic_vector(31 downto 0);
 
     -- output
-    -- read data valid
-    o_spi_rd_data_valid : out std_logic;
-    -- read data (device spi register value).
-    o_spi_rd_data       : out std_logic_vector(31 downto 0);
+    -- hk read data valid
+    o_hk_valid : out std_logic;
+    -- hk read data (device spi register value).
+    o_hk       : out std_logic_vector(31 downto 0);
     -- 1: all spi links are ready,0: one of the spi link is busy
-    o_spi_ready         : out std_logic;
+    o_ready    : out std_logic;
 
     ---------------------------------------------------------------------
     -- errors/status
@@ -125,7 +125,7 @@ architecture RTL of spi_device_select is
   -- index0: low
   constant c_IDX0_L : integer := 0;
   -- index0: high
-  constant c_IDX0_H : integer := c_IDX0_L + i_spi_cmd_wr_data'length - 1;
+  constant c_IDX0_H : integer := c_IDX0_L + i_tc'length - 1;
 
   -- FIFO depth (expressed in number of words)
   constant c_FIFO_DEPTH        : integer := 256;
@@ -188,15 +188,15 @@ architecture RTL of spi_device_select is
   -- select the SPI chip select (registered)
   signal spi_ras_select_r1   : std_logic;
 
-  -- read_valid
-  signal rd_data_valid_next : std_logic;
-  -- read_valid (registered)
-  signal rd_data_valid_r1   : std_logic := '0';
+  -- hk read_valid
+  signal rd_hk_valid_next : std_logic;
+  -- hk read_valid (registered)
+  signal rd_hk_valid_r1   : std_logic := '0';
 
-  -- read data
-  signal rd_data_next : std_logic_vector(o_spi_rd_data'range);
-  -- read data (registered)
-  signal rd_data_r1   : std_logic_vector(o_spi_rd_data'range) := (others => '0');
+  -- hk read data
+  signal rd_hk_next : std_logic_vector(o_hk'range);
+  -- hk read data (registered)
+  signal rd_hk_r1   : std_logic_vector(o_hk'range) := (others => '0');
 
   -- ready flag
   signal ready_next : std_logic;
@@ -256,8 +256,8 @@ begin
   ---------------------------------------------------------------------
   wr_rst_tmp0 <= i_rst;
 
-  wr_tmp0                             <= i_spi_cmd_valid;
-  data_tmp0(c_IDX0_H downto c_IDX0_L) <= i_spi_cmd_wr_data;
+  wr_tmp0                             <= i_tc_valid;
+  data_tmp0(c_IDX0_H downto c_IDX0_L) <= i_tc;
 
   inst_fifo_sync_with_error : entity work.fifo_sync_with_error
     generic map(
@@ -303,15 +303,15 @@ begin
 --   1. read an input command
 --   2. wait the spi engine response (reading)
 ---------------------------------------------------------------------
-  p_decode_state : process (empty1, i_spi_cmd_select, rd_data_r1, ready_r1,
+  p_decode_state : process (empty1, i_spi_select, rd_hk_r1, ready_r1,
                             sm_state_r1, spi_finish,
                             spi_ras_select_r1, spi_rd_data, spi_rd_data_valid,
                             spi_ready, cnt_tempo_r1) is
   begin
     rd_next             <= '0';
     spi_ras_select_next <= spi_ras_select_r1;
-    rd_data_valid_next  <= '0';
-    rd_data_next        <= rd_data_r1;
+    rd_hk_valid_next    <= '0';
+    rd_hk_next          <= rd_hk_r1;
     ready_next          <= ready_r1;
     cnt_tempo_next      <= cnt_tempo_r1;
 
@@ -321,7 +321,7 @@ begin
         sm_state_next <= E_WAIT_CMD;
 
       when E_WAIT_CMD =>
-        spi_ras_select_next <= i_spi_cmd_select;
+        spi_ras_select_next <= i_spi_select;
         cnt_tempo_next      <= (others => '0');
 
         if empty1 = '0' and spi_ready = '1' then
@@ -337,8 +337,8 @@ begin
 
       when E_RUN_SPI =>
 
-        rd_data_valid_next <= spi_rd_data_valid;
-        rd_data_next       <= spi_rd_data;
+        rd_hk_valid_next <= spi_rd_data_valid;
+        rd_hk_next       <= spi_rd_data;
 
         -- wait the end of the spi transaction
         if spi_rd_data_valid = '1' then
@@ -379,19 +379,19 @@ begin
       -- others
       spi_ras_select_r1 <= spi_ras_select_next;
       -- to regdecode
-      rd_data_valid_r1  <= rd_data_valid_next;
-      rd_data_r1        <= rd_data_next;
+      rd_hk_valid_r1    <= rd_hk_valid_next;
+      rd_hk_r1          <= rd_hk_next;
       ready_r1          <= ready_next;
       cnt_tempo_r1      <= cnt_tempo_next;
 
     end if;
   end process p_state;
 
-  o_spi_ready <= ready_r1;
+  o_ready <= ready_r1;
 
   -- to the regdecode
-  o_spi_rd_data_valid <= rd_data_valid_r1;
-  o_spi_rd_data       <= rd_data_r1;
+  o_hk_valid <= rd_hk_valid_r1;
+  o_hk       <= rd_hk_r1;
 
 
 ---------------------------------------------------------------------
@@ -404,7 +404,7 @@ begin
       g_N_CLK_PER_SCLK_L   => pkg_SPI_SCLK_L,  --! Number of clock period for elaborating SPI Serial Clock low  level
       g_N_CLK_PER_SCLK_H   => pkg_SPI_SCLK_H,  --! Number of clock period for elaborating SPI Serial Clock high level
       g_N_CLK_PER_MISO_DEL => pkg_SPI_MISO_DELAY,  --! Number of clock period for miso signal delay from spi pin input to spi master input
-      g_DATA_S             => pkg_SPI_SER_WD_S  --! Data bus size
+      g_DATA_S             => pkg_SPI_SER_WD_S     --! Data bus size
       )
     port map(
       i_rst         => i_rst,  --! Reset asynchronous assertion, synchronous de-assertion ('0' = Inactive, '1' = Active)
@@ -502,7 +502,7 @@ begin
         probe0(4) => ready_r1,
         probe0(3) => spi_ready,
         probe0(2) => data_valid_tmp1,
-        probe0(1) => rd_data_valid_r1,
+        probe0(1) => rd_hk_valid_r1,
         probe0(0) => spi_ras_select_r1,
 
         -- probe1
@@ -513,7 +513,7 @@ begin
 
         -- probe2
         probe2(63 downto 32) => data1,
-        probe2(31 downto 0)  => rd_data_r1,
+        probe2(31 downto 0)  => rd_hk_r1,
 
         -- probe 3
         probe3(3)          => empty_sync1,

@@ -173,18 +173,18 @@ architecture RTL of system_tmtc_top is
 
 
   -- write enable spi command
-  signal reg_spi_wr_cmd_valid : std_logic;
+  signal tc_valid : std_logic;
   -- write spi data command
-  signal reg_spi_wr_cmd       : std_logic_vector(31 downto 0);
+  signal tc       : std_logic_vector(31 downto 0);
 
   -- spi read data valid
-  signal reg_spi_rd_data_valid : std_logic;
+  signal hk_valid : std_logic;
   -- spi read data
-  signal reg_spi_rd_data       : std_logic_vector(31 downto 0);
+  signal hk       : std_logic_vector(31 downto 0);
 
 
   -- spi_conf register value
-  signal reg_spi_conf   : std_logic_vector(31 downto 0);
+  signal reg_tc_hk_conf : std_logic_vector(31 downto 0);
   -- icu_conf register value
   signal reg_icu_conf   : std_logic_vector(31 downto 0);
   -- debug_ctrl register value
@@ -195,11 +195,11 @@ architecture RTL of system_tmtc_top is
 
 
   -- fifo science data valid
-  signal reg_fifo_science_data_valid : std_logic;
+  signal fifo_science_data_valid : std_logic;
   -- fifo science data
-  signal reg_fifo_science_data       : std_logic_vector(31 downto 0);
+  signal fifo_science_data       : std_logic_vector(31 downto 0);
   -- fifo science prog full
-  signal reg_fifo_science_prog_full  : std_logic;
+  signal fifo_science_prog_full  : std_logic;
 
   -- status register: errors1
   signal reg_wire_errors1 : std_logic_vector(31 downto 0);
@@ -243,10 +243,10 @@ architecture RTL of system_tmtc_top is
   -- FMC PLL lock led
   signal led_pll_lock : std_logic;
 
-  -- spi_errors
-  signal spi_errors : std_logic_vector(15 downto 0);
-  -- spi_status
-  signal spi_status : std_logic_vector(7 downto 0);
+  -- tc_hk_errors
+  signal tc_hk_errors : std_logic_vector(15 downto 0);
+  -- tc_hk_status
+  signal tc_hk_status : std_logic_vector(7 downto 0);
 
   -- science errors1
   signal science_errors1 : std_logic_vector(15 downto 0);
@@ -347,14 +347,14 @@ begin
       -- HK
       ---------------------------------------------------------------------
       -- pipe_out spi hk(pipe)
-      i_spi_rd_data_valid    => reg_spi_rd_data_valid,
-      i_spi_rd_data          => reg_spi_rd_data,
+      i_hk_valid       => hk_valid,
+      i_hk             => hk,
       -- pipe
-      o_reg_spi_wr_cmd_valid => reg_spi_wr_cmd_valid,
-      o_reg_spi_wr_cmd       => reg_spi_wr_cmd,
+      o_tc_valid   => tc_valid,
+      o_tc         => tc,
       -- wire
-      o_reg_ctrl             => open,
-      o_reg_spi_conf         => reg_spi_conf,
+      o_reg_ctrl       => open,
+      o_reg_tc_hk_conf => reg_tc_hk_conf,
 
       -- ICU
       ---------------------------------------------------------------------
@@ -363,12 +363,12 @@ begin
       -- science
       ---------------------------------------------------------------------
       -- wire_out:
-      i_reg_science_stamp_lsb   => reg_science_stamp_lsb,
+      i_reg_science_stamp_lsb => reg_science_stamp_lsb,
 
       -- from science
-      i_fifo_science_data_valid => reg_fifo_science_data_valid,
-      i_fifo_science_data       => reg_fifo_science_data,
-      o_fifo_science_prog_full  => reg_fifo_science_prog_full,
+      i_fifo_science_data_valid => fifo_science_data_valid,
+      i_fifo_science_data       => fifo_science_data,
+      o_fifo_science_prog_full  => fifo_science_prog_full,
 
       -- debug_ctrl
       ---------------------------------------------------------------------
@@ -385,8 +385,8 @@ begin
 
 
 -- extract bits from register
-  spi_select  <= reg_spi_conf(pkg_SPI_RAS_SEL_IDX_H);
-  icu_select  <= reg_icu_conf(pkg_ICU_SEL_IDX_H);
+  spi_select  <= reg_tc_hk_conf(pkg_TC_HK_CONF_SPI_RAS_SEL_IDX_H);
+  icu_select  <= reg_icu_conf(pkg_ICU_CONF_SEL_IDX_H);
   rst_status  <= reg_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
   debug_pulse <= reg_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
 
@@ -404,12 +404,12 @@ begin
 
   -- errors1
   reg_wire_errors1(31 downto 16) <= (others => '0');
-  reg_wire_errors1(15 downto 0)  <= spi_errors;
+  reg_wire_errors1(15 downto 0)  <= tc_hk_errors;
   -- status1
   reg_wire_status1(31 downto 24) <= (others => '0');
   reg_wire_status1(23 downto 16) <= (others => '0');
   reg_wire_status1(15 downto 8)  <= (others => '0');
-  reg_wire_status1(7 downto 0)   <= spi_status;
+  reg_wire_status1(7 downto 0)   <= tc_hk_status;
 
 
 
@@ -473,26 +473,26 @@ begin
       -- HK: SPI
       ---------------------------------------------------------------------
       -- spi_select bit
-      i_spi_select       => spi_select,
-      -- write enable spi command
-      i_spi_wr_cmd_valid => reg_spi_wr_cmd_valid,
-      -- write spi data command
-      i_spi_wr_cmd       => reg_spi_wr_cmd,
+      i_spi_select => spi_select,
+      -- write enable tc command
+      i_tc_valid   => tc_valid,
+      -- write tc data command
+      i_tc         => tc,
 
-      -- spi read data valid
-      o_spi_rd_data_valid => reg_spi_rd_data_valid,
-      -- spi read data
-      o_spi_rd_data       => reg_spi_rd_data,
+      -- hk read data valid
+      o_hk_valid => hk_valid,
+      -- hk read data
+      o_hk       => hk,
 
       -- to regdecode
       -- science
       ---------------------------------------------------------------------
       -- fifo prog full
-      i_fifo_science_prog_full  => reg_fifo_science_prog_full,
+      i_fifo_science_prog_full  => fifo_science_prog_full,
       -- fifo data valid (write enable)
-      o_fifo_science_data_valid => reg_fifo_science_data_valid,
+      o_fifo_science_data_valid => fifo_science_data_valid,
       -- fifo data
-      o_fifo_science_data       => reg_fifo_science_data,
+      o_fifo_science_data       => fifo_science_data,
 
       -- status
       ---------------------------------------------------------------------
@@ -558,10 +558,10 @@ begin
       ---------------------------------------------------------------------
       -- debug
       ---------------------------------------------------------------------
-      -- spi_errors
-      o_spi_errors => spi_errors,
-      -- spi_status
-      o_spi_status => spi_status,
+      -- tc_hk_errors
+      o_tc_hk_errors => tc_hk_errors,
+      -- tc_hk_status
+      o_tc_hk_status => tc_hk_status,
 
       -- science errors1
       o_science_errors1 => science_errors1,

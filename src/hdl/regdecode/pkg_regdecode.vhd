@@ -41,7 +41,7 @@ package pkg_regdecode is
   --
   ---------------------------------------------------------------------
   -- user-defined: Firmware ID Value
-  constant pkg_FIRMWARE_ID_VALUE : integer := 18; -- 0x12
+  constant pkg_FIRMWARE_ID_VALUE : integer := 18;  -- 0x12
 
   -- user-defined: FIRMWARE name
   constant pkg_FIRMWARE_NAME_CHAR3 : character := 'T';  -- ascii character
@@ -93,15 +93,15 @@ package pkg_regdecode is
   -- auto-computed: error_sel width
   constant pkg_ERROR_SEL_WIDTH : integer := work.pkg_utils.pkg_width_from_indexes(i_idx_high => pkg_ERROR_SEL_IDX_H, i_idx_low => pkg_ERROR_SEL_IDX_L);
 
-  -- user-defined: spi_conf
+  -- user-defined: tc_hk_conf
   ---------------------------------------------------------------------
   -- user-defined: spi_ras_select (bit index)
-  constant pkg_SPI_RAS_SEL_IDX_H : integer := 0;
+  constant pkg_TC_HK_CONF_SPI_RAS_SEL_IDX_H : integer := 0;
 
   -- user-defined: icu_conf
   ---------------------------------------------------------------------
   -- user-defined: icu_select (bit index)
-  constant pkg_ICU_SEL_IDX_H : integer := 0;
+  constant pkg_ICU_CONF_SEL_IDX_H : integer := 0;
 
   -- wire loopback
   -----------------------------------------------------------------

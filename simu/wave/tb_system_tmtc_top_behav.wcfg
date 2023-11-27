@@ -365,21 +365,21 @@
          <obj_property name="ElementShortName">i_spi_select</obj_property>
          <obj_property name="ObjectShortName">i_spi_select</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_spi_wr_en" type="logic">
-         <obj_property name="ElementShortName">i_spi_wr_en</obj_property>
-         <obj_property name="ObjectShortName">i_spi_wr_en</obj_property>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_tc_valid" type="logic">
+         <obj_property name="ElementShortName">i_tc_valid</obj_property>
+         <obj_property name="ObjectShortName">i_tc_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_spi_wr_data" type="array">
-         <obj_property name="ElementShortName">i_spi_wr_data[31:0]</obj_property>
-         <obj_property name="ObjectShortName">i_spi_wr_data[31:0]</obj_property>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/i_tc" type="array">
+         <obj_property name="ElementShortName">i_tc[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_tc[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_rd_data_valid" type="logic">
-         <obj_property name="ElementShortName">o_spi_rd_data_valid</obj_property>
-         <obj_property name="ObjectShortName">o_spi_rd_data_valid</obj_property>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_hk_valid" type="logic">
+         <obj_property name="ElementShortName">o_hk_valid</obj_property>
+         <obj_property name="ObjectShortName">o_hk_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_rd_data" type="array">
-         <obj_property name="ElementShortName">o_spi_rd_data[31:0]</obj_property>
-         <obj_property name="ObjectShortName">o_spi_rd_data[31:0]</obj_property>
+      <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_hk" type="array">
+         <obj_property name="ElementShortName">o_hk[31:0]</obj_property>
+         <obj_property name="ObjectShortName">o_hk[31:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/tb_system_tmtc_top/inst_system_tmtc_top/inst_tmtc_top/inst_spi_top/o_spi_ready" type="logic">
          <obj_property name="ElementShortName">o_spi_ready</obj_property>

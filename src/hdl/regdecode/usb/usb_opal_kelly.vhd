@@ -53,10 +53,10 @@ entity usb_opal_kelly is
     i_usb_wireout_science_wr_data_count : in    std_logic_vector(31 downto 0);
     -- science_stamp_lsb register (reading)
     i_usb_wireout_science_stamp_lsb     : in    std_logic_vector(31 downto 0);
-    -- spi_conf register (reading)
-    i_usb_wireout_spi_conf              : in    std_logic_vector(31 downto 0);
+    -- tc_hk_conf register (reading)
+    i_usb_wireout_tc_hk_conf            : in    std_logic_vector(31 downto 0);
     -- spi_rd_data_count register (reading)
-    i_usb_wireout_spi_rd_data_count     : in    std_logic_vector(31 downto 0);
+    i_usb_wireout_hk_rd_data_count      : in    std_logic_vector(31 downto 0);
     -- hardware id register (reading)
     i_usb_wireout_hardware_id           : in    std_logic_vector(31 downto 0);
     -- firmware_name register (reading)
@@ -82,25 +82,25 @@ entity usb_opal_kelly is
 
     -- read spi pipe
     -- read fifo
-    o_usb_pipeout_spi_rd_cmd_valid : out std_logic;
+    o_usb_pipeout_rd_hk_valid : out std_logic;
     -- input data fifo
-    i_usb_pipeout_spi_rd_cmd       : in  std_logic_vector(31 downto 0);
+    i_usb_pipeout_rd_hk       : in  std_logic_vector(31 downto 0);
     ---------------------------------------------------------------------
     -- to the user @o_usb_clk
     ---------------------------------------------------------------------
     -- usb clock
-    o_usb_clk                      : out std_logic;
+    o_usb_clk                 : out std_logic;
     -- pipe
     -- pipein data valid
-    o_usb_pipein_spi_wr_cmd_valid  : out std_logic;
+    o_usb_pipein_tc_valid     : out std_logic;
     -- pipein data
-    o_usb_pipein_spi_wr_cmd        : out std_logic_vector(31 downto 0);
+    o_usb_pipein_tc           : out std_logic_vector(31 downto 0);
 
     -- wire
     -- ctrl register (writting)
     o_usb_wirein_ctrl       : out std_logic_vector(31 downto 0);
-    -- spi_conf register (writting)
-    o_usb_wirein_spi_conf   : out std_logic_vector(31 downto 0);
+    -- tc_hk_conf register (writting)
+    o_usb_wirein_tc_hk_conf : out std_logic_vector(31 downto 0);
     -- icu_conf register (writting)
     o_usb_wirein_icu_conf   : out std_logic_vector(31 downto 0);
     -- debugging
@@ -193,9 +193,9 @@ architecture RTL of usb_opal_kelly is
   signal ep3A_wire : std_logic_vector(31 downto 0);  -- wire out26
   signal ep3B_wire : std_logic_vector(31 downto 0);  -- wire out27
   --signal ep3C_wire : std_logic_vector(31 downto 0); -- wire out28
-  signal ep3D_wire : std_logic_vector(31 downto 0); -- wire out29
-  signal ep3E_wire : std_logic_vector(31 downto 0); -- wire out30
-  signal ep3F_wire : std_logic_vector(31 downto 0); -- wire out31
+  signal ep3D_wire : std_logic_vector(31 downto 0);  -- wire out29
+  signal ep3E_wire : std_logic_vector(31 downto 0);  -- wire out30
+  signal ep3F_wire : std_logic_vector(31 downto 0);  -- wire out31
 
   -- pipe in
   -- pipe in valid
@@ -245,8 +245,8 @@ begin
   -- to wire_out: main
   ep21_wire <= i_usb_wireout_science_wr_data_count;
   ep23_wire <= i_usb_wireout_science_stamp_lsb;
-  ep24_wire <= i_usb_wireout_spi_conf;
-  ep26_wire <= i_usb_wireout_spi_rd_data_count;
+  ep24_wire <= i_usb_wireout_tc_hk_conf;
+  ep26_wire <= i_usb_wireout_hk_rd_data_count;
 
 
   -- to wire_out: debug
@@ -264,8 +264,8 @@ begin
   epA0_pipe                           <= i_usb_pipeout_science_rd_data;
 
   -- from/to pipeout
-  o_usb_pipeout_spi_rd_cmd_valid <= epA1_pipe_rd;
-  epA1_pipe                      <= i_usb_pipeout_spi_rd_cmd;
+  o_usb_pipeout_rd_hk_valid <= epA1_pipe_rd;
+  epA1_pipe                 <= i_usb_pipeout_rd_hk;
 
   ----------------------------------------------------
   --    Opal Kelly Wire in
@@ -446,15 +446,15 @@ begin
   -- output
   ---------------------------------------------------------------------
   -- from okhost
-  o_usb_clk                     <= okClk;
+  o_usb_clk             <= okClk;
   -- from pipe in
-  o_usb_pipein_spi_wr_cmd_valid <= ep80_pipe_valid;
-  o_usb_pipein_spi_wr_cmd       <= ep80_pipe;
+  o_usb_pipein_tc_valid <= ep80_pipe_valid;
+  o_usb_pipein_tc       <= ep80_pipe;
 
   -- from wire in
-  o_usb_wirein_ctrl     <= ep00_wire;
-  o_usb_wirein_spi_conf <= ep01_wire;
-  o_usb_wirein_icu_conf <= ep02_wire;
+  o_usb_wirein_ctrl       <= ep00_wire;
+  o_usb_wirein_tc_hk_conf <= ep01_wire;
+  o_usb_wirein_icu_conf   <= ep02_wire;
 
   o_usb_wirein_debug_ctrl <= ep18_wire;
   o_usb_wirein_sel_errors <= ep19_wire;

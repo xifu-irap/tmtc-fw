@@ -74,21 +74,21 @@ entity regdecode_top is
     -- HK
     ---------------------------------------------------------------------
 
-    -- pipe_out spi data valid (HK)
-    i_spi_rd_data_valid    : in  std_logic;
-    -- pipe_out spi data (HK)
-    i_spi_rd_data          : in  std_logic_vector(31 downto 0);
+    -- pipe_out hk data valid
+    i_hk_valid     : in  std_logic;
+    -- pipe_out HK data
+    i_hk           : in  std_logic_vector(31 downto 0);
     -- pipe
-    -- HK pipein data valid
-    o_reg_spi_wr_cmd_valid : out std_logic;
-    -- HK pipein data
-    o_reg_spi_wr_cmd       : out std_logic_vector(31 downto 0);
+    -- TC pipein data valid
+    o_tc_valid : out std_logic;
+    -- TC pipein data
+    o_tc       : out std_logic_vector(31 downto 0);
 
     -- wire
     -- ctrl register (writting)
-    o_reg_ctrl     : out std_logic_vector(31 downto 0);
-    -- spi_conf register (writting)
-    o_reg_spi_conf : out std_logic_vector(31 downto 0);
+    o_reg_ctrl       : out std_logic_vector(31 downto 0);
+    -- tc_hk_conf register (writting)
+    o_reg_tc_hk_conf : out std_logic_vector(31 downto 0);
 
     -- ICU
     ---------------------------------------------------------------------
@@ -150,11 +150,11 @@ architecture RTL of regdecode_top is
 -- science_stamp_lsb register value
   signal usb_wireout_science_stamp_lsb : std_logic_vector(31 downto 0);
 
--- spi_conf register value
-  signal usb_wireout_spi_conf : std_logic_vector(31 downto 0);
+-- tc_hk_conf register value
+  signal usb_wireout_tc_hk_conf : std_logic_vector(31 downto 0);
 
   -- spi_rd_data_count register
-  signal usb_wireout_spi_rd_data_count : std_logic_vector(31 downto 0);
+  signal usb_wireout_hk_rd_data_count : std_logic_vector(31 downto 0);
 
 -- firmware_id register value
   signal usb_wireout_firmware_id : std_logic_vector(31 downto 0);
@@ -189,17 +189,17 @@ architecture RTL of regdecode_top is
   -- spi pipeout
   ---------------------------------------------------------------------
   -- spi pipeout data valid
-  signal usb_pipeout_spi_rd_cmd_valid : std_logic;
+  signal usb_pipeout_rd_hk_valid : std_logic;
   -- spi pipeout data
-  signal usb_pipeout_spi_rd_cmd       : std_logic_vector(31 downto 0);
+  signal usb_pipeout_rd_hk       : std_logic_vector(31 downto 0);
 
 
 -- Common Register configuration
 ---------------------------------------------------------------------
 -- ctrl register value
   signal usb_wirein_ctrl       : std_logic_vector(31 downto 0);
--- spi_conf register value
-  signal usb_wirein_spi_conf   : std_logic_vector(31 downto 0);
+-- tc_hk_conf register value
+  signal usb_wirein_tc_hk_conf : std_logic_vector(31 downto 0);
 -- icu_conf register value
   signal usb_wirein_icu_conf   : std_logic_vector(31 downto 0);
 -- Debugging Registers
@@ -212,9 +212,9 @@ architecture RTL of regdecode_top is
 -- SPI Pipe_In
 ---------------------------------------------------------------------
   -- spi pipein data valid
-  signal usb_pipein_spi_wr_cmd_valid : std_logic;
+  signal usb_pipein_tc_valid : std_logic;
   -- spi pipein data
-  signal usb_pipein_spi_wr_cmd       : std_logic_vector(31 downto 0);
+  signal usb_pipein_tc       : std_logic_vector(31 downto 0);
 
 
   -- usb clock
@@ -243,9 +243,9 @@ architecture RTL of regdecode_top is
   -- HK pipe_in: regdecode_pipe_usb_to_user
   ---------------------------------------------------------------------
   -- HK pipein data valid
-  signal spi_wr_cmd_valid  : std_logic;
+  signal tc_valid          : std_logic;
   -- HK pipe_in data
-  signal spi_wr_cmd        : std_logic_vector(o_reg_spi_wr_cmd'range);
+  signal tc                : std_logic_vector(o_tc'range);
   -- spi errors
   signal hk_pipe_in_errors : std_logic_vector(15 downto 0);
   -- spi status
@@ -263,14 +263,14 @@ architecture RTL of regdecode_top is
   signal hk_pipe_out_status : std_logic_vector(7 downto 0);
 
   ---------------------------------------------------------------------
-  -- debug_ctrl regdecode_register_to_user
+  -- tc_hk_conf regdecode_register_to_user
   ---------------------------------------------------------------------
   --signal spi_conf_valid : std_logic;
-  signal spi_conf        : std_logic_vector(o_reg_spi_conf'range);
-  -- debug_ctrl errors
-  signal spi_conf_errors : std_logic_vector(15 downto 0);
-  -- debug_ctrl status
-  signal spi_conf_status : std_logic_vector(7 downto 0);
+  signal tc_hk_conf        : std_logic_vector(o_reg_tc_hk_conf'range);
+  -- tc_hk_conf errors
+  signal tc_hk_conf_errors : std_logic_vector(15 downto 0);
+  -- tc_hk_conf status
+  signal tc_hk_conf_status : std_logic_vector(7 downto 0);
 
   ---------------------------------------------------------------------
   -- debug_ctrl regdecode_register_to_user
@@ -309,9 +309,9 @@ architecture RTL of regdecode_top is
   -- regdecode_wire_errors
   ---------------------------------------------------------------------
   -- selected wire
-  signal wire_errors : std_logic_vector(31 downto 0);
+  signal wire_errors      : std_logic_vector(31 downto 0);
   -- selected status
-  signal wire_status : std_logic_vector(31 downto 0);
+  signal wire_status      : std_logic_vector(31 downto 0);
 
 begin
 
@@ -332,8 +332,8 @@ begin
       -- wire_out
       i_usb_wireout_science_wr_data_count => usb_wireout_science_wr_data_count,  -- science_wr_data_count register (reading)
       i_usb_wireout_science_stamp_lsb     => usb_wireout_science_stamp_lsb,  -- science_stamp_lsb register (reading)
-      i_usb_wireout_spi_conf              => usb_wireout_spi_conf,  -- spi_conf register (reading)
-      i_usb_wireout_spi_rd_data_count     => usb_wireout_spi_rd_data_count,  -- spi_rd_data_count register (reading)
+      i_usb_wireout_tc_hk_conf            => usb_wireout_tc_hk_conf,  -- tc_hk_conf register (reading)
+      i_usb_wireout_hk_rd_data_count      => usb_wireout_hk_rd_data_count,  -- spi_rd_data_count register (reading)
       i_usb_wireout_hardware_id           => usb_wireout_hardware_id,  -- hardware id register (reading)
       i_usb_wireout_firmware_name         => usb_wireout_firmware_name,  -- firmware_name register (reading)
       i_usb_wireout_firmware_id           => usb_wireout_firmware_id,  -- firmware_id register (reading)
@@ -349,8 +349,8 @@ begin
       i_usb_pipeout_science_rd_data       => usb_pipeout_science_rd_data,
 
       -- read spi pipe
-      o_usb_pipeout_spi_rd_cmd_valid => usb_pipeout_spi_rd_cmd_valid,
-      i_usb_pipeout_spi_rd_cmd       => usb_pipeout_spi_rd_cmd,
+      o_usb_pipeout_rd_hk_valid => usb_pipeout_rd_hk_valid,
+      i_usb_pipeout_rd_hk       => usb_pipeout_rd_hk,
 
       ---------------------------------------------------------------------
       -- to the user @o_usb_clk
@@ -358,13 +358,13 @@ begin
       o_usb_clk => usb_clk,             -- usb clock
 
       -- pipe
-      o_usb_pipein_spi_wr_cmd_valid => usb_pipein_spi_wr_cmd_valid,  -- pipein data valid
-      o_usb_pipein_spi_wr_cmd       => usb_pipein_spi_wr_cmd,  -- pipein data
+      o_usb_pipein_tc_valid => usb_pipein_tc_valid,  -- pipein data valid
+      o_usb_pipein_tc       => usb_pipein_tc,        -- pipein data
 
       -- wire
-      o_usb_wirein_ctrl     => usb_wirein_ctrl,  -- ctrl register (writting)
-      o_usb_wirein_spi_conf => usb_wirein_spi_conf,  -- spi_conf register (writting)
-      o_usb_wirein_icu_conf => usb_wirein_icu_conf,  -- icu_conf register (writting)
+      o_usb_wirein_ctrl       => usb_wirein_ctrl,  -- ctrl register (writting)
+      o_usb_wirein_tc_hk_conf => usb_wirein_tc_hk_conf,  -- tc_hk_conf register (writting)
+      o_usb_wirein_icu_conf   => usb_wirein_icu_conf,  -- icu_conf register (writting)
 
       -- debugging
       o_usb_wirein_debug_ctrl => usb_wirein_debug_ctrl,  -- debug_ctrl register (writting)
@@ -394,12 +394,12 @@ begin
     generic map(
       g_INIT       => '0',
       g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
-      g_DATA_WIDTH => usb_wirein_spi_conf'length  -- width of the input/output data.  Possibles values: [1, integer max value[
+      g_DATA_WIDTH => usb_wirein_tc_hk_conf'length  -- width of the input/output data.  Possibles values: [1, integer max value[
       )
     port map(
       i_clk  => usb_clk,
-      i_data => usb_wirein_spi_conf,
-      o_data => usb_wireout_spi_conf
+      i_data => usb_wirein_tc_hk_conf,
+      o_data => usb_wireout_tc_hk_conf
       );
 
   inst_pipeliner_with_init_optional_pipe_debug_ctrl : entity work.pipeliner_with_init
@@ -454,7 +454,7 @@ begin
       i_debug_pulse            => usb_debug_pulse,
       -- data
       i_usb_fifo_rd            => usb_pipeout_science_rd_en,
-      o_usb_fifo_data_valid    => usb_pipeout_science_rd_data_valid, -- to debug
+      o_usb_fifo_data_valid    => usb_pipeout_science_rd_data_valid,  -- to debug
       o_usb_fifo_data          => usb_pipeout_science_rd_data,
       o_usb_fifo_empty         => open,
       o_usb_fifo_wr_data_count => science_wr_data_count,
@@ -473,7 +473,7 @@ begin
   ---------------------------------------------------------------------
   inst_hk_pipe_in_regdecode_pipe_usb_to_user : entity work.regdecode_pipe_usb_to_user
     generic map(
-      g_DATA_WIDTH => usb_pipein_spi_wr_cmd'length,
+      g_DATA_WIDTH => usb_pipein_tc'length,
       g_FIFO_DEPTH => 16
       )
     port map(
@@ -485,15 +485,15 @@ begin
       i_rst_status      => usb_rst_status,
       i_debug_pulse     => usb_debug_pulse,
       -- input
-      i_data_valid      => usb_pipein_spi_wr_cmd_valid,
-      i_data            => usb_pipein_spi_wr_cmd,
+      i_data_valid      => usb_pipein_tc_valid,
+      i_data            => usb_pipein_tc,
       ---------------------------------------------------------------------
       -- to the user: @i_out_clk
       ---------------------------------------------------------------------
       i_out_clk         => i_out_clk,
       -- data
-      o_fifo_data_valid => spi_wr_cmd_valid,
-      o_fifo_data       => spi_wr_cmd,
+      o_fifo_data_valid => tc_valid,
+      o_fifo_data       => tc,
       ---------------------------------------------------------------------
       -- errors/status @ i_clk
       ---------------------------------------------------------------------
@@ -502,8 +502,8 @@ begin
       );
 
 
-  o_reg_spi_wr_cmd_valid <= spi_wr_cmd_valid;
-  o_reg_spi_wr_cmd       <= spi_wr_cmd;
+  o_tc_valid <= tc_valid;
+  o_tc       <= tc;
 
   ---------------------------------------------------------------------
   -- HK pipe_out:
@@ -511,7 +511,7 @@ begin
   ---------------------------------------------------------------------
   inst_hk_pipe_out_regdecode_pipe_user_to_usb_data_count : entity work.regdecode_pipe_user_to_usb_data_count
     generic map(
-      g_DATA_WIDTH => i_spi_rd_data'length
+      g_DATA_WIDTH => i_hk'length
       )
     port map(
       ---------------------------------------------------------------------
@@ -520,8 +520,8 @@ begin
       -- data
       i_out_clk                => i_out_clk,
       i_out_rst                => i_out_rst,
-      i_data_valid             => i_spi_rd_data_valid,
-      i_data                   => i_spi_rd_data,
+      i_data_valid             => i_hk_valid,
+      i_data                   => i_hk,
       ---------------------------------------------------------------------
       -- to the usb: @i_clk
       ---------------------------------------------------------------------
@@ -530,9 +530,9 @@ begin
       i_rst_status             => usb_rst_status,
       i_debug_pulse            => usb_debug_pulse,
       -- data
-      i_usb_fifo_rd            => usb_pipeout_spi_rd_cmd_valid,
+      i_usb_fifo_rd            => usb_pipeout_rd_hk_valid,
       o_usb_fifo_data_valid    => open,
-      o_usb_fifo_data          => usb_pipeout_spi_rd_cmd,
+      o_usb_fifo_data          => usb_pipeout_rd_hk,
       o_usb_fifo_empty         => open,
       o_usb_fifo_wr_data_count => hk_wr_data_count,
       ---------------------------------------------------------------------
@@ -544,16 +544,16 @@ begin
   -- authorized values of the read data count: multiple of 4 words of 32 bits (example: 0,4,8,12,16, etc)
   --   1. convert the number of words into number of USB packets: X= hk_wr_data_count(hk_wr_data_count'high downto 2))
   --   2. convert the number of USB packets into words of 32 bits: X*4
-  usb_wireout_spi_rd_data_count <= std_logic_vector(resize(unsigned(hk_wr_data_count(hk_wr_data_count'high downto 2)) * 4, usb_wireout_spi_rd_data_count'length));
+  usb_wireout_hk_rd_data_count <= std_logic_vector(resize(unsigned(hk_wr_data_count(hk_wr_data_count'high downto 2)) * 4, usb_wireout_hk_rd_data_count'length));
 
 
 ---------------------------------------------------------------------
-  -- spi_conf register
+  -- tc_hk_conf register
   --   cross clock domain: @i_clk -> @i_out_clk
   ---------------------------------------------------------------------
-  inst_hk_spi_conf_regdecode_register_to_user : entity work.regdecode_register_to_user
+  inst_tc_hk_conf_regdecode_register_to_user : entity work.regdecode_register_to_user
     generic map(
-      g_DATA_WIDTH => usb_wirein_spi_conf'length
+      g_DATA_WIDTH => usb_wirein_tc_hk_conf'length
       )
     port map(
       ---------------------------------------------------------------------
@@ -564,7 +564,7 @@ begin
       i_rst_status  => usb_rst_status,
       i_debug_pulse => usb_debug_pulse,
       -- input
-      i_data        => usb_wirein_spi_conf,
+      i_data        => usb_wirein_tc_hk_conf,
       ---------------------------------------------------------------------
       -- to the user: @i_out_clk
       ---------------------------------------------------------------------
@@ -572,16 +572,16 @@ begin
 
       -- data
       o_fifo_data_valid => open,
-      o_fifo_data       => spi_conf,
+      o_fifo_data       => tc_hk_conf,
       ---------------------------------------------------------------------
       -- errors/status @ i_clk
       ---------------------------------------------------------------------
-      o_errors          => spi_conf_errors,
-      o_status          => spi_conf_status
+      o_errors          => tc_hk_conf_errors,
+      o_status          => tc_hk_conf_status
       );
 
 
-  o_reg_spi_conf <= spi_conf;
+  o_reg_tc_hk_conf <= tc_hk_conf;
 
   ---------------------------------------------------------------------
   -- debug_ctrl register
@@ -671,9 +671,9 @@ begin
 
     end generate gen_reg;
 
-    usb_wireout_science_stamp_lsb    <= reg_tmp1(0);
-    science_stamp_lsb_errors         <= errors_tmp1(0);
-    science_stamp_lsb_status         <= status_tmp1(0);
+    usb_wireout_science_stamp_lsb <= reg_tmp1(0);
+    science_stamp_lsb_errors      <= errors_tmp1(0);
+    science_stamp_lsb_status      <= status_tmp1(0);
   end generate gen_sync_reg;
 
   ---------------------------------------------------------------------
@@ -690,12 +690,12 @@ begin
   usb_wire_status0(7 downto 0)   <= science_status;
 
   -- errors1
-  usb_wire_errors1(31 downto 16) <= spi_conf_errors;
+  usb_wire_errors1(31 downto 16) <= tc_hk_conf_errors;
   usb_wire_errors1(15 downto 0)  <= hk_pipe_out_errors;
 
   -- status1
   usb_wire_status1(31 downto 24) <= (others => '0');
-  usb_wire_status1(23 downto 16) <= spi_conf_status;
+  usb_wire_status1(23 downto 16) <= tc_hk_conf_status;
   usb_wire_status1(15 downto 8)  <= (others => '0');
   usb_wire_status1(7 downto 0)   <= hk_pipe_out_status;
 
@@ -751,7 +751,7 @@ begin
   usb_wireout_errors <= wire_errors;
   usb_wireout_status <= wire_status;
 
-   ---------------------------------------------------------------------
+  ---------------------------------------------------------------------
   -- debug
   ---------------------------------------------------------------------
   gen_debug : if g_DEBUG generate
@@ -792,15 +792,15 @@ begin
         probe0(0) => debug_science_data_valid,
 
         -- probe1
-        probe1(79 downto 64)  => debug_science_error_cnt,
-        probe1(63 downto 32)  => usb_wireout_science_wr_data_count,
-        probe1(31 downto 0)   => debug_science_data,
+        probe1(79 downto 64) => debug_science_error_cnt,
+        probe1(63 downto 32) => usb_wireout_science_wr_data_count,
+        probe1(31 downto 0)  => debug_science_data,
 
         -- probe2
-        probe2(127 downto 96)   => usb_wireout_science_stamp_lsb,
-        probe2(95 downto 64)   => usb_wire_errors2,
-        probe2(63 downto 32)   => usb_wire_errors1,
-        probe2(31 downto 0)    => usb_wire_errors0
+        probe2(127 downto 96) => usb_wireout_science_stamp_lsb,
+        probe2(95 downto 64)  => usb_wire_errors2,
+        probe2(63 downto 32)  => usb_wire_errors1,
+        probe2(31 downto 0)   => usb_wire_errors0
         );
 
 
