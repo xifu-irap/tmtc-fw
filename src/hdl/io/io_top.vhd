@@ -110,6 +110,9 @@ begin
   -- science
   ---------------------------------------------------------------------
   inst_io_science : entity work.io_science
+     generic map(
+      g_FIFO_DEPTH_OUT => pkg_IO_SCIENCE_FIFO_DEPTH
+      )
     port map(
       ---------------------------------------------------------------------
       -- from DEMUX: science interface @i_science_clk

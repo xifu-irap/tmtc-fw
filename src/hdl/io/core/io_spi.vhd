@@ -176,7 +176,7 @@ begin
   inst_pipeliner_optional_output_clk : entity work.pipeliner_with_init
     generic map(
       g_INIT       => '0',
-      g_NB_PIPES   => 0,  -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_NB_PIPES   => pkg_IO_SPI_MOSI_DELAY - 1,  -- number of consecutives registers. Possibles values: [0, integer max value[
       g_DATA_WIDTH => clk_pipe_tmp0'length  -- width of the input/output data.  Possibles values: [1, integer max value[
       )
     port map(

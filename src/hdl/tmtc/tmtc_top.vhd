@@ -215,7 +215,7 @@ begin
 ---------------------------------------------------------------------
   inst_tc_hk_top : entity work.tc_hk_top
     generic map(
-      g_DEBUG => pkg_SPI_TOP_DEBUG
+      g_DEBUG => pkg_TC_HK_TOP_DEBUG
       )
     port map(
       i_clk         => i_clk,

@@ -42,8 +42,10 @@ use work.pkg_utils.all;
 
 entity tc_hk_spi_device_select is
   generic (
+    -- input FIFO DEPTH
+    g_FIFO_DEPTH_IN : integer := 16;
     -- true: Enable the DEBUG TOOL (ILA, etc.), false: otherwise
-    g_DEBUG : boolean := false
+    g_DEBUG         : boolean := false
     );
   port (
     -- clock
@@ -128,7 +130,7 @@ architecture RTL of tc_hk_spi_device_select is
   constant c_IDX0_H : integer := c_IDX0_L + i_tc'length - 1;
 
   -- FIFO depth (expressed in number of words)
-  constant c_FIFO_DEPTH        : integer := 256;
+  constant c_FIFO_DEPTH        : integer := g_FIFO_DEPTH_IN;
   -- FIFO width (expressed in bits)
   constant c_FIFO_WIDTH        : integer := c_IDX0_H + 1;
   -- FIFO latency (in reading)
@@ -403,7 +405,7 @@ begin
       g_CPHA               => pkg_SPI_CPHA,    --! Clock phase
       g_N_CLK_PER_SCLK_L   => pkg_SPI_SCLK_L,  --! Number of clock period for elaborating SPI Serial Clock low  level
       g_N_CLK_PER_SCLK_H   => pkg_SPI_SCLK_H,  --! Number of clock period for elaborating SPI Serial Clock high level
-      g_N_CLK_PER_MISO_DEL => pkg_SPI_MISO_DELAY,  --! Number of clock period for miso signal delay from spi pin input to spi master input
+      g_N_CLK_PER_MISO_DEL => pkg_IO_SPI_MISO_LATENCY,  --! Number of clock period for miso signal delay from spi pin input to spi master input
       g_DATA_S             => pkg_SPI_SER_WD_S     --! Data bus size
       )
     port map(

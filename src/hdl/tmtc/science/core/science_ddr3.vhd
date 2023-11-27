@@ -31,7 +31,14 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+
 entity science_ddr3 is
+  generic (
+    -- input FIFO DEPTH
+    g_FIFO_DEPTH_IN  : integer;
+    -- Output FIFO DEPTH
+    g_FIFO_DEPTH_OUT : integer
+    );
   port (
 
     -- input clock
@@ -121,9 +128,9 @@ architecture RTL of science_ddr3 is
   constant c_FIFO_IDX0_H : integer := c_FIFO_IDX0_L + i_data'length - 1;
 
   -- FIFO depth (expressed in number of words)
-  constant c_FIFO_DEPTH0     : integer := 128;
+  constant c_FIFO_DEPTH0     : integer := g_FIFO_DEPTH_IN;
   -- FIFO prog full (expressed in number of words)
-  constant c_FIFO_PROG_FULL0 : integer := c_FIFO_DEPTH0 - 64;
+  constant c_FIFO_PROG_FULL0 : integer := c_FIFO_DEPTH0 - integer(real(c_FIFO_DEPTH0/2));
   -- FIFO width (expressed in bits)
   constant c_FIFO_WIDTH0     : integer := c_FIFO_IDX0_H + 1;
 
@@ -174,7 +181,7 @@ architecture RTL of science_ddr3 is
   -- output fifo
   ---------------------------------------------------------------------
   -- FIFO depth (expressed in number of words)
-  constant c_FIFO_DEPTH2     : integer := 256;
+  constant c_FIFO_DEPTH2     : integer := g_FIFO_DEPTH_OUT;
   -- FIFO prog full (expressed in number of words)
   constant c_FIFO_PROG_FULL2 : integer := c_FIFO_DEPTH2 - 4;
   -- FIFO width (expressed in bits)

@@ -49,6 +49,10 @@ use unisim.VComponents.all;
 use work.pkg_system_tmtc.all;
 
 entity io_science is
+  generic (
+    -- output FIFO depth
+     g_FIFO_DEPTH_OUT : integer := pkg_IO_SCIENCE_FIFO_DEPTH
+     );
   port (
     ---------------------------------------------------------------------
     -- from DEMUX: science interface @i_science_clk
@@ -118,7 +122,7 @@ architecture RTL of io_science is
   constant c_IDX1_H : integer := c_IDX1_L + 1 - 1;
 
   -- FIFO depth (expressed in number of words)
-  constant c_FIFO_DEPTH        : integer := 16;
+  constant c_FIFO_DEPTH        : integer := g_FIFO_DEPTH_OUT;
   -- FIFO width (expressed in bits)
   constant c_FIFO_WIDTH        : integer := c_IDX1_H + 1;
   -- FIFO latency (in reading)

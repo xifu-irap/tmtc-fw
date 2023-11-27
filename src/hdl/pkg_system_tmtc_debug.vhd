@@ -37,26 +37,26 @@ package pkg_system_tmtc_debug is
   ---------------------------------------------------------------------
   -- SCIENCE_TOP
   ---------------------------------------------------------------------
-  -- user-defined: true: to use Xilinx debugging modules (ILA, VIO,..), false: otherwise
+  -- user-defined: true: use Xilinx debugging modules (ILA, VIO,..), false: otherwise
   constant pkg_SCIENCE_TOP_DEBUG : boolean := false;
 
   ---------------------------------------------------------------------
-  -- SPI_TOP
+  -- TC_HK_TOP
   ---------------------------------------------------------------------
-  -- user-defined: true: to use Xilinx debugging modules (ILA, VIO,..), false: otherwise
-  constant pkg_SPI_TOP_DEBUG : boolean := false;
+  -- user-defined: true: use Xilinx debugging modules (ILA, VIO,..), false: otherwise
+  constant pkg_TC_HK_TOP_DEBUG : boolean := false;
 
   ---------------------------------------------------------------------
-  -- SPI_TOP
+  -- tc_hk_spi_device_select
   ---------------------------------------------------------------------
-  -- user-defined: true: to use Xilinx debugging modules (ILA, VIO,..), false: otherwise
-  constant pkg_SPI_DEVICE_SELECT_DEBUG : boolean := true;
+  -- user-defined: true: use Xilinx debugging modules (ILA, VIO,..), false: otherwise
+  constant pkg_TC_HK_SPI_DEVICE_SELECT_DEBUG : boolean := true;
 
 
   ---------------------------------------------------------------------
   -- REGDECODE_TOP
   ---------------------------------------------------------------------
-  -- user-defined: true: to use Xilinx debugging modules (ILA, VIO,..), false: otherwise
+  -- user-defined: true: use Xilinx debugging modules (ILA, VIO,..), false: otherwise
   constant pkg_REGDECODE_TOP_DEBUG : boolean := false;
 
 

@@ -69,21 +69,21 @@ entity science_rx_deserializer is
     o_sync_word_eof : out std_logic;
 
     -- first ctrl bit (for debugging)
-    o_sof           : out std_logic;
+    o_sof        : out std_logic;
     -- last ctrl bit (for debugging)
-    o_eof           : out std_logic;
+    o_eof        : out std_logic;
     -- valid deserialized word
-    o_data_valid    : out std_logic;
+    o_data_valid : out std_logic;
     -- deserialized control word
-    o_ctrl_word     : out std_logic_vector(g_DATA_WIDTH_BY_LINK - 1 downto 0);
+    o_ctrl_word  : out std_logic_vector(g_DATA_WIDTH_BY_LINK - 1 downto 0);
     -- deserialized data words
-    o_data_words    : out std_logic_vector(g_DATA_WIDTH*g_DATA_WIDTH_BY_LINK - 1 downto 0);
+    o_data_words : out std_logic_vector(g_DATA_WIDTH*g_DATA_WIDTH_BY_LINK - 1 downto 0);
 
     ---------------------------------------------------------------------
     -- errors/status
     ---------------------------------------------------------------------
     -- status
-    o_status : out std_logic_vector(7  downto 0);
+    o_status : out std_logic_vector(7 downto 0);
     -- errors
     o_errors : out std_logic_vector(15 downto 0)
     );
@@ -109,14 +109,14 @@ architecture RTL of science_rx_deserializer is
   signal sm_state_r1   : t_state := E_RST;
 
   -- first bit of a science ctrl bit
-  signal sof_next: std_logic;
+  signal sof_next : std_logic;
   -- delayed first bit of a science ctrl bit
-  signal sof_r1  : std_logic;
+  signal sof_r1   : std_logic;
 
   -- last bit of a science ctrl bit
-  signal eof_next: std_logic;
+  signal eof_next : std_logic;
   -- delayed last bit of a science ctrl bit
-  signal eof_r1  : std_logic;
+  signal eof_r1   : std_logic;
 
   -- generate a data valid when words are built
   signal data_valid_next : std_logic;
@@ -140,21 +140,21 @@ architecture RTL of science_rx_deserializer is
   signal ctrl_array_r1   : std_logic_vector(o_ctrl_word'range);
 
   -- error on the science ctrl word size
-  signal error_next: std_logic;
+  signal error_next : std_logic;
   -- delayed error on the science ctrl word size
-  signal error_r1  : std_logic;
+  signal error_r1   : std_logic;
 
   -- fsm ready
   signal ready_next : std_logic;
   -- delayed fsm ready
-  signal ready_r1 : std_logic;
+  signal ready_r1   : std_logic;
 
 
   ---------------------------------------------------------------------
   --  deserializer of the input data
   ---------------------------------------------------------------------
   -- data shift register (registered)
-  signal data_array_r1   : t_array_data;
+  signal data_array_r1       : t_array_data;
   -- delayed data valid: one by link
   signal data_valid_array_r1 : std_logic_vector(i_science_data'range);
 
@@ -162,17 +162,17 @@ architecture RTL of science_rx_deserializer is
   -- output pipe
   ---------------------------------------------------------------------
   -- detect the end of the synchro word (0-1-1) registered
-  signal sync_word_eof_r2   : std_logic;
+  signal sync_word_eof_r2 : std_logic;
   -- delayed first bit of a science ctrl bit
-  signal sof_r2  : std_logic;
+  signal sof_r2           : std_logic;
   -- delayed last bit of a science ctrl bit
-  signal eof_r2  : std_logic;
+  signal eof_r2           : std_logic;
   -- data valid (registered)
-  signal data_valid_r2   : std_logic;
+  signal data_valid_r2    : std_logic;
   -- latched ctrl registers (registered)
-  signal ctrl_array_r2   : std_logic_vector(o_ctrl_word'range);
+  signal ctrl_array_r2    : std_logic_vector(o_ctrl_word'range);
   -- latched data registers
-  signal data_array_r2   : t_array_data;
+  signal data_array_r2    : t_array_data;
 
   ---------------------------------------------------------------------
   -- error latching
@@ -198,7 +198,7 @@ begin
     sync_word_eof_next <= '0';
     ctrl_array_next    <= ctrl_array_r1;
     cnt_bit_next       <= cnt_bit_r1;
-    error_next         <=  '0';
+    error_next         <= '0';
     ready_next         <= ready_r1;
 
     case sm_state_r1 is
@@ -223,7 +223,7 @@ begin
           ctrl_array_next <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
           sm_state_next   <= E_WAIT_HEADER2;
         else
-          ready_next      <= '1';
+          ready_next    <= '1';
           sm_state_next <= E_WAIT_HEADER1;
         end if;
 
@@ -250,7 +250,7 @@ begin
           if cnt_bit_r1 = c_CNT_MAX then
             data_valid_next <= '1';
             cnt_bit_next    <= (others => '0');
-            eof_next      <= '1';
+            eof_next        <= '1';
 
             if i_science_ctrl = '0' then
               -- detect the 1st ctrl synchro bit: science_ctrl = 0
@@ -326,20 +326,20 @@ begin
 ---------------------------------------------------------------------
 -- add pipe
 ---------------------------------------------------------------------
-p_pipe: process (i_clk) is
-begin
-  if rising_edge(i_clk) then
-    sync_word_eof_r2 <= sync_word_eof_r1;
-    sof_r2           <= sof_r1;
-    eof_r2           <= eof_r1;
-    data_valid_r2    <= data_valid_r1;
-    -- add a latch to improve the readiability in simulation
-    if data_valid_r1 = '1' then
-      ctrl_array_r2 <= ctrl_array_r1;
-      data_array_r2 <= data_array_r1;
+  p_pipe : process (i_clk) is
+  begin
+    if rising_edge(i_clk) then
+      sync_word_eof_r2 <= sync_word_eof_r1;
+      sof_r2           <= sof_r1;
+      eof_r2           <= eof_r1;
+      data_valid_r2    <= data_valid_r1;
+      -- add a latch to improve the readiability in simulation
+      if data_valid_r1 = '1' then
+        ctrl_array_r2 <= ctrl_array_r1;
+        data_array_r2 <= data_array_r1;
+      end if;
     end if;
-  end if;
-end process p_pipe;
+  end process p_pipe;
 
 ---------------------------------------------------------------------
 -- output
@@ -359,7 +359,7 @@ end process p_pipe;
   ---------------------------------------------------------------------
 -- errors/status
 ---------------------------------------------------------------------
-  error_tmp(0) <= error_r1;                     -- fifo wr full error
+  error_tmp(0) <= error_r1;             -- fifo wr full error
   gen_errors_latch : for i in error_tmp'range generate
     inst_one_error_latch : entity work.one_error_latch
       port map(

@@ -272,7 +272,7 @@ begin
   inst_pipeliner_with_init_sync_with_science_rx_deserializer_out : entity work.pipeliner_with_init
     generic map(
       g_INIT       => '0',
-      g_NB_PIPES   => pkg_SC_RX_DESERIALIZER,  -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_NB_PIPES   => pkg_SC_RX_DESERIALIZER_LATENCY,  -- number of consecutives registers. Possibles values: [0, integer max value[
       g_DATA_WIDTH => data_pipe_tmp0'length  -- width of the input/output data.  Possibles values: [1, integer max value[
       )
     port map(
@@ -339,6 +339,10 @@ begin
 -- science_ddr3
 ---------------------------------------------------------------------
   inst_science_ddr3 : entity work.science_ddr3
+    generic map(
+      g_FIFO_DEPTH_IN  => pkg_SC_DDR3_FIFO_DEPTH_IN,
+      g_FIFO_DEPTH_OUT => pkg_SC_DDR3_FIFO_DEPTH_OUT
+      )
     port map(
       -- input clock
       i_clk                 => i_clk,

@@ -32,6 +32,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 use work.pkg_system_tmtc_debug.all;
+use work.pkg_system_tmtc.all;
 
 entity tc_hk_top is
   generic (
@@ -130,7 +131,7 @@ begin
     generic map(
       g_ENDIANESS_CHANGE => true,  -- False: no change, True: data byte are swapped
       g_DATA_WIDTH       => i_tc'length,  -- width of the input data bus. The value must be a multiple of 8.
-      g_OUTPUT_DELAY     => 0      --0: no delay, 1: one tap delay and so on.
+      g_OUTPUT_DELAY     => pkg_TC_HK_TOP_ENDIANNESS_DELAY  --0: no delay, 1: one tap delay and so on.
       )
     port map(
       ---------------------------------------------------------------------
@@ -153,7 +154,8 @@ begin
 ---------------------------------------------------------------------
   isnt_tc_hk_spi_device_select : entity work.tc_hk_spi_device_select
     generic map(
-      g_DEBUG => pkg_SPI_DEVICE_SELECT_DEBUG
+      g_FIFO_DEPTH_IN => pkg_TC_HK_SPI_DEVICE_SELECT_FIFO_DEPTH,
+      g_DEBUG         => pkg_TC_HK_SPI_DEVICE_SELECT_DEBUG
       )
     port map(
       i_clk         => i_clk,

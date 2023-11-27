@@ -53,9 +53,9 @@ entity science_rx_frame is
     -- output
     ---------------------------------------------------------------------
     -- fist frame
-    o_sof_frame : out std_logic;
+    o_sof_frame  : out std_logic;
     -- last frame
-    o_eof_frame : out std_logic;
+    o_eof_frame  : out std_logic;
     -- output data valid
     o_data_valid : out std_logic;
     -- output data
@@ -96,12 +96,12 @@ architecture RTL of science_rx_frame is
   -- first frame
   signal sof_frame_next : std_logic;
   -- delayed first frame
-  signal sof_frame_r1 : std_logic;
+  signal sof_frame_r1   : std_logic;
 
   -- last frame
   signal eof_frame_next : std_logic;
   -- delayed last frame
-  signal eof_frame_r1 : std_logic;
+  signal eof_frame_r1   : std_logic;
 
   -- data_valid when an output word is complete
   signal data_valid_next : std_logic;
@@ -117,9 +117,9 @@ architecture RTL of science_rx_frame is
   -- build output word
   ---------------------------------------------------------------------
   -- delayed first frame
-  signal sof_frame_r2 : std_logic;
+  signal sof_frame_r2  : std_logic;
   -- delayed last frame
-  signal eof_frame_r2 : std_logic;
+  signal eof_frame_r2  : std_logic;
   -- delayed data valid
   signal data_valid_r2 : std_logic;
   -- delayed data
