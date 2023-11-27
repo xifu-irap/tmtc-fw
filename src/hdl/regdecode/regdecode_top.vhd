@@ -75,9 +75,9 @@ entity regdecode_top is
     ---------------------------------------------------------------------
 
     -- pipe_out hk data valid
-    i_hk_valid     : in  std_logic;
+    i_hk_valid : in  std_logic;
     -- pipe_out HK data
-    i_hk           : in  std_logic_vector(31 downto 0);
+    i_hk       : in  std_logic_vector(31 downto 0);
     -- pipe
     -- TC pipein data valid
     o_tc_valid : out std_logic;
@@ -433,7 +433,8 @@ begin
   ---------------------------------------------------------------------
   inst_regdecode_science_fifo : entity work.regdecode_science_fifo
     generic map(
-      g_DATA_WIDTH => i_fifo_science_data'length
+      g_DATA_WIDTH     => i_fifo_science_data'length,
+      g_FIFO_DEPTH_OUT => pkg_SCIENCE_FIFO_DEPTH
       )
     port map(
       ---------------------------------------------------------------------
@@ -468,13 +469,13 @@ begin
   usb_wireout_science_wr_data_count <= std_logic_vector(resize(unsigned(science_wr_data_count(15 downto 2)), usb_wireout_science_wr_data_count'length));
 
   ---------------------------------------------------------------------
-  -- HK pipe_in:
+  -- TC pipe_in:
   --   cross clock domain: @i_clk -> @i_out_clk
   ---------------------------------------------------------------------
   inst_hk_pipe_in_regdecode_pipe_usb_to_user : entity work.regdecode_pipe_usb_to_user
     generic map(
       g_DATA_WIDTH => usb_pipein_tc'length,
-      g_FIFO_DEPTH => 16
+      g_FIFO_DEPTH => pkg_TC_FIFO_DEPTH
       )
     port map(
       ---------------------------------------------------------------------
@@ -511,7 +512,8 @@ begin
   ---------------------------------------------------------------------
   inst_hk_pipe_out_regdecode_pipe_user_to_usb_data_count : entity work.regdecode_pipe_user_to_usb_data_count
     generic map(
-      g_DATA_WIDTH => i_hk'length
+      g_DATA_WIDTH     => i_hk'length,
+      g_FIFO_DEPTH_OUT => pkg_HK_FIFO_DEPTH
       )
     port map(
       ---------------------------------------------------------------------
@@ -553,7 +555,8 @@ begin
   ---------------------------------------------------------------------
   inst_tc_hk_conf_regdecode_register_to_user : entity work.regdecode_register_to_user
     generic map(
-      g_DATA_WIDTH => usb_wirein_tc_hk_conf'length
+      g_DATA_WIDTH     => usb_wirein_tc_hk_conf'length,
+      g_FIFO_DEPTH_OUT => pkg_TC_HK_CONF_FIFO_DEPTH
       )
     port map(
       ---------------------------------------------------------------------
@@ -589,7 +592,8 @@ begin
   ---------------------------------------------------------------------
   inst_regdecode_register_to_user_debug_ctrl : entity work.regdecode_register_to_user
     generic map(
-      g_DATA_WIDTH => usb_wirein_debug_ctrl'length
+      g_DATA_WIDTH     => usb_wirein_debug_ctrl'length,
+      g_FIFO_DEPTH_OUT => pkg_DEBUG_CTRL_FIFO_DEPTH
       )
     port map(
       ---------------------------------------------------------------------
@@ -643,7 +647,8 @@ begin
     gen_reg : for i in reg_tmp0'range generate
       inst_regdecode_register_to_usb : entity work.regdecode_register_to_usb
         generic map(
-          g_DATA_WIDTH => reg_tmp0(i)'length
+          g_DATA_WIDTH     => reg_tmp0(i)'length,
+          g_FIFO_DEPTH_OUT => pkg_SC_STAMP_LSB_FIFO_DEPTH
           )
         port map(
           ---------------------------------------------------------------------

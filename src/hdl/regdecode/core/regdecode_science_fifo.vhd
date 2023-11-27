@@ -36,12 +36,14 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.pkg_regdecode.all;
 use work.pkg_utils.all;
 
 entity regdecode_science_fifo is
   generic (
-    g_DATA_WIDTH : integer := 32
+    -- data width
+    g_DATA_WIDTH     : integer := 32;
+    -- Output FIFO depth
+    g_FIFO_DEPTH_OUT : integer
     );
   port(
     ---------------------------------------------------------------------
@@ -53,9 +55,9 @@ entity regdecode_science_fifo is
     i_out_rst : in std_logic;
 
     -- input fifo data valid
-    i_fifo_data_valid : in std_logic;
+    i_fifo_data_valid : in  std_logic;
     -- input fifo data
-    i_fifo_data       : in std_logic_vector(g_DATA_WIDTH - 1 downto 0);
+    i_fifo_data       : in  std_logic_vector(g_DATA_WIDTH - 1 downto 0);
     -- input fifo prog full
     o_fifo_prog_full  : out std_logic;
 
@@ -84,7 +86,7 @@ entity regdecode_science_fifo is
     ---------------------------------------------------------------------
     -- errors/status @ i_clk
     ---------------------------------------------------------------------
-     -- output errors
+    -- output errors
     o_errors                 : out std_logic_vector(15 downto 0);
     -- output status
     o_status                 : out std_logic_vector(7 downto 0)
@@ -102,23 +104,23 @@ architecture RTL of regdecode_science_fifo is
   constant c_FIFO_IDX0_H : integer := c_FIFO_IDX0_L + i_fifo_data'length - 1;
 
   -- FIFO depth (expressed in number of words)
-  constant c_FIFO_DEPTH0 : integer := 16;
+  constant c_FIFO_DEPTH0     : integer := 16;
   -- FIFO prog full (expressed in number of words)
   constant c_FIFO_PROG_FULL0 : integer := c_FIFO_DEPTH0 - 4;
   -- FIFO width (expressed in bits)
-  constant c_FIFO_WIDTH0 : integer := c_FIFO_IDX0_H + 1;
+  constant c_FIFO_WIDTH0     : integer := c_FIFO_IDX0_H + 1;
 
   -- fifo write side
   -- fifo rst
-  signal wr_rst0      : std_logic;
+  signal wr_rst0       : std_logic;
   -- fifo write
-  signal wr_tmp0      : std_logic;
+  signal wr_tmp0       : std_logic;
   -- fifo data_in
-  signal wr_data_tmp0 : std_logic_vector(c_FIFO_WIDTH0 - 1 downto 0);
+  signal wr_data_tmp0  : std_logic_vector(c_FIFO_WIDTH0 - 1 downto 0);
   -- fifo full flag
   -- signal wr_full0      : std_logic;
   -- fifo prog full
-  signal wr_prog_full0      : std_logic;
+  signal wr_prog_full0 : std_logic;
   -- fifo rst_busy flag
   -- signal wr_rst_busy0  : std_logic;
 
@@ -143,13 +145,13 @@ architecture RTL of regdecode_science_fifo is
   -- output fifo
   ---------------------------------------------------------------------
   -- FIFO depth (expressed in number of words)
-  constant c_FIFO_DEPTH2          : integer := pkg_SCIENCE_FIFO_DEPTH;
+  constant c_FIFO_DEPTH2          : integer := g_FIFO_DEPTH_OUT;
   -- FIFO prog full (expressed in number of words)
-  constant c_FIFO_PROG_FULL2 : integer := c_FIFO_DEPTH2 - 4;
+  constant c_FIFO_PROG_FULL2      : integer := c_FIFO_DEPTH2 - 4;
   -- FIFO width (expressed in bits)
   constant c_FIFO_WIDTH2          : integer := c_FIFO_IDX0_H + 1;
   -- FIFO write data count width (expressed in bits)
-  constant c_WR_DATA_COUNT_WIDTH2 : integer := pkg_width_from_value(c_FIFO_DEPTH2) + 1;
+  constant c_WR_DATA_COUNT_WIDTH2 : integer := work.pkg_utils.pkg_width_from_value(c_FIFO_DEPTH2) + 1;
 
   -- fifo write side
   -- fifo rst
@@ -163,7 +165,7 @@ architecture RTL of regdecode_science_fifo is
   -- fifo full flag
   -- signal wr_full2       : std_logic;
   -- fifo prog full
-  signal wr_prog_full2      : std_logic;
+  signal wr_prog_full2  : std_logic;
   -- fifo rst_busy flag
   -- signal wr_rst_busy2   : std_logic;
 
@@ -245,11 +247,11 @@ begin
       o_empty_sync    => empty_sync1
       );
 
-      o_fifo_prog_full <= wr_prog_full0;
+  o_fifo_prog_full <= wr_prog_full0;
 ---------------------------------------------------------------------
 -- output FIFO
 ---------------------------------------------------------------------
-  rd1 <= '1' when empty1 = '0' and rd_rst_busy1 = '0' and wr_prog_full2 = '0' else '0';
+  rd1              <= '1' when empty1 = '0' and rd_rst_busy1 = '0' and wr_prog_full2 = '0' else '0';
 
   wr_rst2      <= i_rst;
   wr_tmp2      <= data_valid1;

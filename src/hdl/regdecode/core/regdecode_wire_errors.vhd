@@ -46,7 +46,7 @@ use work.pkg_utils.all;
 
 entity regdecode_wire_errors is
   generic(
-    g_ERROR_SEL_WIDTH  : integer := 4  -- define the width of the error selection
+    g_ERROR_SEL_WIDTH : integer := 4  -- define the width of the error selection
     );
   port(
     ---------------------------------------------------------------------
@@ -63,21 +63,21 @@ entity regdecode_wire_errors is
     ---------------------------------------------------------------------
     -- input @i_clk
     ---------------------------------------------------------------------
-    i_clk               : in  std_logic;  -- clock
-    i_error_sel         : in  std_logic_vector(g_ERROR_SEL_WIDTH - 1 downto 0);  -- select the errors/status to output
+    i_clk             : in  std_logic;  -- clock
+    i_error_sel       : in  std_logic_vector(g_ERROR_SEL_WIDTH - 1 downto 0);  -- select the errors/status to output
     -- errors
-    i_usb_reg_errors2   : in  std_logic_vector(31 downto 0);  -- errors value
-    i_usb_reg_errors1   : in  std_logic_vector(31 downto 0);  -- errors value
-    i_usb_reg_errors0   : in  std_logic_vector(31 downto 0);  -- errors value
+    i_usb_reg_errors2 : in  std_logic_vector(31 downto 0);  -- errors value
+    i_usb_reg_errors1 : in  std_logic_vector(31 downto 0);  -- errors value
+    i_usb_reg_errors0 : in  std_logic_vector(31 downto 0);  -- errors value
     -- status
-    i_usb_reg_status2   : in  std_logic_vector(31 downto 0);  -- status value
-    i_usb_reg_status1   : in  std_logic_vector(31 downto 0);  -- status value
-    i_usb_reg_status0   : in  std_logic_vector(31 downto 0);  -- status value
+    i_usb_reg_status2 : in  std_logic_vector(31 downto 0);  -- status value
+    i_usb_reg_status1 : in  std_logic_vector(31 downto 0);  -- status value
+    i_usb_reg_status0 : in  std_logic_vector(31 downto 0);  -- status value
     ---------------------------------------------------------------------
     -- output @ i_clk
     ---------------------------------------------------------------------
-    o_wire_errors       : out std_logic_vector(31 downto 0);  -- output errors
-    o_wire_status       : out std_logic_vector(31 downto 0)   -- output status
+    o_wire_errors     : out std_logic_vector(31 downto 0);  -- output errors
+    o_wire_status     : out std_logic_vector(31 downto 0)   -- output status
     );
 end entity regdecode_wire_errors;
 
@@ -96,16 +96,16 @@ architecture RTL of regdecode_wire_errors is
 -- cross clock domain: i_clk_out -> i_clk
 ---------------------------------------------------------------------
 -- temporary input pipe: error
-  signal error_array_tmp0 : t_wire_array(c_NB_WIRE - 1 downto 0);
+  signal error_array_tmp0        : t_wire_array(c_NB_WIRE - 1 downto 0);
 -- temporary output pipe: error
-  signal error_array_tmp1 : t_wire_array(c_NB_WIRE - 1 downto 0);
+  signal error_array_tmp1        : t_wire_array(c_NB_WIRE - 1 downto 0);
 -- resynchonized temporary output pipe : error
   signal resync_error_array_tmp2 : t_wire_array(c_NB_WIRE - 1 downto 0);
 
 -- temporary input pipe: status
-  signal status_array_tmp0 : t_wire_array(c_NB_WIRE - 1 downto 0);
+  signal status_array_tmp0        : t_wire_array(c_NB_WIRE - 1 downto 0);
 -- temporary output pipe: status
-  signal status_array_tmp1 : t_wire_array(c_NB_WIRE - 1 downto 0);
+  signal status_array_tmp1        : t_wire_array(c_NB_WIRE - 1 downto 0);
 -- resynchonized temporary output pipe : status
   signal resync_status_array_tmp2 : t_wire_array(c_NB_WIRE - 1 downto 0);
 
@@ -118,9 +118,9 @@ architecture RTL of regdecode_wire_errors is
   -- array of selectable status
   signal status_array_tmp : t_wire_array(c_NB_WIRE_TOT - 1 downto 0);
   -- selected errors
-  signal errors_r1 : std_logic_vector(31 downto 0);
+  signal errors_r1        : std_logic_vector(31 downto 0);
   -- selected status
-  signal status_r1 : std_logic_vector(31 downto 0);
+  signal status_r1        : std_logic_vector(31 downto 0);
 
 
 
@@ -238,18 +238,18 @@ begin
   -- select output errors and
   -- for each error word, generate an associated trig bit if the error value is different of 0
   -----------------------------------------------------------------
-  errors_array_tmp(4)  <= resync_error_array_tmp2(1);
-  errors_array_tmp(3)  <= resync_error_array_tmp2(0);
-  errors_array_tmp(2)  <= i_usb_reg_errors2;
-  errors_array_tmp(1)  <= i_usb_reg_errors1;
-  errors_array_tmp(0)  <= i_usb_reg_errors0;
+  errors_array_tmp(4) <= resync_error_array_tmp2(1);
+  errors_array_tmp(3) <= resync_error_array_tmp2(0);
+  errors_array_tmp(2) <= i_usb_reg_errors2;
+  errors_array_tmp(1) <= i_usb_reg_errors1;
+  errors_array_tmp(0) <= i_usb_reg_errors0;
 
 
-  status_array_tmp(4)  <= resync_status_array_tmp2(1);
-  status_array_tmp(3)  <= resync_status_array_tmp2(0);
-  status_array_tmp(2)  <= i_usb_reg_status2;
-  status_array_tmp(1)  <= i_usb_reg_status1;
-  status_array_tmp(0)  <= i_usb_reg_status0;
+  status_array_tmp(4) <= resync_status_array_tmp2(1);
+  status_array_tmp(3) <= resync_status_array_tmp2(0);
+  status_array_tmp(2) <= i_usb_reg_status2;
+  status_array_tmp(1) <= i_usb_reg_status1;
+  status_array_tmp(0) <= i_usb_reg_status0;
 
   ---------------------------------------------------------------------
   -- Select the error/status value

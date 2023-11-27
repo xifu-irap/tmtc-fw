@@ -43,10 +43,13 @@ package pkg_regdecode is
   -- user-defined: Firmware ID Value
   constant pkg_FIRMWARE_ID_VALUE : integer := 18;  -- 0x12
 
-  -- user-defined: FIRMWARE name
+  -- user-defined: FIRMWARE name (character3)
   constant pkg_FIRMWARE_NAME_CHAR3 : character := 'T';  -- ascii character
+  -- user-defined: FIRMWARE name (character2)
   constant pkg_FIRMWARE_NAME_CHAR2 : character := 'M';  -- ascii character
+  -- user-defined: FIRMWARE name (character1)
   constant pkg_FIRMWARE_NAME_CHAR1 : character := 'T';  -- ascii character
+  -- user-defined: FIRMWARE name (character0)
   constant pkg_FIRMWARE_NAME_CHAR0 : character := 'C';  -- ascii character
 
   -- auto-computed: firmware name
@@ -72,19 +75,24 @@ package pkg_regdecode is
   -- wire in/wire out
   -----------------------------------------------------------------
 
-  -- user-defined: ctrl
+  -- ctrl register
   ---------------------------------------------------------------------
   -- user-defined: ctrl rst (bit index)
   constant pkg_CTRL_RST_IDX_H : integer := 0;
 
-  -- user-defined: debug_ctrl
+  -- debug_ctrl register
   ---------------------------------------------------------------------
   -- user-defined: debug_pulse (bit index)
   constant pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H : integer := 0;
   -- user-defined: rst_status (bit index)
   constant pkg_DEBUG_CTRL_RST_STATUS_IDX_H  : integer := 1;
 
-  -- user-defined: error_sel
+  -- tc_hk_conf register
+  ---------------------------------------------------------------------
+  -- user-defined: spi_ras_select (bit index)
+  constant pkg_TC_HK_CONF_SPI_RAS_SEL_IDX_H : integer := 0;
+
+  -- error_sel register
   ---------------------------------------------------------------------
   -- user-defined: error_sel (bit index high)
   constant pkg_ERROR_SEL_IDX_H : integer := 2;
@@ -93,27 +101,47 @@ package pkg_regdecode is
   -- auto-computed: error_sel width
   constant pkg_ERROR_SEL_WIDTH : integer := work.pkg_utils.pkg_width_from_indexes(i_idx_high => pkg_ERROR_SEL_IDX_H, i_idx_low => pkg_ERROR_SEL_IDX_L);
 
-  -- user-defined: tc_hk_conf
-  ---------------------------------------------------------------------
-  -- user-defined: spi_ras_select (bit index)
-  constant pkg_TC_HK_CONF_SPI_RAS_SEL_IDX_H : integer := 0;
 
-  -- user-defined: icu_conf
+  -- icu conf register
   ---------------------------------------------------------------------
   -- user-defined: icu_select (bit index)
   constant pkg_ICU_CONF_SEL_IDX_H : integer := 0;
+
+  ---------------------------------------------------------------------
+  -- FIFO
+  ---------------------------------------------------------------------
+
+  -- tc_hk_conf register
+  -----------------------------------------------------------------
+  -- user-defined: define the fifo depth (expressed in number of words)
+  constant pkg_TC_HK_CONF_FIFO_DEPTH : integer := 16;  -- must be >= 16 and a power of 2
+
+  -- debug_ctrl register
+  -----------------------------------------------------------------
+  -- user-defined: define the fifo depth (expressed in number of words)
+  constant pkg_DEBUG_CTRL_FIFO_DEPTH : integer := 16;  -- must be >= 16 and a power of 2
+
+  -- science_stamp_lsb register
+  -----------------------------------------------------------------
+  -- user-defined: define the fifo depth (expressed in number of words)
+  constant pkg_SC_STAMP_LSB_FIFO_DEPTH : integer := 16;  -- must be >= 16 and a power of 2
 
   -- wire loopback
   -----------------------------------------------------------------
   -- user-defined: define the number of tap delay for loopback (wire). The range is [0;max int value[
   constant pkg_WIRE_LOOPBACK_DELAY : integer := 1;
 
-  -- regdecode_hk_fifo
+  -- tc pipe in
+  -----------------------------------------------------------------
+  -- user-defined: define the fifo depth (expressed in number of words)
+  constant pkg_TC_FIFO_DEPTH : integer := 16;  -- must be >= 16 and a power of 2
+
+  -- hk pipe out
   -----------------------------------------------------------------
   -- user-defined: define the fifo depth (expressed in number of words)
   constant pkg_HK_FIFO_DEPTH : integer := 256;
 
-  -- regdecode_science_fifo
+  -- science pipe out
   -----------------------------------------------------------------
   -- user-defined: define the fifo depth (expressed in number of words)
   constant pkg_SCIENCE_FIFO_DEPTH : integer := 32768;

@@ -36,9 +36,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.pkg_regdecode.all;
-use work.pkg_utils.all;
-
 entity regdecode_pipe_usb_to_user is
   generic (
     g_DATA_WIDTH : integer := 32;
@@ -50,7 +47,7 @@ entity regdecode_pipe_usb_to_user is
     ---------------------------------------------------------------------
     -- input clock
     i_clk         : in std_logic;
-     -- reset
+    -- reset
     i_rst         : in std_logic;
     -- reset error flag(s)
     i_rst_status  : in std_logic;

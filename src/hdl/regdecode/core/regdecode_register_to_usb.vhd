@@ -36,12 +36,12 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.pkg_regdecode.all;
-use work.pkg_utils.all;
-
 entity regdecode_register_to_usb is
   generic (
-    g_DATA_WIDTH : integer := 32
+    -- data width
+    g_DATA_WIDTH     : integer := 32;
+    -- output FIFO depth
+    g_FIFO_DEPTH_OUT : integer := 16
     );
   port(
     ---------------------------------------------------------------------
@@ -99,7 +99,7 @@ architecture RTL of regdecode_register_to_usb is
   constant c_FIFO_IDX0_H : integer := c_FIFO_IDX0_L + i_data'length - 1;
 
   -- FIFO depth (expressed in number of words)
-  constant c_FIFO_DEPTH0 : integer := 16;
+  constant c_FIFO_DEPTH0 : integer := g_FIFO_DEPTH_OUT;
   -- FIFO width (expressed in bits)
   constant c_FIFO_WIDTH0 : integer := c_FIFO_IDX0_H + 1;
 

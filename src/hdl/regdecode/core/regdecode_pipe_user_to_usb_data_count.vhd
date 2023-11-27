@@ -36,12 +36,14 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.pkg_regdecode.all;
 use work.pkg_utils.all;
 
 entity regdecode_pipe_user_to_usb_data_count is
   generic (
-    g_DATA_WIDTH : integer := 32
+    -- data width
+    g_DATA_WIDTH     : integer := 32;
+    -- output FIFO depth
+    g_FIFO_DEPTH_OUT : integer := 16
     );
   port(
 
@@ -49,22 +51,22 @@ entity regdecode_pipe_user_to_usb_data_count is
     -- from the user:  @i_out_clk
     ---------------------------------------------------------------------
     -- data
-    i_out_clk    : in std_logic; -- input clock
-    i_out_rst    : in std_logic; -- reset
-    i_data_valid : in std_logic; -- input data valid
+    i_out_clk    : in std_logic;        -- input clock
+    i_out_rst    : in std_logic;        -- reset
+    i_data_valid : in std_logic;        -- input data valid
     i_data       : in std_logic_vector(g_DATA_WIDTH - 1 downto 0);  -- input data
 
     ---------------------------------------------------------------------
     -- to the usb: @i_clk
     ---------------------------------------------------------------------
     -- output clock
-    i_clk         : in std_logic;
+    i_clk                    : in  std_logic;
     -- reset
-    i_rst         : in std_logic;
+    i_rst                    : in  std_logic;
     -- reset error flag(s)
-    i_rst_status  : in std_logic;
+    i_rst_status             : in  std_logic;
     -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
-    i_debug_pulse : in std_logic;
+    i_debug_pulse            : in  std_logic;
     -- data
     -- fifo read enable
     i_usb_fifo_rd            : in  std_logic;
@@ -96,18 +98,18 @@ architecture RTL of regdecode_pipe_user_to_usb_data_count is
   -- index0: high
   constant c_FIFO_IDX0_H : integer := c_FIFO_IDX0_L + i_data'length - 1;
 
-   -- FIFO depth (expressed in number of words)
-  constant c_FIFO_DEPTH0          : integer := 16;
+  -- FIFO depth (expressed in number of words)
+  constant c_FIFO_DEPTH0 : integer := 16;
   -- FIFO width (expressed in bits)
-  constant c_FIFO_WIDTH0          : integer := c_FIFO_IDX0_H + 1;
+  constant c_FIFO_WIDTH0 : integer := c_FIFO_IDX0_H + 1;
 
   -- fifo write side
   -- fifo rst
-  signal wr_rst0        : std_logic;
+  signal wr_rst0      : std_logic;
   -- fifo write
-  signal wr_tmp0        : std_logic;
+  signal wr_tmp0      : std_logic;
   -- fifo data_in
-  signal wr_data_tmp0   : std_logic_vector(c_FIFO_WIDTH0 - 1 downto 0);
+  signal wr_data_tmp0 : std_logic_vector(c_FIFO_WIDTH0 - 1 downto 0);
   -- fifo full flag
   -- signal wr_full0       : std_logic;
   -- fifo rst_busy flag
@@ -135,13 +137,13 @@ architecture RTL of regdecode_pipe_user_to_usb_data_count is
   ---------------------------------------------------------------------
 
   -- FIFO depth (expressed in number of words)
-  constant c_FIFO_DEPTH2          : integer := pkg_HK_FIFO_DEPTH;
+  constant c_FIFO_DEPTH2            : integer := g_FIFO_DEPTH_OUT;
   -- FIFO prog full (expressed in number of words)
   constant c_FIFO_PROG_FULL_THRESH2 : integer := c_FIFO_DEPTH2 - 8;
   -- FIFO width (expressed in bits)
-  constant c_FIFO_WIDTH2          : integer := c_FIFO_IDX0_H + 1;
+  constant c_FIFO_WIDTH2            : integer := c_FIFO_IDX0_H + 1;
   -- FIFO write data count width (expressed in bits)
-  constant c_WR_DATA_COUNT_WIDTH2 : integer := pkg_width_from_value(c_FIFO_DEPTH2) + 1;
+  constant c_WR_DATA_COUNT_WIDTH2   : integer := work.pkg_utils.pkg_width_from_value(c_FIFO_DEPTH2) + 1;
 
   -- fifo write side
   -- fifo rst
@@ -155,7 +157,7 @@ architecture RTL of regdecode_pipe_user_to_usb_data_count is
   -- fifo full flag
   -- signal wr_full2       : std_logic;
   -- fifo prog full flag
-   signal wr_prog_full2       : std_logic;
+  signal wr_prog_full2  : std_logic;
   -- fifo rst_busy flag
   -- signal wr_rst_busy2   : std_logic;
 
