@@ -190,14 +190,9 @@ architecture RTL of system_tmtc_top is
   -- debug_ctrl register value
   signal reg_debug_ctrl : std_logic_vector(31 downto 0);
 
-  -- science_status register value
-  signal reg_science_status    : std_logic_vector(31 downto 0);
   -- science_stamp_lsb register value
   signal reg_science_stamp_lsb : std_logic_vector(31 downto 0);
-  -- science_debug0 register value
-  signal reg_science_debug0    : std_logic_vector(31 downto 0);
-  -- science_debug1 register value
-  signal reg_science_debug1    : std_logic_vector(31 downto 0);
+
 
   -- fifo science data valid
   signal reg_fifo_science_data_valid : std_logic;
@@ -368,10 +363,8 @@ begin
       -- science
       ---------------------------------------------------------------------
       -- wire_out:
-      i_reg_science_status      => reg_science_status,  -- to connect
       i_reg_science_stamp_lsb   => reg_science_stamp_lsb,
-      i_reg_science_debug0      => reg_science_debug0,  -- to connect
-      i_reg_science_debug1      => reg_science_debug1,  -- to connect
+
       -- from science
       i_fifo_science_data_valid => reg_fifo_science_data_valid,
       i_fifo_science_data       => reg_fifo_science_data,

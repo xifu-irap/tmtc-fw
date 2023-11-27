@@ -97,14 +97,8 @@ entity regdecode_top is
 
     -- science
     ---------------------------------------------------------------------
-    -- science_status register (reading)
-    i_reg_science_status    : in std_logic_vector(31 downto 0);
     -- science_stamp_lsb register (reading)
     i_reg_science_stamp_lsb : in std_logic_vector(31 downto 0);
-    -- science_debug register (reading)
-    i_reg_science_debug0    : in std_logic_vector(31 downto 0);
-    -- science_stamp_msb register (reading)
-    i_reg_science_debug1    : in std_logic_vector(31 downto 0);
 
     -- from science
     -- fifo science data valid
@@ -152,8 +146,6 @@ architecture RTL of regdecode_top is
 -- science_wr_data_count register value
   signal usb_wireout_science_wr_data_count : std_logic_vector(31 downto 0);
 
--- science_status register value
-  signal usb_wireout_science_status : std_logic_vector(31 downto 0);
 
 -- science_stamp_lsb register value
   signal usb_wireout_science_stamp_lsb : std_logic_vector(31 downto 0);
@@ -161,14 +153,8 @@ architecture RTL of regdecode_top is
 -- spi_conf register value
   signal usb_wireout_spi_conf : std_logic_vector(31 downto 0);
 
--- science_debug0 register value
-  signal usb_wireout_science_debug0 : std_logic_vector(31 downto 0);
-
   -- spi_rd_data_count register
   signal usb_wireout_spi_rd_data_count : std_logic_vector(31 downto 0);
-
--- science_debug1 register value
-  signal usb_wireout_science_debug1 : std_logic_vector(31 downto 0);
 
 -- firmware_id register value
   signal usb_wireout_firmware_id : std_logic_vector(31 downto 0);
@@ -299,25 +285,10 @@ architecture RTL of regdecode_top is
   ---------------------------------------------------------------------
   -- regdecode_register_to_usb
   ---------------------------------------------------------------------
-  -- science_status errors
-  signal science_status_errors : std_logic_vector(15 downto 0);
-  -- science_status status
-  signal science_status_status : std_logic_vector(7 downto 0);
-
   -- science_stamp_lsb errors
   signal science_stamp_lsb_errors : std_logic_vector(15 downto 0);
   -- science_stamp_lsb status
   signal science_stamp_lsb_status : std_logic_vector(7 downto 0);
-
-  -- science_debug0 errors
-  signal science_debug0_errors : std_logic_vector(15 downto 0);
-  -- science_debug0 status
-  signal science_debug0_status : std_logic_vector(7 downto 0);
-
-  -- science_debug1 errors
-  signal science_debug1_errors : std_logic_vector(15 downto 0);
-  -- science_debug1 status
-  signal science_debug1_status : std_logic_vector(7 downto 0);
 
   ---------------------------------------------------------------------
   -- build errors/status
@@ -360,12 +331,9 @@ begin
       ---------------------------------------------------------------------
       -- wire_out
       i_usb_wireout_science_wr_data_count => usb_wireout_science_wr_data_count,  -- science_wr_data_count register (reading)
-      i_usb_wireout_science_status        => usb_wireout_science_status,  -- science_status register (reading)
       i_usb_wireout_science_stamp_lsb     => usb_wireout_science_stamp_lsb,  -- science_stamp_lsb register (reading)
       i_usb_wireout_spi_conf              => usb_wireout_spi_conf,  -- spi_conf register (reading)
-      i_usb_wireout_science_debug0        => usb_wireout_science_debug0,  -- science_debug0 register (reading)
       i_usb_wireout_spi_rd_data_count     => usb_wireout_spi_rd_data_count,  -- spi_rd_data_count register (reading)
-      i_usb_wireout_science_debug1        => usb_wireout_science_debug1,  -- science_debug1 register (reading)
       i_usb_wireout_hardware_id           => usb_wireout_hardware_id,  -- hardware id register (reading)
       i_usb_wireout_firmware_name         => usb_wireout_firmware_name,  -- firmware_name register (reading)
       i_usb_wireout_firmware_id           => usb_wireout_firmware_id,  -- firmware_id register (reading)
@@ -660,7 +628,7 @@ begin
   ---------------------------------------------------------------------
   gen_sync_reg : if true generate
     -- number of registers to synchronized
-    constant c_NB_REGS : integer := 4;
+    constant c_NB_REGS : integer := 1;
     -- temporary input register array
     signal reg_tmp0    : t_array32(0 to c_NB_REGS - 1);
     -- temporary output register array
@@ -670,10 +638,7 @@ begin
     -- temporary output status array
     signal status_tmp1 : t_array8(0 to c_NB_REGS - 1);
   begin
-    reg_tmp0(3) <= i_reg_science_status;
-    reg_tmp0(2) <= i_reg_science_stamp_lsb;
-    reg_tmp0(1) <= i_reg_science_debug0;
-    reg_tmp0(0) <= i_reg_science_debug1;
+    reg_tmp0(0) <= i_reg_science_stamp_lsb;
 
     gen_reg : for i in reg_tmp0'range generate
       inst_regdecode_register_to_usb : entity work.regdecode_register_to_usb
@@ -705,20 +670,10 @@ begin
           );
 
     end generate gen_reg;
-    usb_wireout_science_status    <= reg_tmp1(3);
-    usb_wireout_science_stamp_lsb <= reg_tmp1(2);
-    usb_wireout_science_debug0    <= reg_tmp1(1);
-    usb_wireout_science_debug1    <= reg_tmp1(0);
 
-    science_status_errors    <= errors_tmp1(3);  -- to connect
-    science_stamp_lsb_errors <= errors_tmp1(2);
-    science_debug0_errors    <= errors_tmp1(1);  -- to connect
-    science_debug1_errors    <= errors_tmp1(0);  -- to connect
-
-    science_status_status    <= status_tmp1(3);  -- to connect
-    science_stamp_lsb_status <= status_tmp1(2);
-    science_debug0_status    <= status_tmp1(1);  -- to connect
-    science_debug1_status    <= status_tmp1(0);  -- to connect
+    usb_wireout_science_stamp_lsb    <= reg_tmp1(0);
+    science_stamp_lsb_errors         <= errors_tmp1(0);
+    science_stamp_lsb_status         <= status_tmp1(0);
   end generate gen_sync_reg;
 
   ---------------------------------------------------------------------

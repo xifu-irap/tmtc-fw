@@ -51,18 +51,12 @@ entity usb_opal_kelly is
     -- wire_out
     -- science_wr_data_count register (reading)
     i_usb_wireout_science_wr_data_count : in    std_logic_vector(31 downto 0);
-    -- science_status register (reading)
-    i_usb_wireout_science_status        : in    std_logic_vector(31 downto 0);
     -- science_stamp_lsb register (reading)
     i_usb_wireout_science_stamp_lsb     : in    std_logic_vector(31 downto 0);
     -- spi_conf register (reading)
     i_usb_wireout_spi_conf              : in    std_logic_vector(31 downto 0);
-    -- science_debug0 register (reading)
-    i_usb_wireout_science_debug0        : in    std_logic_vector(31 downto 0);
     -- spi_rd_data_count register (reading)
     i_usb_wireout_spi_rd_data_count     : in    std_logic_vector(31 downto 0);
-    -- science_debug1 register (reading)
-    i_usb_wireout_science_debug1        : in    std_logic_vector(31 downto 0);
     -- hardware id register (reading)
     i_usb_wireout_hardware_id           : in    std_logic_vector(31 downto 0);
     -- firmware_name register (reading)
@@ -120,7 +114,7 @@ end entity usb_opal_kelly;
 architecture RTL of usb_opal_kelly is
 
   -- total number of used wire out, pipe out, pipe in and trigger out
-  constant c_WIRE_PIPE_TRIG_NUMBER_OUT : integer := 17;
+  constant c_WIRE_PIPE_TRIG_NUMBER_OUT : integer := 14;
 
   ---- Opal Kelly signals ----
   -- usb interface signal
@@ -172,12 +166,12 @@ architecture RTL of usb_opal_kelly is
   -- wires out
   --signal ep20_wire : std_logic_vector(31 downto 0); -- wire out00
   signal ep21_wire : std_logic_vector(31 downto 0);  -- wire out01
-  signal ep22_wire : std_logic_vector(31 downto 0);  -- wire out02
+  --signal ep22_wire : std_logic_vector(31 downto 0);  -- wire out02
   signal ep23_wire : std_logic_vector(31 downto 0);  -- wire out03
   signal ep24_wire : std_logic_vector(31 downto 0);  -- wire out04
-  signal ep25_wire : std_logic_vector(31 downto 0);  -- wire out05
+  --signal ep25_wire : std_logic_vector(31 downto 0);  -- wire out05
   signal ep26_wire : std_logic_vector(31 downto 0);  -- wire out06
-  signal ep27_wire : std_logic_vector(31 downto 0);  -- wire out07
+  --signal ep27_wire : std_logic_vector(31 downto 0);  -- wire out07
   --signal ep28_wire : std_logic_vector(31 downto 0);  -- wire out08
   --signal ep29_wire : std_logic_vector(31 downto 0);  -- wire out09
   --signal ep2A_wire : std_logic_vector(31 downto 0); -- wire out10
@@ -250,12 +244,9 @@ begin
   ---------------------------------------------------------------------
   -- to wire_out: main
   ep21_wire <= i_usb_wireout_science_wr_data_count;
-  ep22_wire <= i_usb_wireout_science_status;
   ep23_wire <= i_usb_wireout_science_stamp_lsb;
   ep24_wire <= i_usb_wireout_spi_conf;
-  ep25_wire <= i_usb_wireout_science_debug0;
   ep26_wire <= i_usb_wireout_spi_rd_data_count;
-  ep27_wire <= i_usb_wireout_science_debug1;
 
 
   -- to wire_out: debug
@@ -333,18 +324,11 @@ begin
       ep_datain => ep21_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep22 : okWireOut
-    port map(
-      okHE      => okHE,
-      okEH      => okEHx_array(1),
-      ep_addr   => x"22",               -- Endpoint address
-      ep_datain => ep22_wire            -- Endpoint data out 32 bits
-      );
 
   inst_okwireout_ep23 : okWireOut
     port map(
       okHE      => okHE,
-      okEH      => okEHx_array(2),
+      okEH      => okEHx_array(1),
       ep_addr   => x"23",               -- Endpoint address
       ep_datain => ep23_wire            -- Endpoint data out 32 bits
       );
@@ -352,40 +336,25 @@ begin
   inst_okwireout_ep24 : okWireOut
     port map(
       okHE      => okHE,
-      okEH      => okEHx_array(3),
+      okEH      => okEHx_array(2),
       ep_addr   => x"24",               -- Endpoint address
       ep_datain => ep24_wire            -- Endpoint data out 32 bits
       );
 
-  inst_okwireout_ep25 : okWireOut
-    port map(
-      okHE      => okHE,
-      okEH      => okEHx_array(4),
-      ep_addr   => x"25",               -- Endpoint address
-      ep_datain => ep25_wire            -- Endpoint data out 32 bits
-      );
 
   inst_okwireout_ep26 : okWireOut
     port map(
       okHE      => okHE,
-      okEH      => okEHx_array(5),
+      okEH      => okEHx_array(3),
       ep_addr   => x"26",               -- Endpoint address
       ep_datain => ep26_wire            -- Endpoint data out 32 bits
       );
 
 
-  inst_okwireout_ep27 : okWireOut
-    port map(
-      okHE      => okHE,
-      okEH      => okEHx_array(6),
-      ep_addr   => x"27",               -- Endpoint address
-      ep_datain => ep27_wire            -- Endpoint data out 32 bits
-      );
-
   inst_okwireout_ep38 : okWireOut
     port map(
       okHE      => okHE,
-      okEH      => okEHx_array(7),
+      okEH      => okEHx_array(4),
       ep_addr   => x"38",               -- Endpoint address
       ep_datain => ep38_wire            -- Endpoint data out 32 bits
       );
@@ -393,7 +362,7 @@ begin
   inst_okwireout_ep39 : okWireOut
     port map(
       okHE      => okHE,
-      okEH      => okEHx_array(8),
+      okEH      => okEHx_array(5),
       ep_addr   => x"39",               -- Endpoint address
       ep_datain => ep39_wire            -- Endpoint data out 32 bits
       );
@@ -401,7 +370,7 @@ begin
   inst_okwireout_ep3A : okWireOut
     port map(
       okHE      => okHE,
-      okEH      => okEHx_array(9),
+      okEH      => okEHx_array(6),
       ep_addr   => x"3A",               -- Endpoint address
       ep_datain => ep3A_wire            -- Endpoint data out 32 bits
       );
@@ -409,7 +378,7 @@ begin
   inst_okwireout_ep3B : okWireOut
     port map(
       okHE      => okHE,
-      okEH      => okEHx_array(10),
+      okEH      => okEHx_array(7),
       ep_addr   => x"3B",               -- Endpoint address
       ep_datain => ep3B_wire            -- Endpoint data out 32 bits
       );
@@ -417,7 +386,7 @@ begin
   inst_okwireout_ep3D : okWireOut
     port map(
       okHE      => okHE,
-      okEH      => okEHx_array(11),
+      okEH      => okEHx_array(8),
       ep_addr   => x"3D",               -- Endpoint address
       ep_datain => ep3D_wire            -- Endpoint data out 32 bits
       );
@@ -425,7 +394,7 @@ begin
   inst_okwireout_ep3E : okWireOut
     port map(
       okHE      => okHE,
-      okEH      => okEHx_array(12),
+      okEH      => okEHx_array(9),
       ep_addr   => x"3E",               -- Endpoint address
       ep_datain => ep3E_wire            -- Endpoint data out 32 bits
       );
@@ -433,7 +402,7 @@ begin
   inst_okwireout_ep3F : okWireOut
     port map(
       okHE      => okHE,
-      okEH      => okEHx_array(13),
+      okEH      => okEHx_array(10),
       ep_addr   => x"3F",               -- Endpoint address
       ep_datain => ep3F_wire            -- Endpoint data out 32 bits
       );
@@ -446,7 +415,7 @@ begin
   inst_okpipein_ep80 : okPipeIn
     port map(
       okHE       => okHE,
-      okEH       => okEHx_array(14),
+      okEH       => okEHx_array(11),
       ep_addr    => x"80",
       ep_write   => ep80_pipe_valid,
       ep_dataout => ep80_pipe
@@ -458,7 +427,7 @@ begin
   inst_okpipeout_epA0 : okPipeOut
     port map(
       okHE      => okHE,
-      okEH      => okEHx_array(15),
+      okEH      => okEHx_array(12),
       ep_addr   => x"A0",
       ep_read   => epA0_pipe_rd,
       ep_datain => epA0_pipe
@@ -467,7 +436,7 @@ begin
   inst_okpipeout_epA1 : okPipeOut
     port map(
       okHE      => okHE,
-      okEH      => okEHx_array(16),
+      okEH      => okEHx_array(13),
       ep_addr   => x"A1",
       ep_read   => epA1_pipe_rd,
       ep_datain => epA1_pipe
