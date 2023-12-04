@@ -50,7 +50,7 @@ package pkg_system_tmtc_debug is
   -- tc_hk_spi_device_select
   ---------------------------------------------------------------------
   -- user-defined: true: use Xilinx debugging modules (ILA, VIO,..), false: otherwise
-  constant pkg_TC_HK_SPI_DEVICE_SELECT_DEBUG : boolean := true;
+  constant pkg_TC_HK_SPI_DEVICE_SELECT_DEBUG : boolean := false;
 
 
   ---------------------------------------------------------------------
