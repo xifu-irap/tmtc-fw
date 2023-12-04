@@ -144,27 +144,33 @@ architecture RTL of regdecode_top is
 -- Common Register configuration
 ---------------------------------------------------------------------
 -- science_wr_data_count register value
-  signal usb_wireout_science_wr_data_count : std_logic_vector(31 downto 0);
+signal usb_wireout_science_wr_data_count : std_logic_vector(31 downto 0);
 
 
 -- science_stamp_lsb register value
-  signal usb_wireout_science_stamp_lsb : std_logic_vector(31 downto 0);
+signal usb_wireout_science_stamp_lsb : std_logic_vector(31 downto 0);
+
+-- ctrl register value
+signal usb_wireout_ctrl : std_logic_vector(31 downto 0);
+
+-- icu_conf register value
+signal usb_wireout_icu_conf : std_logic_vector(31 downto 0);
 
 -- tc_hk_conf register value
-  signal usb_wireout_tc_hk_conf : std_logic_vector(31 downto 0);
+signal usb_wireout_tc_hk_conf : std_logic_vector(31 downto 0);
 
-  -- spi_rd_data_count register
-  signal usb_wireout_hk_rd_data_count : std_logic_vector(31 downto 0);
+-- spi_rd_data_count register
+signal usb_wireout_hk_rd_data_count : std_logic_vector(31 downto 0);
 
 -- firmware_id register value
-  signal usb_wireout_firmware_id : std_logic_vector(31 downto 0);
+signal usb_wireout_firmware_id : std_logic_vector(31 downto 0);
 
 -- hardware_id register value
-  signal usb_wireout_hardware_id : std_logic_vector(31 downto 0);
+signal usb_wireout_hardware_id : std_logic_vector(31 downto 0);
 
 
 -- firmware_name register value
-  signal usb_wireout_firmware_name : std_logic_vector(31 downto 0);
+signal usb_wireout_firmware_name : std_logic_vector(31 downto 0);
 
 -- Debugging Registers
 ---------------------------------------------------------------------
@@ -275,7 +281,9 @@ architecture RTL of regdecode_top is
   ---------------------------------------------------------------------
   -- debug_ctrl regdecode_register_to_user
   ---------------------------------------------------------------------
+  -- debug_ctrl valid
   signal reg_debug_ctrl_valid : std_logic;
+  -- debug_ctrl register
   signal reg_debug_ctrl       : std_logic_vector(o_reg_debug_ctrl'range);
   -- debug_ctrl errors
   signal debug_ctrl_errors    : std_logic_vector(15 downto 0);
@@ -330,10 +338,12 @@ begin
       -- from the user @o_usb_clk
       ---------------------------------------------------------------------
       -- wire_out
-      i_usb_wireout_science_wr_data_count => usb_wireout_science_wr_data_count,  -- science_wr_data_count register (reading)
-      i_usb_wireout_science_stamp_lsb     => usb_wireout_science_stamp_lsb,  -- science_stamp_lsb register (reading)
+      i_usb_wireout_ctrl                  => usb_wireout_ctrl,  -- ctrl register (reading)
       i_usb_wireout_tc_hk_conf            => usb_wireout_tc_hk_conf,  -- tc_hk_conf register (reading)
-      i_usb_wireout_hk_rd_data_count      => usb_wireout_hk_rd_data_count,  -- spi_rd_data_count register (reading)
+      i_usb_wireout_icu_conf              => usb_wireout_icu_conf,  -- icu_conf register (reading)
+      i_usb_wireout_science_stamp_lsb     => usb_wireout_science_stamp_lsb,  -- science_stamp_lsb register (reading)
+      i_usb_wireout_science_wr_data_count => usb_wireout_science_wr_data_count,  -- science_wr_data_count register (reading)
+      i_usb_wireout_hk_rd_data_count      => usb_wireout_hk_rd_data_count,  -- hk_rd_data_count register (reading)
       i_usb_wireout_hardware_id           => usb_wireout_hardware_id,  -- hardware id register (reading)
       i_usb_wireout_firmware_name         => usb_wireout_firmware_name,  -- firmware_name register (reading)
       i_usb_wireout_firmware_id           => usb_wireout_firmware_id,  -- firmware_id register (reading)
@@ -390,7 +400,19 @@ begin
 ---------------------------------------------------------------------
 -- internal loopback
 ---------------------------------------------------------------------
-  inst_pipeliner_with_init_optional_pipe_spi_conf : entity work.pipeliner_with_init
+  inst_pipeliner_with_init_optional_pipe_ctrl : entity work.pipeliner_with_init
+    generic map(
+      g_INIT       => '0',
+      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_DATA_WIDTH => usb_wirein_ctrl'length  -- width of the input/output data.  Possibles values: [1, integer max value[
+      )
+    port map(
+      i_clk  => usb_clk,
+      i_data => usb_wirein_ctrl,
+      o_data => usb_wireout_ctrl
+      );
+
+  inst_pipeliner_with_init_optional_pipe_tc_hk_conf : entity work.pipeliner_with_init
     generic map(
       g_INIT       => '0',
       g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
@@ -400,6 +422,18 @@ begin
       i_clk  => usb_clk,
       i_data => usb_wirein_tc_hk_conf,
       o_data => usb_wireout_tc_hk_conf
+      );
+
+  inst_pipeliner_with_init_optional_pipe_icu_conf : entity work.pipeliner_with_init
+    generic map(
+      g_INIT       => '0',
+      g_NB_PIPES   => pkg_WIRE_LOOPBACK_DELAY,  -- number of consecutives registers. Possibles values: [0, integer max value[
+      g_DATA_WIDTH => usb_wirein_icu_conf'length  -- width of the input/output data.  Possibles values: [1, integer max value[
+      )
+    port map(
+      i_clk  => usb_clk,
+      i_data => usb_wirein_icu_conf,
+      o_data => usb_wireout_icu_conf
       );
 
   inst_pipeliner_with_init_optional_pipe_debug_ctrl : entity work.pipeliner_with_init
