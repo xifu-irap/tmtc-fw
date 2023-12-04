@@ -73,11 +73,11 @@ set_property IOSTANDARD LVCMOS33 [get_ports {b_okAA}]
 ############################################################################
 ## System Clock
 ############################################################################
-set_property IOSTANDARD LVDS [get_ports {i_sys_clkp}]
-set_property PACKAGE_PIN AC4 [get_ports {i_sys_clkp}]
+set_property IOSTANDARD LVDS [get_ports {i_sys_clk_p}]
+set_property PACKAGE_PIN AC4 [get_ports {i_sys_clk_p}]
 
-set_property IOSTANDARD LVDS [get_ports {i_sys_clkn}]
-set_property PACKAGE_PIN AC3 [get_ports {i_sys_clkn}]
+set_property IOSTANDARD LVDS [get_ports {i_sys_clk_n}]
+set_property PACKAGE_PIN AC3 [get_ports {i_sys_clk_n}]
 
 
 
