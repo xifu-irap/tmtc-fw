@@ -57,7 +57,7 @@ entity system_tmtc_top is
     -- On board
     ---------------------------------------------------------------------
     -- hardware id register (reading)
-    --i_hardware_id : in std_logic_vector(31 downto 0); -- TODO
+    i_hardware_id : in std_logic_vector(7 downto 0);
 
 
 
@@ -130,7 +130,7 @@ entity system_tmtc_top is
     o_spi_mosi : out std_logic;
     -- Shared SPI clock
     o_spi_sclk : out std_logic;
-    -- SPI chip select
+    -- SPI chip select (bit0: RAS, bit1: DEMUX)
     o_spi_cs_n : out std_logic_vector(1 downto 0);
 
     ---------------------------------------------------------------------
@@ -143,10 +143,14 @@ entity system_tmtc_top is
     -- Leds
     ---------------------------------------------------------------------
     -- Opal Kelly LEDs
-    o_leds : out std_logic_vector(3 downto 0)
+    o_leds : out std_logic_vector(3 downto 0);
 
-    --o_led_fw       : out std_logic;-- TODO
-    --o_led_science_ready : out std_logic;-- led_pll_lock: TODO
+    -- facade leds
+    ---------------------------------------------------------------------
+    -- loaded firwware led
+    o_led_fw       : out std_logic;
+    -- pll lock led
+    o_led_pll_lock : out std_logic
 
 
     );
@@ -171,8 +175,7 @@ architecture RTL of system_tmtc_top is
   -- '1': Fill the output FIFO with a pre-defined pattern, '0': fill the output FIFO with data from the DDR
   signal science_pattern_en_fifo_out : std_logic;
 
-  --signal hardware_id : std_logic_vector(i_hardware_id'range);
-  signal hardware_id : std_logic_vector(7 downto 0);  -- TODO
+  signal hardware_id : std_logic_vector(i_hardware_id'range);
 
 
   -- write enable spi command
@@ -315,8 +318,8 @@ architecture RTL of system_tmtc_top is
 
 begin
 
---hardware_id <= i_hardware_id; -- TODO
-  hardware_id <= (others => '0');       -- TODO
+hardware_id <= i_hardware_id;
+
 ---------------------------------------------------------------------
 -- regdecode
 ---------------------------------------------------------------------
@@ -586,8 +589,8 @@ begin
   o_sel_main_n <= icu_select;
 
   o_leds <= leds;
-  --o_led_fw            <= led_fw; -- TODO
-  --o_led_science_ready <= led_pll_lock; -- TODO
+  o_led_fw            <= led_fw;
+  o_led_pll_lock <= led_pll_lock;
 
 ----------------------------------------------------
 --      Controller DDR3
