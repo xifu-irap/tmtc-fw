@@ -168,6 +168,9 @@ architecture RTL of system_tmtc_top is
   -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s) @ sys_clk
   signal debug_pulse : std_logic;
 
+  -- '1': Fill the output FIFO with a pre-defined pattern, '0': fill the output FIFO with data from the DDR
+  signal science_pattern_en_fifo_out : std_logic;
+
   --signal hardware_id : std_logic_vector(i_hardware_id'range);
   signal hardware_id : std_logic_vector(7 downto 0);  -- TODO
 
@@ -385,10 +388,14 @@ begin
 
 
 -- extract bits from register
+  -- tc_hk_conf register
   spi_select  <= reg_tc_hk_conf(pkg_TC_HK_CONF_SPI_RAS_SEL_IDX_H);
+  -- icu_conf register
   icu_select  <= reg_icu_conf(pkg_ICU_CONF_SEL_IDX_H);
-  rst_status  <= reg_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
-  debug_pulse <= reg_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
+  -- debug_ctrl register
+  rst_status                  <= reg_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
+  debug_pulse                 <= reg_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
+  science_pattern_en_fifo_out <= reg_debug_ctrl(pkg_DEBUG_CTRL_SC_PATTERN_EN_FIFO_OUT_IDX_H);
 
   -- to registers
   reg_science_stamp_lsb <= ddr_stamp;
@@ -468,6 +475,9 @@ begin
       i_rst_status  => rst_status,
       -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
       i_debug_pulse => debug_pulse,
+
+      -- '1': Fill the science output FIFO with a pre-defined pattern, '0': fill the science output FIFO with data from the DDR
+      i_science_pattern_en_fifo_out => science_pattern_en_fifo_out,
 
 
       -- HK: SPI

@@ -86,6 +86,8 @@ package pkg_regdecode is
   constant pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H : integer := 0;
   -- user-defined: rst_status (bit index)
   constant pkg_DEBUG_CTRL_RST_STATUS_IDX_H  : integer := 1;
+  -- user-defined: science_pattern_en_fifo_out
+  constant pkg_DEBUG_CTRL_SC_PATTERN_EN_FIFO_OUT_IDX_H  : integer := 4;
 
   -- tc_hk_conf register
   ---------------------------------------------------------------------
