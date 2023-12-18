@@ -24,7 +24,17 @@
 -- -------------------------------------------------------------------------------------------------------------
 --    @details
 --
---    This module checks the periodicity of the science header
+--    According to the i_pattern_en value, this module has 2 modes:
+--       1. pattern generator (i_pattern_en=1). In this case, the input data is ignored. But the module generates
+--       a science pattern at full speed for the external output FIFO. The periodic science patterns has the following structure:
+--           1. 32 bit word0: c_BAD_HEADER - ...
+--           2. 32 bit word1: data0
+--           3. 32 bit word2: data1
+--       2. bypass (i_pattern_en=0). In this case, the input data is copied on the output.
+--
+--    Note:
+--      . To be able to differienciate the pattern generator mode of the bypass mode,
+--      a c_bad_header is used (pattern generator) in order to generated errors on the test script level.
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -34,16 +44,20 @@ use ieee.numeric_std.all;
 
 entity science_pattern_fifo_out is
   port (
+    -- input clock
     i_clk        : in std_logic;
     ---------------------------------------------------------------------
     -- From the redgdecode
     ---------------------------------------------------------------------
+    -- '1': Fill the output FIFO with a pre-defined pattern, '0': fill the output FIFO with data from the DDR
     i_pattern_en : in std_logic;
 
     ---------------------------------------------------------------------
     -- from the DDR
     ---------------------------------------------------------------------
+    -- input data valid
     i_data_valid : in std_logic;
+    -- input data
     i_data       : in std_logic_vector(31 downto 0);
 
     ---------------------------------------------------------------------
@@ -51,7 +65,9 @@ entity science_pattern_fifo_out is
     ---------------------------------------------------------------------
     -- ouput fifo prog full
     i_fifo_prog_full  : in  std_logic;
+    -- output fifo data valid (write enable)
     o_fifo_data_valid : out std_logic;
+    -- output fifo data
     o_fifo_data       : out std_logic_vector(31 downto 0)
 
     );
@@ -87,6 +103,9 @@ begin
 ---------------------------------------------------------------------
 -- FSM
 ---------------------------------------------------------------------
+-- This FSM has 2 modes:
+--   . copy the input data to the output (i_pattern_en=0)
+--   . output an periodic patterns at full speeds (i_pattern_en=1)
   p_decode_state : process (data_r1, i_data, i_data_valid, i_pattern_en,
                             i_fifo_prog_full, sm_state_r1) is
   begin
