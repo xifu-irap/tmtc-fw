@@ -318,7 +318,7 @@ architecture RTL of system_tmtc_top is
 
 begin
 
-hardware_id <= i_hardware_id;
+  hardware_id <= i_hardware_id;
 
 ---------------------------------------------------------------------
 -- regdecode
@@ -356,8 +356,8 @@ hardware_id <= i_hardware_id;
       i_hk_valid       => hk_valid,
       i_hk             => hk,
       -- pipe
-      o_tc_valid   => tc_valid,
-      o_tc         => tc,
+      o_tc_valid       => tc_valid,
+      o_tc             => tc,
       -- wire
       o_reg_ctrl       => open,
       o_reg_tc_hk_conf => reg_tc_hk_conf,
@@ -392,9 +392,9 @@ hardware_id <= i_hardware_id;
 
 -- extract bits from register
   -- tc_hk_conf register
-  spi_select  <= reg_tc_hk_conf(pkg_TC_HK_CONF_SPI_RAS_SEL_IDX_H);
+  spi_select                  <= reg_tc_hk_conf(pkg_TC_HK_CONF_SPI_RAS_SEL_IDX_H);
   -- icu_conf register
-  icu_select  <= reg_icu_conf(pkg_ICU_CONF_SEL_IDX_H);
+  icu_select                  <= reg_icu_conf(pkg_ICU_CONF_SEL_IDX_H);
   -- debug_ctrl register
   rst_status                  <= reg_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
   debug_pulse                 <= reg_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
@@ -588,8 +588,8 @@ hardware_id <= i_hardware_id;
 
   o_sel_main_n <= icu_select;
 
-  o_leds <= leds;
-  o_led_fw            <= led_fw;
+  o_leds         <= leds;
+  o_led_fw       <= led_fw;
   o_led_pll_lock <= led_pll_lock;
 
 ----------------------------------------------------
