@@ -41,7 +41,7 @@ package pkg_regdecode is
   --
   ---------------------------------------------------------------------
   -- user-defined: Firmware ID Value
-  constant pkg_FIRMWARE_ID_VALUE : integer := 20;  -- 0x14
+  constant pkg_FIRMWARE_ID_VALUE : integer := 21;  -- 0x15
 
   -- user-defined: FIRMWARE name (character3)
   constant pkg_FIRMWARE_NAME_CHAR3 : character := 'T';  -- ascii character
@@ -146,7 +146,7 @@ package pkg_regdecode is
   -- science pipe out
   -----------------------------------------------------------------
   -- user-defined: define the fifo depth (expressed in number of words)
-  constant pkg_SCIENCE_FIFO_DEPTH : integer := 32768;
+  constant pkg_SCIENCE_FIFO_DEPTH : integer := 131072;
 
 
 

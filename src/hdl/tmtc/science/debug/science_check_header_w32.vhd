@@ -24,7 +24,12 @@
 -- -------------------------------------------------------------------------------------------------------------
 --    @details
 --
---    This module checks the periodicity of the science header
+--    This module checks the periodicity of the science pattern (provided by the DDR manager)
+--    The periodic science patterns has the following structure:
+--        1. 32 bit word0: header - ...
+--        2. 32 bit word1: data0
+--        3. 32 bit word2: data1
+--    In particular, en error (one by words) is generated and counted if the header is not found every 3 words.
 --
 -- -------------------------------------------------------------------------------------------------------------
 
@@ -34,19 +39,26 @@ use ieee.numeric_std.all;
 
 entity science_check_header_w32 is
   port (
+    -- input clock
     i_clk : in std_logic;
     ---------------------------------------------------------------------
     -- from DEMUX: science interface @i_science_clk
     ---------------------------------------------------------------------
+    -- input science data valid
     i_science_valid : in std_logic;
+    -- input science data
     i_science_data  : in std_logic_vector(31 downto 0);
 
     ---------------------------------------------------------------------
     -- to user: science interface @i_sys_clk
     ---------------------------------------------------------------------
+    -- delayed science data valid
     o_science_data_valid  : out std_logic;
+    -- delayed science data
     o_science_data        : out std_logic_vector(31 downto 0);
+    -- science error cnt valid
     o_science_error_valid : out std_logic;
+    -- science error count: count the number of pattern error
     o_science_error_cnt   : out std_logic_vector(15 downto 0)
 
     );
@@ -54,6 +66,7 @@ end entity science_check_header_w32;
 
 architecture RTL of science_check_header_w32 is
 
+  -- defined the header value
   constant c_HEADER : std_logic_vector(15 downto 0) := x"AAAA";
 
   -- fsm type declaration
@@ -80,6 +93,7 @@ begin
 ---------------------------------------------------------------------
 -- FSM
 ---------------------------------------------------------------------
+-- This process check the periodicity of the science pattern: header -> data0 -> data1
   p_decode_state : process (cnt_error_r1, i_science_data(31 downto 16),
                             i_science_valid, sm_state_r1) is
   begin
