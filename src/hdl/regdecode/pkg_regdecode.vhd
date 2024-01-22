@@ -41,7 +41,7 @@ package pkg_regdecode is
   --
   ---------------------------------------------------------------------
   -- user-defined: Firmware ID Value
-  constant pkg_FIRMWARE_ID_VALUE : integer := 19;  -- 0x13
+  constant pkg_FIRMWARE_ID_VALUE : integer := 20;  -- 0x14
 
   -- user-defined: FIRMWARE name (character3)
   constant pkg_FIRMWARE_NAME_CHAR3 : character := 'T';  -- ascii character
@@ -86,6 +86,8 @@ package pkg_regdecode is
   constant pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H : integer := 0;
   -- user-defined: rst_status (bit index)
   constant pkg_DEBUG_CTRL_RST_STATUS_IDX_H  : integer := 1;
+  -- user-defined: science_pattern_en_fifo_out
+  constant pkg_DEBUG_CTRL_SC_PATTERN_EN_FIFO_OUT_IDX_H  : integer := 4;
 
   -- tc_hk_conf register
   ---------------------------------------------------------------------

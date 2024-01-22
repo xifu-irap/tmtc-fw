@@ -57,6 +57,9 @@ entity science_top is
     -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s) @i_clk
     i_debug_pulse : in std_logic;
 
+    -- '1': Fill the output FIFO with a pre-defined pattern, '0': fill the output FIFO with data from the DDR
+    i_pattern_en_fifo_out : in std_logic;
+
 
     ---------------------------------------------------------------------
     -- from/to DDR controller @ i_clk
@@ -210,6 +213,15 @@ architecture RTL of science_top is
   signal ddr_errors      : std_logic_vector(o_errors0'range);
   -- science ddr status
   signal ddr_status      : std_logic_vector(o_status0'range);
+
+
+  ---------------------------------------------------------------------
+  -- science pattern fifo out
+  ---------------------------------------------------------------------
+  -- output fifo data valid
+  signal fifo_data_valid1 : std_logic;
+  -- output fifo data
+  signal fifo_data1       : std_logic_vector(o_fifo_data'range);
 
 begin
 
@@ -413,8 +425,34 @@ begin
       o_status              => ddr_status
       );
 
-  o_fifo_data_valid <= fifo_data_valid;
-  o_fifo_data       <= fifo_data;
+
+  ---------------------------------------------------------------------
+  --
+  ---------------------------------------------------------------------
+  inst_science_pattern_fifo_out : entity work.science_pattern_fifo_out
+    port map(
+      i_clk             => i_clk,
+      ---------------------------------------------------------------------
+      -- From the redgdecode
+      ---------------------------------------------------------------------
+      i_pattern_en      => i_pattern_en_fifo_out,
+      ---------------------------------------------------------------------
+      -- from the DDR
+      ---------------------------------------------------------------------
+      i_data_valid      => fifo_data_valid,
+      i_data            => fifo_data,
+      ---------------------------------------------------------------------
+      -- output
+      ---------------------------------------------------------------------
+      -- ouput fifo prog full
+      i_fifo_prog_full  => i_fifo_prog_full,
+      o_fifo_data_valid => fifo_data_valid1,
+      o_fifo_data       => fifo_data1
+      );
+
+
+  o_fifo_data_valid <= fifo_data_valid1;
+  o_fifo_data       <= fifo_data1;
 
   o_errors0 <= ddr_errors;
   o_status0 <= ddr_status;

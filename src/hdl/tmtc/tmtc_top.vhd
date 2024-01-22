@@ -57,6 +57,9 @@ entity tmtc_top is
     -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s)
     i_debug_pulse : in std_logic;
 
+    -- '1': Fill the science output FIFO with a pre-defined pattern, '0': fill the science output FIFO with data from the DDR
+    i_science_pattern_en_fifo_out : in std_logic;
+
 
     -- HK: SPI
     ---------------------------------------------------------------------
@@ -277,6 +280,9 @@ begin
       i_rst_status  => i_rst_status,
       -- error mode (transparent vs capture). Possible values: '1': delay the error(s), '0': capture the error(s) @i_clk
       i_debug_pulse => i_debug_pulse,
+
+      -- '1': Fill the output FIFO with a pre-defined pattern, '0': fill the output FIFO with data from the DDR
+      i_pattern_en_fifo_out => i_science_pattern_en_fifo_out,
 
       ---------------------------------------------------------------------
       -- from/to DDR controller @ sys_clk
