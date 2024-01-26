@@ -150,8 +150,12 @@ entity system_tmtc_top is
     -- loaded firwware led
     o_led_fw       : out std_logic;
     -- pll lock led
-    o_led_pll_lock : out std_logic
+    o_led_pll_lock : out std_logic;
 
+    -- debugging signal (spare)
+    ---------------------------------------------------------------------
+    -- spare for debugging
+    o_debug : out std_logic_vector(3 downto 0)
 
     );
 end entity system_tmtc_top;
@@ -701,6 +705,10 @@ begin
       i_ui_spi_cs_n => ui_spi_cs_n
       );
 
+     ---------------------------------------------------------------------
+     -- debugging
+     ---------------------------------------------------------------------
+     o_debug <= (others => '0');
 
 
 end architecture RTL;
