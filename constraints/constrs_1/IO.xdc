@@ -44,12 +44,12 @@ create_clock -name virt_usb_clk_in -period 9.920;
  # 62.5 MHz
 create_clock -period 16 -name science_clk1 [get_ports {i_science_clk_p[0]}]
 
-# science
+# science: 62.5 MHz
 #    create the associated virtual input clock to science_clk1 and science_clk2
 #      science_clk1 and science_clk2 have the same source.
 create_clock -period 16 -name virtual_science_clk;
 
-# DDR
+# DDR: 100Mhz
 create_clock -period 10  -name virtual_ddr_clk;
 
 
@@ -101,15 +101,15 @@ create_generated_clock -name usb_clk_regQ_on_clk_pin -source $usb_src -divide_by
 # data     __XXXX____Rise_Data____XXXX__
 #
 
-set input_clock         virt_usb_clk_in;      # Name of input clock
-set input_clock_period  9.92;    # Period of input clock
-set dv_bre              1.920;             # Data valid before the rising clock edge
-set dv_are              0.000;             # Data valid after the rising clock edge
-set input_ports         {i_okUH[*]};     # List of input ports
+# set input_clock         virt_usb_clk_in;      # Name of input clock
+# set input_clock_period  9.92;    # Period of input clock
+# set dv_bre              1.920;             # Data valid before the rising clock edge
+# set dv_are              0.000;             # Data valid after the rising clock edge
+# set input_ports         {i_okUH[*]};     # List of input ports
 
-# Input Delay Constraint
-set_input_delay -clock $input_clock -max [expr $input_clock_period - $dv_bre] [get_ports $input_ports] -add_delay;
-set_input_delay -clock $input_clock -min $dv_are                              [get_ports $input_ports] -add_delay;
+# # Input Delay Constraint
+# set_input_delay -clock $input_clock -max [expr $input_clock_period - $dv_bre] [get_ports $input_ports] -add_delay;
+# set_input_delay -clock $input_clock -min $dv_are                              [get_ports $input_ports] -add_delay;
 
 # Center-Aligned Rising Edge Source Synchronous Inputs
 #
@@ -128,15 +128,15 @@ set_input_delay -clock $input_clock -min $dv_are                              [g
 # data     __XXXX____Rise_Data____XXXX__
 #
 
-set input_clock         virt_usb_clk_in;      # Name of input clock
-set input_clock_period  9.92;    # Period of input clock
-set dv_bre              1.920;             # Data valid before the rising clock edge
-set dv_are              0.000;             # Data valid after the rising clock edge
-set input_ports         {b_okUHU[*] b_okAA};     # List of input ports
+# set input_clock         virt_usb_clk_in;      # Name of input clock
+# set input_clock_period  9.92;    # Period of input clock
+# set dv_bre              1.920;             # Data valid before the rising clock edge
+# set dv_are              0.000;             # Data valid after the rising clock edge
+# set input_ports         {b_okUHU[*] b_okAA};     # List of input ports
 
-# Input Delay Constraint
-set_input_delay -clock $input_clock -max [expr $input_clock_period - $dv_bre] [get_ports $input_ports] -add_delay;
-set_input_delay -clock $input_clock -min $dv_are                              [get_ports $input_ports] -add_delay;
+# # Input Delay Constraint
+# set_input_delay -clock $input_clock -max [expr $input_clock_period - $dv_bre] [get_ports $input_ports] -add_delay;
+# set_input_delay -clock $input_clock -min $dv_are                              [get_ports $input_ports] -add_delay;
 
 ###############################################################################################################
 # usb (output ports)
@@ -162,17 +162,34 @@ set_input_delay -clock $input_clock -min $dv_are                              [g
 # create_generated_clock -name <gen_clock_name> -multiply_by 1 -source [get_pins <source_pin>] [get_ports <output_clock_port>]
 # gen_clock_name is the name of forwarded clock here. It should be used below for defining "fwclk".
 
-set fwclk        usb_clk;     # forwarded clock name (generated using create_generated_clock at output clock port)
-set tsu          2.000;            # destination device setup time requirement
-set thd          0.500;            # destination device hold time requirement
-set trce_dly_max 0.000;            # maximum board trace delay
-set trce_dly_min 0.000;            # minimum board trace delay
-set output_ports {o_okHU[*] b_okUHU[*] b_okAA};   # list of output ports
+# set fwclk        usb_clk;     # forwarded clock name (generated using create_generated_clock at output clock port)
+# set tsu          2.000;            # destination device setup time requirement
+# set thd          0.500;            # destination device hold time requirement
+# set trce_dly_max 0.000;            # maximum board trace delay
+# set trce_dly_min 0.000;            # minimum board trace delay
+# set output_ports {o_okHU[*] b_okUHU[*] b_okAA};   # list of output ports
 
-# Output Delay Constraints
-set_output_delay -clock $fwclk -max [expr $trce_dly_max + $tsu] [get_ports $output_ports] -add_delay;
-set_output_delay -clock $fwclk -min [expr $trce_dly_min - $thd] [get_ports $output_ports] -add_delay;
+# # Output Delay Constraints
+# set_output_delay -clock $fwclk -max [expr $trce_dly_max + $tsu] [get_ports $output_ports] -add_delay;
+# set_output_delay -clock $fwclk -min [expr $trce_dly_min - $thd] [get_ports $output_ports] -add_delay;
 
+
+###############################################################################################################
+# usb
+###############################################################################################################
+set_input_delay -add_delay -max -clock [get_clocks {usb_clk_in}]  8.000 [get_ports {i_okUH[*]}]
+set_input_delay -add_delay -min -clock [get_clocks {usb_clk_in}] 10.000 [get_ports {i_okUH[*]}]
+set_multicycle_path -setup -from [get_ports {i_okUH[*]}] 2
+
+set_input_delay -add_delay -max -clock [get_clocks {usb_clk_in}]  8.000 [get_ports {b_okUHU[*]}]
+set_input_delay -add_delay -min -clock [get_clocks {usb_clk_in}]  2.000 [get_ports {b_okUHU[*]}]
+set_multicycle_path -setup -from [get_ports {b_okUHU[*]}] 2
+
+set_output_delay -add_delay -max -clock [get_clocks {usb_clk_in}]  2.000 [get_ports {o_okHU[*]}]
+set_output_delay -add_delay -min -clock [get_clocks {usb_clk_in}]  -0.500 [get_ports {o_okHU[*]}]
+
+set_output_delay -add_delay -max -clock [get_clocks {usb_clk_in}]  2.000 [get_ports {b_okUHU[*]}]
+set_output_delay -add_delay -min -clock [get_clocks {usb_clk_in}]  -0.500 [get_ports {b_okUHU[*]}]
 
 ##################################################################################
 # SPI: timing constraints (output ports)
@@ -230,10 +247,10 @@ set_output_delay -clock $fwclk -min [expr $trce_dly_min - $thd] [get_ports $outp
 # data     __XXXX____Rise_Data____XXXX__
 #
 
-set input_clock         virtual_ddr_clk;      # Name of input clock
-set input_clock_period  5;              # Period of input clock
-set dv_bre              1;          # Data valid before the rising clock edge
-set dv_are              1;          # Data valid after the rising clock edge
+set input_clock         ddr_user_clk;      # Name of input clock
+set input_clock_period  10;              # Period of input clock
+set dv_bre              7.5;          # Data valid before the rising clock edge
+set dv_are              3.5;          # Data valid after the rising clock edge
 set input_ports         {i_spi_miso};     # List of input ports
 
 # Input Delay Constraint
@@ -261,9 +278,9 @@ set_input_delay -clock $input_clock -min $dv_are                              [g
 # data     __XXXX____Rise_Data____XXXX__
 #
 
-set input_clock         virtual_science_clk;      # Name of input clock
+set input_clock         science_clk1;      # Name of input clock
 set input_clock_period  16;    # Period of input clock
-set dv_bre              2.50;             # Data valid before the rising clock edge
+set dv_bre              14;             # Data valid before the rising clock edge
 set dv_are              2.5000;             # Data valid after the rising clock edge
 set input_ports         {i_science_ctrl_p[*] i_science_data_p[*]};     # List of input ports
 
@@ -277,20 +294,25 @@ set_input_delay -clock $input_clock -min $dv_are                              [g
 # set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_pins -hierarchical *clk_ref_mmcm_gen.mmcm_i*CLKIN1]
 
 # constraints ddr sys_rst reset (input reset)
-set_max_delay -from [get_clocks usb_clk] -to [get_clocks ddr_user_clk] -datapath_only 5.0; #200 MHz
-set_bus_skew -from [get_clocks usb_clk] -to [get_clocks ddr_user_clk] 5.0; #200 MHz
+# set_max_delay -from [get_clocks usb_clk] -to [get_clocks ddr_user_clk] -datapath_only 5.0; #200 MHz
+# set_bus_skew -from [get_clocks usb_clk] -to [get_clocks ddr_user_clk] 5.0; #200 MHz
 
-set_max_delay -from [get_clocks usb_clk] -to [get_clocks mmcm_ps_clk_bufg_in] -datapath_only 10.0; #100 MHz
-set_bus_skew -from [get_clocks usb_clk] -to [get_clocks mmcm_ps_clk_bufg_in] 10.0; #100 MHz
-
-
-set_max_delay -from [get_clocks ddr_user_clk] -to [get_ports {ddr3_reset_n}] -datapath_only 5.0; #200 MHz
-set_max_delay -from [get_ports {ddr3_dqs_p[*]}] -to [get_clocks ddr_user_clk] -datapath_only 5.0; #200 MHz
+# set_max_delay -from [get_clocks usb_clk] -to [get_clocks mmcm_ps_clk_bufg_in] -datapath_only 10.0; #100 MHz
+# set_bus_skew -from [get_clocks usb_clk] -to [get_clocks mmcm_ps_clk_bufg_in] 10.0; #100 MHz
 
 
-set_max_delay -from [get_clocks ddr_user_clk] -to [get_clocks usb_clk] -datapath_only 5.0; #200 MHz
+# set_max_delay -from [get_clocks ddr_user_clk] -to [get_ports {ddr3_reset_n}] -datapath_only 5.0; #200 MHz
+# set_max_delay -from [get_ports {ddr3_dqs_p[*]}] -to [get_clocks ddr_user_clk] -datapath_only 5.0; #200 MHz
+
+
+# set_max_delay -from [get_clocks ddr_user_clk] -to [get_clocks usb_clk] -datapath_only 5.0; #200 MHz
 # set_bus_skew -from [get_clocks ddr_user_clk] -to [get_clocks usb_clk] 5.0; #200 MHz
 
+set_max_delay -from [get_clocks ddr_user_clk] -to [get_clocks usb_clk] -datapath_only 9.920; # # max(@usb_clk,@ddr_clk) = 100.8MHz
+set_bus_skew -from [get_clocks ddr_user_clk] -to [get_clocks usb_clk] 9.920; # max(@usb_clk,@ddr_clk) = 100.8MHz
+
+set_max_delay -from [get_clocks usb_clk] -to [get_clocks ddr_user_clk] -datapath_only 9.920; # # max(@usb_clk,@ddr_clk) = 100.8MHz
+set_bus_skew -from [get_clocks usb_clk] -to [get_clocks ddr_user_clk] 9.920; # max(@usb_clk,@ddr_clk) = 100.8MHz
 
 
 ###############################################################################################################
@@ -298,23 +320,28 @@ set_max_delay -from [get_clocks ddr_user_clk] -to [get_clocks usb_clk] -datapath
 #  by default, set_clock_group on a master clock are NOT applied to generated clocks by default.
 #  You need to explicitly include it as in the command below.
 ###############################################################################################################
-set_clock_groups -name async_mmcm_usb_user_virt -asynchronous -group {usb_clk} -group {virt_usb_clk_in}
+# set_clock_groups -name async_mmcm_usb_user_virt -asynchronous -group {usb_clk} -group {virt_usb_clk_in}
 # set_clock_groups -name async_science -group {science_clk1 science_clk2}
 
-set_false_path -setup  -rise_from [get_clocks virtual_science_clk] -fall_to [get_clocks science_clk1]
-set_false_path -setup  -fall_from [get_clocks virtual_science_clk] -rise_to [get_clocks science_clk1]
-set_false_path -hold   -rise_from [get_clocks virtual_science_clk] -fall_to [get_clocks science_clk1]
-set_false_path -hold   -fall_from [get_clocks virtual_science_clk] -rise_to [get_clocks science_clk1]
+# set_false_path -setup  -rise_from [get_clocks virtual_science_clk] -fall_to [get_clocks science_clk1]
+# set_false_path -setup  -fall_from [get_clocks virtual_science_clk] -rise_to [get_clocks science_clk1]
+# set_false_path -hold   -rise_from [get_clocks virtual_science_clk] -fall_to [get_clocks science_clk1]
+# set_false_path -hold   -fall_from [get_clocks virtual_science_clk] -rise_to [get_clocks science_clk1]
 
-set_false_path -setup  -rise_from [get_clocks ddr_user_clk] -fall_to [get_clocks gen_spi_clk]
-set_false_path -setup  -fall_from [get_clocks ddr_user_clk] -rise_to [get_clocks gen_spi_clk]
-set_false_path -hold   -rise_from [get_clocks ddr_user_clk] -fall_to [get_clocks gen_spi_clk]
-set_false_path -hold   -fall_from [get_clocks ddr_user_clk] -rise_to [get_clocks gen_spi_clk]
+# set_false_path -setup  -rise_from [get_clocks ddr_user_clk] -fall_to [get_clocks gen_spi_clk]
+# set_false_path -setup  -fall_from [get_clocks ddr_user_clk] -rise_to [get_clocks gen_spi_clk]
+# set_false_path -hold   -rise_from [get_clocks ddr_user_clk] -fall_to [get_clocks gen_spi_clk]
+# set_false_path -hold   -fall_from [get_clocks ddr_user_clk] -rise_to [get_clocks gen_spi_clk]
 
-set_false_path -setup  -rise_from [get_clocks virtual_ddr_clk] -fall_to [get_clocks ddr_user_clk]
-set_false_path -setup  -fall_from [get_clocks virtual_ddr_clk] -rise_to [get_clocks ddr_user_clk]
-set_false_path -hold   -rise_from [get_clocks virtual_ddr_clk] -fall_to [get_clocks ddr_user_clk]
-set_false_path -hold   -fall_from [get_clocks virtual_ddr_clk] -rise_to [get_clocks ddr_user_clk]
+# set_false_path -setup  -rise_from [get_clocks virtual_ddr_clk] -fall_to [get_clocks ddr_user_clk]
+# set_false_path -setup  -fall_from [get_clocks virtual_ddr_clk] -rise_to [get_clocks ddr_user_clk]
+# set_false_path -hold   -rise_from [get_clocks virtual_ddr_clk] -fall_to [get_clocks ddr_user_clk]
+# set_false_path -hold   -fall_from [get_clocks virtual_ddr_clk] -rise_to [get_clocks ddr_user_clk]
+
+set_false_path -setup  -rise_from [get_clocks science_clk1] -fall_to [get_clocks ddr_user_clk]
+set_false_path -setup  -fall_from [get_clocks science_clk1] -rise_to [get_clocks ddr_user_clk]
+set_false_path -hold   -rise_from [get_clocks science_clk1] -fall_to [get_clocks ddr_user_clk]
+set_false_path -hold   -fall_from [get_clocks science_clk1] -rise_to [get_clocks ddr_user_clk]
 
 
 ##################################################################################
