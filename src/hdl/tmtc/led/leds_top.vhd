@@ -116,7 +116,7 @@ begin
         end if;
       end if;
     end if;
-  end process;
+  end process p_clock_science_link0;
 
   ---------------------------------------------------------------------
   -- detect @clk alive
