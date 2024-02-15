@@ -57,7 +57,7 @@ entity science_ddr3_stamp is
     o_subtraction_addr_wr_addr_rd : out std_logic_vector(31 downto 0)
 
     );
-end entity;
+end entity science_ddr3_stamp;
 
 architecture RTL of science_ddr3_stamp is
 -- step1
