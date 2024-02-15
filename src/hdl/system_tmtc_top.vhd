@@ -34,9 +34,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library unisim;
-use unisim.vcomponents.all;
-
 use work.pkg_system_tmtc_debug.all;
 use work.pkg_system_tmtc.all;
 use work.pkg_regdecode.all;
