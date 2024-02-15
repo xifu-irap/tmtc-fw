@@ -44,7 +44,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 library unisim;
-use unisim.VComponents.all;
+use unisim.vcomponents.all;
 
 use work.pkg_system_tmtc.all;
 
