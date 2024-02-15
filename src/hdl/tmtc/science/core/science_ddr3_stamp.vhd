@@ -37,9 +37,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library unisim;
-use unisim.VComponents.all;
-
 entity science_ddr3_stamp is
   port(
     --  clock
@@ -60,7 +57,7 @@ entity science_ddr3_stamp is
     o_subtraction_addr_wr_addr_rd : out std_logic_vector(31 downto 0)
 
     );
-end entity;
+end entity science_ddr3_stamp;
 
 architecture RTL of science_ddr3_stamp is
 -- step1
