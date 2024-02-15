@@ -53,7 +53,7 @@ entity system_tmtc_top is
     ---------------------------------------------------------------------
     -- On board
     ---------------------------------------------------------------------
-    -- hardware id register (reading)
+    -- hardware id
     i_hardware_id : in std_logic_vector(7 downto 0);
 
 
@@ -176,6 +176,7 @@ architecture RTL of system_tmtc_top is
   -- '1': Fill the output FIFO with a pre-defined pattern, '0': fill the output FIFO with data from the DDR
   signal science_pattern_en_fifo_out : std_logic;
 
+  -- hardware id
   signal hardware_id : std_logic_vector(i_hardware_id'range);
 
 
