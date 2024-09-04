@@ -41,7 +41,7 @@ package pkg_regdecode is
   --
   ---------------------------------------------------------------------
   -- user-defined: Firmware ID Value
-  constant pkg_FIRMWARE_ID_VALUE : integer := 23;  -- 0x17
+  constant pkg_FIRMWARE_ID_VALUE : integer := 24;  -- 0x18
 
   -- user-defined: FIRMWARE name (character3)
   constant pkg_FIRMWARE_NAME_CHAR3 : character := 'T';  -- ascii character
