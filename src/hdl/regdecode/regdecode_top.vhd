@@ -232,7 +232,6 @@ signal usb_wireout_firmware_name : std_logic_vector(31 downto 0);
   -- debug_pulse @usb_clk
   signal usb_debug_pulse : std_logic;
 
-  -- select the internal errors
   signal sel_errors : std_logic_vector(pkg_ERROR_SEL_WIDTH - 1 downto 0);
 
 
