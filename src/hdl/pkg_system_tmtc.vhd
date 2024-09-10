@@ -124,11 +124,11 @@ package pkg_system_tmtc is
   -- SPI: Data bus size
   constant pkg_SPI_SER_WD_S : integer   := 32;
   -- SPI: Number of clock period for elaborating SPI Serial Clock low level
-  constant pkg_SPI_SCLK_L   : integer   := 24;
+  constant pkg_SPI_SCLK_L   : integer   := 24*4;
   -- SPI: Number of clock period for elaborating SPI Serial Clock high level
-  constant pkg_SPI_SCLK_H   : integer   := 2;
+  constant pkg_SPI_SCLK_H   : integer   := 2*4;
   -- SPI: Number of clock period between two SPI communication. Should be >2
-  constant pkg_SPI_PAUSE    : positive  := 3;
+  constant pkg_SPI_PAUSE    : positive  := 3*4;
 
   ---------------------------------------------------------------------
   -- TMTC/science

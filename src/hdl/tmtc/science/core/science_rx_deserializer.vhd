@@ -297,7 +297,7 @@ begin
 --  Note: the latency must be equal to the fsm latency (see above)
 ---------------------------------------------------------------------
   gen_deserialize_data : for i in i_science_data'range generate
-    science_rx_deserializer_data_INST : entity work.science_rx_deserializer_data
+    inst_science_rx_deserializer_data : entity work.science_rx_deserializer_data
       generic map(
         -- define the number of bits by links in order to build word
         g_DATA_WIDTH_BY_LINK => g_DATA_WIDTH_BY_LINK
