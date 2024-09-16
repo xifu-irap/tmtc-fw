@@ -133,10 +133,10 @@ begin
   end generate gen_extracted_word;
 
 -- build a frame
-  frame_tmp(95 downto 88) <= i_ctrl_word;
-  frame_tmp(87 downto 80) <= i_ctrl_word;
-  frame_tmp(79 downto 72) <= x"AA";
-  frame_tmp(71 downto 64) <= x"AA";
+  frame_tmp(95 downto 88) <= x"AA";
+  frame_tmp(87 downto 80) <= x"AA";
+  frame_tmp(79 downto 72) <= i_ctrl_word;
+  frame_tmp(71 downto 64) <= i_ctrl_word;
   frame_tmp(63 downto 56) <= data_array(3);
   frame_tmp(55 downto 48) <= data_array(2);
   frame_tmp(47 downto 40) <= data_array(1);
