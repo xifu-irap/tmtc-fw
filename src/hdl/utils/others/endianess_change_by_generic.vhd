@@ -65,7 +65,6 @@ end entity endianess_change_by_generic;
 
 architecture RTL of endianess_change_by_generic is
 
-  -- Minimum Number of bytes to represent the input data
   constant c_NB_BYTES : integer := integer(g_DATA_WIDTH/8);
 
 -- endianess conversion

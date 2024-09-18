@@ -105,7 +105,7 @@ entity science_ddr3_ctrl is
     o_buffer_new_cmd_byte_addr_rd : out std_logic_vector(54 downto 0)
 
     );
-end entity science_ddr3_ctrl;
+end entity;
 
 architecture RTL of science_ddr3_ctrl is
 

@@ -54,15 +54,15 @@ entity leds_top is
     -- data valid (serialized bit)
     i_science_data_valid : in std_logic;
     -- detect the last bit of the synchro word
-    i_science_sync       : in std_logic;
+    i_science_sync       : in  std_logic;
 
     ---------------------------------------------------------------------
     -- output @i_clk
     ---------------------------------------------------------------------
     -- FPGA board: status leds
-    o_leds         : out std_logic_vector(3 downto 0);
+    o_leds : out std_logic_vector(3 downto 0);
     -- FMC firmware led
-    o_led_fw       : out std_logic;
+    o_led_fw: out std_logic;
     -- FMC PLL lock led
     o_led_pll_lock : out std_logic
 
@@ -93,9 +93,9 @@ begin
 
     if rising_edge(i_clk) then
       if i_rst = '1' then
-        cpt0_r1  <= (others => '0');
-        leds_r1  <= '1';
-        start_r1 <= (others => '0');
+        cpt0_r1    <= (others => '0');
+        leds_r1    <= '1';
+        start_r1   <= (others => '0');
       else
         -- compute change only when a new bit is received
         if i_science_data_valid = '1' then
@@ -111,12 +111,12 @@ begin
             else
               leds_r1 <= '1';
             end if;
-            cpt0_r1 <= (others => '0');
+            cpt0_r1    <= (others => '0');
           end if;
         end if;
       end if;
     end if;
-  end process p_clock_science_link0;
+  end process;
 
   ---------------------------------------------------------------------
   -- detect @clk alive
