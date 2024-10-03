@@ -34,9 +34,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library unisim;
-use unisim.vcomponents.all;
-
 use work.pkg_system_tmtc_debug.all;
 use work.pkg_system_tmtc.all;
 use work.pkg_regdecode.all;
@@ -56,8 +53,8 @@ entity system_tmtc_top is
     ---------------------------------------------------------------------
     -- On board
     ---------------------------------------------------------------------
-    -- hardware id register (reading)
-    --i_hardware_id : in std_logic_vector(31 downto 0); -- TODO
+    -- hardware id
+    i_hardware_id : in std_logic_vector(7 downto 0);
 
 
 
@@ -130,7 +127,7 @@ entity system_tmtc_top is
     o_spi_mosi : out std_logic;
     -- Shared SPI clock
     o_spi_sclk : out std_logic;
-    -- SPI chip select
+    -- SPI chip select (bit0: RAS, bit1: DEMUX)
     o_spi_cs_n : out std_logic_vector(1 downto 0);
 
     ---------------------------------------------------------------------
@@ -143,11 +140,19 @@ entity system_tmtc_top is
     -- Leds
     ---------------------------------------------------------------------
     -- Opal Kelly LEDs
-    o_leds : out std_logic_vector(3 downto 0)
+    o_leds : out std_logic_vector(3 downto 0);
 
-    --o_led_fw       : out std_logic;-- TODO
-    --o_led_science_ready : out std_logic;-- led_pll_lock: TODO
+    -- facade leds
+    ---------------------------------------------------------------------
+    -- loaded firwware led
+    o_led_fw       : out std_logic;
+    -- pll lock led
+    o_led_pll_lock : out std_logic;
 
+    -- debugging signal (spare)
+    ---------------------------------------------------------------------
+    -- spare for debugging
+    o_debug : out std_logic_vector(3 downto 0)
 
     );
 end entity system_tmtc_top;
@@ -171,8 +176,8 @@ architecture RTL of system_tmtc_top is
   -- '1': Fill the output FIFO with a pre-defined pattern, '0': fill the output FIFO with data from the DDR
   signal science_pattern_en_fifo_out : std_logic;
 
-  --signal hardware_id : std_logic_vector(i_hardware_id'range);
-  signal hardware_id : std_logic_vector(7 downto 0);  -- TODO
+  -- hardware id
+  signal hardware_id : std_logic_vector(i_hardware_id'range);
 
 
   -- write enable spi command
@@ -315,8 +320,8 @@ architecture RTL of system_tmtc_top is
 
 begin
 
---hardware_id <= i_hardware_id; -- TODO
-  hardware_id <= (others => '0');       -- TODO
+  hardware_id <= i_hardware_id;
+
 ---------------------------------------------------------------------
 -- regdecode
 ---------------------------------------------------------------------
@@ -353,8 +358,8 @@ begin
       i_hk_valid       => hk_valid,
       i_hk             => hk,
       -- pipe
-      o_tc_valid   => tc_valid,
-      o_tc         => tc,
+      o_tc_valid       => tc_valid,
+      o_tc             => tc,
       -- wire
       o_reg_ctrl       => open,
       o_reg_tc_hk_conf => reg_tc_hk_conf,
@@ -389,9 +394,9 @@ begin
 
 -- extract bits from register
   -- tc_hk_conf register
-  spi_select  <= reg_tc_hk_conf(pkg_TC_HK_CONF_SPI_RAS_SEL_IDX_H);
+  spi_select                  <= reg_tc_hk_conf(pkg_TC_HK_CONF_SPI_RAS_SEL_IDX_H);
   -- icu_conf register
-  icu_select  <= reg_icu_conf(pkg_ICU_CONF_SEL_IDX_H);
+  icu_select                  <= reg_icu_conf(pkg_ICU_CONF_SEL_IDX_H);
   -- debug_ctrl register
   rst_status                  <= reg_debug_ctrl(pkg_DEBUG_CTRL_RST_STATUS_IDX_H);
   debug_pulse                 <= reg_debug_ctrl(pkg_DEBUG_CTRL_DEBUG_PULSE_IDX_H);
@@ -585,9 +590,9 @@ begin
 
   o_sel_main_n <= icu_select;
 
-  o_leds <= leds;
-  --o_led_fw            <= led_fw; -- TODO
-  --o_led_science_ready <= led_pll_lock; -- TODO
+  o_leds         <= leds;
+  o_led_fw       <= led_fw;
+  o_led_pll_lock <= led_pll_lock;
 
 ----------------------------------------------------
 --      Controller DDR3
@@ -698,6 +703,10 @@ begin
       i_ui_spi_cs_n => ui_spi_cs_n
       );
 
+     ---------------------------------------------------------------------
+     -- debugging
+     ---------------------------------------------------------------------
+     o_debug <= (others => '0');
 
 
 end architecture RTL;
