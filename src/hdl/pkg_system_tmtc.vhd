@@ -128,7 +128,7 @@ package pkg_system_tmtc is
   -- SPI: Number of clock period for elaborating SPI Serial Clock high level
   constant pkg_SPI_SCLK_H   : integer   := 10*4;
   -- SPI: Number of clock period between two SPI communication. Should be >2
-  constant pkg_SPI_PAUSE    : positive  := 3*4;
+  constant pkg_SPI_PAUSE    : positive  := (10+16)*4;
 
   ---------------------------------------------------------------------
   -- TMTC/science
