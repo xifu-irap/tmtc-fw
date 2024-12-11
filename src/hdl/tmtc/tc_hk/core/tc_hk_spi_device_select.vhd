@@ -121,6 +121,12 @@ architecture RTL of tc_hk_spi_device_select is
   -- counter max value
   constant c_CNT_MAX : unsigned(c_CNT_WIDTH - 1 downto 0) := to_unsigned(c_INTER_FRAME_TEMPO - 1, c_CNT_WIDTH);
 
+  --  SPI Chip select extra low level counter width (signed)
+  constant c_CS_LOW_CNT_WIDTH : integer := work.pkg_utils.pkg_width_from_value(i_value => pkg_SPI_CS_LOW)+1;
+
+  --  SPI Chip select extra high level counter width (signed)
+  constant c_CS_HGH_CNT_WIDTH : integer := work.pkg_utils.pkg_width_from_value(i_value => pkg_SPI_CS_HGH)+1;
+
   ---------------------------------------------------------------------
   -- input FIFO
   ---------------------------------------------------------------------
@@ -229,6 +235,14 @@ architecture RTL of tc_hk_spi_device_select is
   signal spi_cs_n          : std_logic;
   -- SPI MOSI
   signal spi_mosi          : std_logic;
+  -- SPI Start command transmit
+  signal spi_start         : std_logic;
+  -- SPI Transmit link busy
+  signal spi_tx_busy_n     : std_logic;
+  -- SPI Chip select extra low level counter
+  signal spi_cs_low_lev_cnt: std_logic_vector(c_CS_LOW_CNT_WIDTH-1 downto 0);
+  -- SPI Chip select extra high level counter
+  signal spi_cs_hgh_lev_cnt: std_logic_vector(c_CS_HGH_CNT_WIDTH-1 downto 0);
 
   ---------------------------------------------------------------------
   -- select spi link
@@ -411,18 +425,53 @@ begin
     port map(
       i_rst         => i_rst,  --! Reset asynchronous assertion, synchronous de-assertion ('0' = Inactive, '1' = Active)
       i_clk         => i_clk,           --! Clock
-      i_start       => data_valid_tmp1,  --! Start transmit ('0' = Inactive, '1' = Active)
+      i_start       => spi_start,  --! Start transmit ('0' = Inactive, '1' = Active)
       i_ser_wd_s    => c_SPI_SER_WD_S_V,   --! Serial word size
       i_data_tx     => data1,           --! Data to transmit (stall on MSB)
-      o_tx_busy_n   => spi_ready,  --! Transmit link busy ('0' = Busy, '1' = Not Busy)
+      o_tx_busy_n   => spi_tx_busy_n,   --! Transmit link busy ('0' = Busy, '1' = Not Busy)
       o_data_rx     => spi_rd_data,     --! Receipted data (stall on LSB)
       o_data_rx_rdy => spi_rd_data_valid,  --! Receipted data ready ('0' = Not ready, '1' = Ready)
       i_miso        => i_spi_miso,      --! SPI Master Input Slave Output
       o_mosi        => spi_mosi,        --! SPI Master Output Slave Input
       o_sclk        => spi_clk,         --! SPI Serial Clock
-      o_cs_n        => spi_cs_n  --! SPI Chip Select ('0' = Active, '1' = Inactive)
+      o_cs_n        => open             --! SPI Chip Select ('0' = Active, '1' = Inactive)
       );
 
+  ---------------------------------------------------------------------
+  -- Adaption SPI Chip Select timings to RAS resquest
+  ---------------------------------------------------------------------
+  P_spi_cs_cnt : process (i_rst, i_clk)
+  begin
+
+    if i_rst = '1' then
+      spi_cs_low_lev_cnt   <= (others => '1');
+      spi_cs_hgh_lev_cnt   <= (others => '1');
+
+    elsif rising_edge(i_clk) then
+
+      if spi_tx_busy_n = '0' then
+        spi_cs_low_lev_cnt <= std_logic_vector(to_signed(pkg_SPI_CS_LOW, spi_cs_low_lev_cnt'length));
+
+      elsif spi_cs_low_lev_cnt(spi_cs_low_lev_cnt'high) = '0' then
+        spi_cs_low_lev_cnt <= std_logic_vector(signed(spi_cs_low_lev_cnt) - 1);
+
+      end if;
+         
+      if spi_cs_low_lev_cnt(spi_cs_low_lev_cnt'high) = '0' then
+        spi_cs_hgh_lev_cnt <= std_logic_vector(to_signed(pkg_SPI_CS_HGH, spi_cs_hgh_lev_cnt'length));
+
+      elsif spi_cs_hgh_lev_cnt(spi_cs_hgh_lev_cnt'high) = '0' then
+        spi_cs_hgh_lev_cnt <= std_logic_vector(signed(spi_cs_hgh_lev_cnt) - 1);
+
+      end if;
+
+    end if;
+
+  end process P_spi_cs_cnt;
+
+  spi_start <= data_valid_tmp1 and spi_cs_hgh_lev_cnt(spi_cs_hgh_lev_cnt'high);
+  spi_cs_n  <= spi_cs_low_lev_cnt(spi_cs_low_lev_cnt'high);
+  spi_ready <= spi_cs_hgh_lev_cnt(spi_cs_hgh_lev_cnt'high);
 
   ---------------------------------------------------------------------
   -- Select the spi link
