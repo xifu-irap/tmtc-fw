@@ -91,64 +91,17 @@ end entity science_rx_deserializer;
 
 architecture RTL of science_rx_deserializer is
 
-  -- define the counter width (for the bits)
-  constant c_CNT_BIT_WIDTH : integer := work.pkg_utils.pkg_width_from_value(i_value => g_DATA_WIDTH_BY_LINK);
-
-  -- max bit counter value:
-  constant c_CNT_MAX : unsigned(c_CNT_BIT_WIDTH - 1 downto 0) := to_unsigned(g_DATA_WIDTH_BY_LINK - 1, c_CNT_BIT_WIDTH);
-
-  -- array of data
+  -- array of data (registered)
   type t_array_data is array (g_DATA_WIDTH - 1 downto 0) of std_logic_vector(g_DATA_WIDTH_BY_LINK - 1 downto 0);
 
--- fsm type declaration
-  type t_state is (E_RST, E_WAIT_HEADER0, E_WAIT_HEADER1, E_WAIT_HEADER2, E_DECODE);
+  -- science data valid (registered)
+  signal science_data_vld_r1 : std_logic;
 
-  -- state
-  signal sm_state_next : t_state;
-  -- state (registered)
-  signal sm_state_r1   : t_state := E_RST;
-
-  -- first bit of a science ctrl bit
-  signal sof_next : std_logic;
-  -- delayed first bit of a science ctrl bit
-  signal sof_r1   : std_logic;
-
-  -- last bit of a science ctrl bit
-  signal eof_next : std_logic;
-  -- delayed last bit of a science ctrl bit
-  signal eof_r1   : std_logic;
-
-  -- generate a data valid when words are built
-  signal data_valid_next : std_logic;
   -- data valid (registered)
   signal data_valid_r1   : std_logic;
 
-  -- detect the end of the synchro word (0-1-1)
-  signal sync_word_eof_next : std_logic;
-  -- detect the end of the synchro word (0-1-1) registered
-  signal sync_word_eof_r1   : std_logic;
-
-  -- bit counter
-  signal cnt_bit_next : unsigned(c_CNT_BIT_WIDTH - 1 downto 0);
-  -- bit counter registered
-  signal cnt_bit_r1   : unsigned(c_CNT_BIT_WIDTH - 1 downto 0);
-
-
-  -- ctrl shift register
-  signal ctrl_array_next : std_logic_vector(o_ctrl_word'range);
   -- ctrl shift register (registered)
   signal ctrl_array_r1   : std_logic_vector(o_ctrl_word'range);
-
-  -- error on the science ctrl word size
-  signal error_next : std_logic;
-  -- delayed error on the science ctrl word size
-  signal error_r1   : std_logic;
-
-  -- fsm ready
-  signal ready_next : std_logic;
-  -- delayed fsm ready
-  signal ready_r1   : std_logic;
-
 
   ---------------------------------------------------------------------
   --  deserializer of the input data
@@ -161,10 +114,6 @@ architecture RTL of science_rx_deserializer is
   ---------------------------------------------------------------------
   -- output pipe
   ---------------------------------------------------------------------
-  -- detect the end of the synchro word (0-1-1) registered
-  signal sync_word_eof_r2 : std_logic;
-  -- delayed first bit of a science ctrl bit
-  signal sof_r2           : std_logic;
   -- delayed last bit of a science ctrl bit
   signal eof_r2           : std_logic;
   -- data valid (registered)
@@ -174,122 +123,50 @@ architecture RTL of science_rx_deserializer is
   -- latched data registers
   signal data_array_r2    : t_array_data;
 
-  ---------------------------------------------------------------------
-  -- error latching
-  ---------------------------------------------------------------------
-  -- define the width of the temporary errors signals
-  constant c_NB_ERRORS : integer := 1;
-  -- temporary input errors
-  signal error_tmp     : std_logic_vector(c_NB_ERRORS - 1 downto 0);
-  -- temporary output errors
-  signal error_tmp_bis : std_logic_vector(c_NB_ERRORS - 1 downto 0);
-
-
 begin
 
--- this FSM deserializes the input stream (ctrl) by decoding the control bits and by generating control bits
-  p_decode_state : process (ctrl_array_r1, i_science_ctrl,
-                            i_science_data_valid,
-                            sm_state_r1, cnt_bit_r1, ready_r1) is
-  begin
-    sof_next           <= '0';
-    eof_next           <= '0';
-    data_valid_next    <= '0';
-    sync_word_eof_next <= '0';
-    ctrl_array_next    <= ctrl_array_r1;
-    cnt_bit_next       <= cnt_bit_r1;
-    error_next         <= '0';
-    ready_next         <= ready_r1;
+-- ctrl shift register
+   p_ctrl_array : process (i_clk)
+   begin
 
-    case sm_state_r1 is
-      when E_RST =>
-        cnt_bit_next  <= (others => '0');
-        sm_state_next <= E_WAIT_HEADER0;
+      if rising_edge(i_clk) then
+         if i_rst = '1' then
+            ctrl_array_r1 <= (others => '0');
 
-      when E_WAIT_HEADER0 =>
-        -- detect the 1st ctrl synchro bit: science_ctrl = 0
-        if i_science_ctrl = '0' and i_science_data_valid = '1' then
-          sm_state_next <= E_WAIT_HEADER1;
-        else
-          sm_state_next <= E_WAIT_HEADER0;
-        end if;
+         elsif i_science_data_valid = '1' then
+            ctrl_array_r1 <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
 
-      when E_WAIT_HEADER1 =>
-        -- detect the 2nd ctrl synchro bit: science_ctrl = 1
-        if i_science_ctrl = '1' and i_science_data_valid = '1' then
-          ready_next      <= '0';
-          sof_next        <= '1';
-          cnt_bit_next    <= cnt_bit_r1 + 1;
-          ctrl_array_next <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
-          sm_state_next   <= E_WAIT_HEADER2;
-        else
-          ready_next    <= '1';
-          sm_state_next <= E_WAIT_HEADER1;
-        end if;
+         end if;
 
-      when E_WAIT_HEADER2 =>
+      end if;
 
-        -- detect the 3rd ctrl synchro bit: science_ctrl = 1
-        if i_science_ctrl = '1' and i_science_data_valid = '1' then
-          cnt_bit_next       <= cnt_bit_r1 + 1;
-          ctrl_array_next    <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
-          -- detect the last ctrl sync bit
-          sync_word_eof_next <= '1';
+   end process p_ctrl_array;
 
-          sm_state_next <= E_DECODE;
-        else
-          sm_state_next <= E_WAIT_HEADER2;
-        end if;
+-- science data valid (registered)
+   p_sc_data_vld_r1 : process (i_clk)
+   begin
 
-      when E_DECODE =>
-        -- get the remaining: science_ctrl bits
-        if i_science_data_valid = '1' then
-          cnt_bit_next    <= cnt_bit_r1 + 1;
-          ctrl_array_next <= ctrl_array_r1(ctrl_array_r1'high - 1 downto 0) & i_science_ctrl;
+      if rising_edge(i_clk) then
+         if i_rst = '1' then
+            science_data_vld_r1 <= '0';
 
-          if cnt_bit_r1 = c_CNT_MAX then
-            data_valid_next <= '1';
-            cnt_bit_next    <= (others => '0');
-            eof_next        <= '1';
+         else
+            science_data_vld_r1 <= i_science_data_valid;
 
-            if i_science_ctrl = '0' then
-              -- detect the 1st ctrl synchro bit: science_ctrl = 0
-              sm_state_next <= E_WAIT_HEADER1;
-            else
-              -- this case shouldn't happen => bad 1st ctrl synchro bit.
-              error_next    <= '1';
-              sm_state_next <= E_WAIT_HEADER0;
-            end if;
-          else
-            sm_state_next <= E_DECODE;
-          end if;
-        else
-          sm_state_next <= E_DECODE;
-        end if;
+         end if;
 
-      when others =>
-        sm_state_next <= E_RST;
-    end case;
-  end process p_decode_state;
+      end if;
+
+   end process p_sc_data_vld_r1;
 
 -- registered state signals
   p_state : process (i_clk) is
   begin
     if rising_edge(i_clk) then
-      if i_rst = '1' then
-        sm_state_r1 <= E_RST;
-      else
-        sm_state_r1 <= sm_state_next;
-      end if;
-      sof_r1           <= sof_next;
-      eof_r1           <= eof_next;
-      data_valid_r1    <= data_valid_next;
-      sync_word_eof_r1 <= sync_word_eof_next;
-      ctrl_array_r1    <= ctrl_array_next;
-      cnt_bit_r1       <= cnt_bit_next;
-      error_r1         <= error_next;
-      ready_r1         <= ready_next;
+      data_valid_r1         <= ctrl_array_r1(ctrl_array_r1'high) and ctrl_array_r1(ctrl_array_r1'high-1) and not(ctrl_array_r1(ctrl_array_r1'high-3)) and science_data_vld_r1;
+
     end if;
+
   end process p_state;
 
 ---------------------------------------------------------------------
@@ -297,7 +174,7 @@ begin
 --  Note: the latency must be equal to the fsm latency (see above)
 ---------------------------------------------------------------------
   gen_deserialize_data : for i in i_science_data'range generate
-    science_rx_deserializer_data_INST : entity work.science_rx_deserializer_data
+    inst_science_rx_deserializer_data : entity work.science_rx_deserializer_data
       generic map(
         -- define the number of bits by links in order to build word
         g_DATA_WIDTH_BY_LINK => g_DATA_WIDTH_BY_LINK
@@ -329,9 +206,7 @@ begin
   p_pipe : process (i_clk) is
   begin
     if rising_edge(i_clk) then
-      sync_word_eof_r2 <= sync_word_eof_r1;
-      sof_r2           <= sof_r1;
-      eof_r2           <= eof_r1;
+      eof_r2           <= data_valid_r1;
       data_valid_r2    <= data_valid_r1;
       -- add a latch to improve the readiability in simulation
       if data_valid_r1 = '1' then
@@ -345,8 +220,8 @@ begin
 -- output
 ---------------------------------------------------------------------
 
-  o_sync_word_eof <= sync_word_eof_r2;
-  o_sof           <= sof_r2;
+  o_sync_word_eof <= '0';
+  o_sof           <= '0';
   o_eof           <= eof_r2;
   o_data_valid    <= data_valid_r2;
   o_ctrl_word     <= ctrl_array_r2;
@@ -359,29 +234,10 @@ begin
   ---------------------------------------------------------------------
 -- errors/status
 ---------------------------------------------------------------------
-  error_tmp(0) <= error_r1;             -- fifo wr full error
-  gen_errors_latch : for i in error_tmp'range generate
-    inst_one_error_latch : entity work.one_error_latch
-      port map(
-        i_clk         => i_clk,
-        i_rst         => i_rst_status,
-        i_debug_pulse => i_debug_pulse,
-        i_error       => error_tmp(i),
-        o_error       => error_tmp_bis(i)
-        );
-  end generate gen_errors_latch;
-
-  o_errors(15 downto 1) <= (others => '0');
-  o_errors(0)           <= error_tmp_bis(0);
+  o_errors(15 downto 0) <= (others => '0');
 
   o_status(7 downto 1) <= (others => '0');
-  o_status(0)          <= ready_r1;
-
-
-  ---------------------------------------------------------------------
-  -- for simulation only
-  ---------------------------------------------------------------------
-  assert not (error_tmp_bis(0) = '1') report "[science_rx_deserializer] => science ctrl word error" severity error;
+  o_status(0)          <= data_valid_r2;
 
 
 end architecture RTL;
