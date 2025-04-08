@@ -130,9 +130,7 @@ architecture RTL of usb_opal_kelly is
   -- usb interface signal
   signal okEHx : std_logic_vector(c_WIRE_PIPE_TRIG_NUMBER_OUT * 65 - 1 downto 0);
 
-  -- type definition for the wire_out, pipe out, ... buses
   type t_array65 is array (0 to c_WIRE_PIPE_TRIG_NUMBER_OUT - 1) of std_logic_vector(64 downto 0);
-  -- array of 64 bits buses
   signal okEHx_array : t_array65;
 
   -- wires in

@@ -4,8 +4,8 @@ J2;;;;AB16
 J3;;;;AC16
 J4;;;;
 J5;;;;
-J6;SCIENCE_CTRL_01_P;LVDS_25;i_science_ctrl_p[0];AD23
-J7;SCIENCE_CTRL_01_N;LVDS_25;i_science_ctrl_n[0];AD24
+J6;;;;AD23
+J7;;;;AD24
 J8;;;;
 J9;;;;AD25
 J10;;;;AE25
@@ -13,8 +13,8 @@ J11;;;;
 J12;;;;AA25
 J13;;;;AB25
 J14;;;;
-J15;LED_FW;LVCMOS25;o_led_fw;V23
-J16;LED_PLL_LOCK;LVCMOS25;o_led_pll_lock;V24
+J15;;;;V23
+J16;;;;V24
 J17;;;;
 J18;;;;AD21
 J19;;;;AE21

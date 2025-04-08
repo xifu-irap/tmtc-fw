@@ -79,14 +79,13 @@ verific -vhdl ./src/hdl/reset/core/reset_ddr_controller.vhd
 verific -vhdl ./src/hdl/reset/reset_top.vhd
 
 
-# tmtc/tc_hk
-verific -vhdl ./src/hdl/tmtc/tc_hk/core/spi_master.vhd
-verific -vhdl ./src/hdl/tmtc/tc_hk/core/tc_hk_spi_device_select.vhd
-verific -vhdl ./src/hdl/tmtc/tc_hk/tc_hk_top.vhd
+# tmtc/spi
+verific -vhdl ./src/hdl/tmtc/spi/core/spi_master.vhd
+verific -vhdl ./src/hdl/tmtc/spi/core/spi_device_select.vhd
+verific -vhdl ./src/hdl/tmtc/spi/spi_top.vhd
 
 # tmtc/science
 verific -vhdl ./src/hdl/tmtc/science/debug/science_check_header_w32.vhd
-verific -vhdl ./src/hdl/tmtc/science/debug/science_pattern_fifo_out.vhd
 verific -vhdl ./src/hdl/tmtc/science/core/science_rx_deserializer_data.vhd
 verific -vhdl ./src/hdl/tmtc/science/core/science_rx_deserializer.vhd
 verific -vhdl ./src/hdl/tmtc/science/core/science_rx_frame.vhd

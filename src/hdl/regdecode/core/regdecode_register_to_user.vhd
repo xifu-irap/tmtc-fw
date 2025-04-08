@@ -86,9 +86,7 @@ architecture RTL of regdecode_register_to_user is
   ---------------------------------------------------------------------
   -- detect value change
   ---------------------------------------------------------------------
-  -- auto-generated data valid
   signal data_valid_r1 : std_logic;
-  -- delayed data
   signal data_r1       : std_logic_vector(i_data'range);
 
   ---------------------------------------------------------------------

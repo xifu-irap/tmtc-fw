@@ -44,7 +44,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 library unisim;
-use unisim.vcomponents.all;
+use unisim.VComponents.all;
 
 use work.pkg_system_tmtc.all;
 
@@ -152,7 +152,8 @@ architecture RTL of io_science is
 
   -- temporary data valid
   signal data_valid_tmp1 : std_logic;
-
+  -- fifo data out
+  signal data1           : std_logic_vector(c_FIFO_WIDTH - 1 downto 0);
 
   -- resynchronized science control
   signal science_ctrl1 : std_logic;
