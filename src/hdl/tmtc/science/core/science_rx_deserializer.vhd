@@ -97,11 +97,11 @@ architecture RTL of science_rx_deserializer is
   -- science data valid (registered)
   signal science_data_vld_r1 : std_logic;
 
-  -- data valid (registered)
-  signal data_valid_r1   : std_logic;
+  -- data valid
+  signal data_valid      : std_logic;
 
   -- ctrl shift register (registered)
-  signal ctrl_array_r1   : std_logic_vector(o_ctrl_word'range);
+  signal ctrl_array_r1   : std_logic_vector(g_DATA_WIDTH_BY_LINK downto 0);
 
   ---------------------------------------------------------------------
   --  deserializer of the input data
@@ -159,15 +159,7 @@ begin
 
    end process p_sc_data_vld_r1;
 
--- registered state signals
-  p_state : process (i_clk) is
-  begin
-    if rising_edge(i_clk) then
-      data_valid_r1         <= ctrl_array_r1(ctrl_array_r1'high) and ctrl_array_r1(ctrl_array_r1'high-1) and not(ctrl_array_r1(ctrl_array_r1'high-3)) and science_data_vld_r1;
-
-    end if;
-
-  end process p_state;
+   data_valid <= not(ctrl_array_r1(ctrl_array_r1'high)) and ctrl_array_r1(ctrl_array_r1'high-1) and ctrl_array_r1(ctrl_array_r1'high-2) and science_data_vld_r1;
 
 ---------------------------------------------------------------------
 -- deserialize the input data: one word by line
@@ -206,11 +198,11 @@ begin
   p_pipe : process (i_clk) is
   begin
     if rising_edge(i_clk) then
-      eof_r2           <= data_valid_r1;
-      data_valid_r2    <= data_valid_r1;
+      eof_r2           <= data_valid;
+      data_valid_r2    <= data_valid;
       -- add a latch to improve the readiability in simulation
-      if data_valid_r1 = '1' then
-        ctrl_array_r2 <= ctrl_array_r1;
+      if data_valid = '1' then
+        ctrl_array_r2 <= ctrl_array_r1(ctrl_array_r2'range);
         data_array_r2 <= data_array_r1;
       end if;
     end if;
