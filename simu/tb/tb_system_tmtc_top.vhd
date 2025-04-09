@@ -55,9 +55,8 @@ architecture Simulation of tb_system_tmtc_top is
   -- On board
   ---------------------------------------------------------------------
   -- hardware id register (reading)
-  --i_hardware_id : in std_logic_vector(31 downto 0);
-  -- Opal Kelly LEDs
-  signal o_leds           : std_logic_vector(3 downto 0);
+  signal i_hardware_id    :  std_logic_vector(7 downto 0);
+
   ---------------------------------------------------------------------
   -- DDR input clock
   ---------------------------------------------------------------------
@@ -117,6 +116,16 @@ architecture Simulation of tb_system_tmtc_top is
   -- ICU selection : 0 for main, 1 for redundant
   signal o_sel_main_n     : std_logic;
 
+
+  ---------------------------------------------------------------------
+  -- leds
+  ---------------------------------------------------------------------
+  -- Opal Kelly LEDs
+  signal o_leds           : std_logic_vector(3 downto 0);
+  -- loaded firwware led
+  signal o_led_fw         : std_logic;
+  -- pll lock led
+  signal o_led_pll_lock   : std_logic;
 
   ---------------------------------------------------------------------
   -- Clock definition
@@ -295,9 +304,8 @@ begin
       -- On board
       ---------------------------------------------------------------------
       -- hardware id register (reading)
-      --i_hardware_id : in std_logic_vector(31 downto 0);
-      -- Opal Kelly LEDs
-      o_leds           => o_leds,
+      i_hardware_id    => i_hardware_id,
+
       ---------------------------------------------------------------------
       -- DDR input clock
       ---------------------------------------------------------------------
@@ -354,7 +362,19 @@ begin
       -- ICU: Selection
       ---------------------------------------------------------------------
       -- ICU selection : 0 for main, 1 for redundant
-      o_sel_main_n     => o_sel_main_n
+      o_sel_main_n     => o_sel_main_n,
+      ---------------------------------------------------------------------
+    -- Leds
+    ---------------------------------------------------------------------
+    -- Opal Kelly LEDs
+      o_leds           => o_leds,
+
+    -- facade leds
+    ---------------------------------------------------------------------
+    -- loaded firwware led
+    o_led_fw          => o_led_fw,
+    -- pll lock led
+    o_led_pll_lock    => o_led_pll_lock
       );
 
 

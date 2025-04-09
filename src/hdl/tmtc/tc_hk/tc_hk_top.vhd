@@ -152,7 +152,7 @@ begin
 ---------------------------------------------------------------------
 -- SPI select
 ---------------------------------------------------------------------
-  isnt_tc_hk_spi_device_select : entity work.tc_hk_spi_device_select
+  inst_tc_hk_spi_device_select : entity work.tc_hk_spi_device_select
     generic map(
       g_FIFO_DEPTH_IN => pkg_TC_HK_SPI_DEVICE_SELECT_FIFO_DEPTH,
       g_DEBUG         => pkg_TC_HK_SPI_DEVICE_SELECT_DEBUG

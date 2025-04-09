@@ -127,9 +127,9 @@ package pkg_system_tmtc is
   constant pkg_SPI_SCLK_L   : integer   := 20*4;
   -- SPI: Number of clock period for elaborating SPI Serial Clock high level
   constant pkg_SPI_SCLK_H   : integer   := 6*4;
-  -- SPI: Number of clock period the Chip Select must be in low level after end of transmit
+  -- SPI: Number of clock period the Chip Select must be in low level after end of transmit  
   constant pkg_SPI_CS_LOW   : positive  := 5*4;
-  -- SPI: Number of clock period the Chip Select must be in high level between two SPI communication
+  -- SPI: Number of clock period the Chip Select must be in high level between two SPI communication 
   constant pkg_SPI_CS_HGH   : positive  := 5*4;
   -- SPI: Number of clock period between two SPI communication. Should be >2
   constant pkg_SPI_PAUSE    : positive  := pkg_SPI_CS_LOW + pkg_SPI_CS_HGH + 4;
@@ -163,3 +163,4 @@ package pkg_system_tmtc is
 
 
 end pkg_system_tmtc;
+
