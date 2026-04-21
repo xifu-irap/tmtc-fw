@@ -55,7 +55,11 @@ entity tc_hk_top is
 
     -- command
     -- select the SPI chip
-    i_spi_select : in std_logic;
+    --   00 --> RAS module
+    --   01 --> DMX0 module
+    --   10 --> DMX1 module
+    --   11 --> no device selected
+    i_spi_select : in std_logic_vector(1 downto 0);
     -- tc_rx write enable
     i_tc_valid   : in std_logic;
     -- tc_rx write data
@@ -81,7 +85,7 @@ entity tc_hk_top is
     -- Shared SPI clock line
     o_spi_sclk : out std_logic;
     -- SPI chip select
-    o_spi_cs_n : out std_logic_vector(1 downto 0);
+    o_spi_cs_n : out std_logic_vector(2 downto 0);
 
     ---------------------------------------------------------------------
     -- errors status
@@ -216,7 +220,7 @@ begin
         probe0(4) => i_rst,
         probe0(3) => tc_valid_rx,
         probe0(2) => ready,
-        probe0(1) => i_spi_select,
+        probe0(1) => i_spi_select(0),
         probe0(0) => hk_valid,
 
         -- probe1

@@ -63,8 +63,12 @@ entity tmtc_top is
 
     -- HK: SPI
     ---------------------------------------------------------------------
-    -- spi_select bit
-    i_spi_select : in std_logic;
+    -- spi_select
+    --   00 --> RAS module
+    --   01 --> DMX0 module
+    --   10 --> DMX1 module
+    --   11 --> no device selected
+    i_spi_select : in std_logic_vector(1 downto 0);
     -- write enable tc command
     i_tc_valid   : in std_logic;
     -- write tc data command
@@ -145,7 +149,7 @@ entity tmtc_top is
     -- Shared SPI clock line
     o_spi_sclk : out std_logic;
     -- SPI chip select
-    o_spi_cs_n : out std_logic_vector(1 downto 0);
+    o_spi_cs_n : out std_logic_vector(2 downto 0);
 
     ---------------------------------------------------------------------
     -- leds

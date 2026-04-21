@@ -127,8 +127,8 @@ entity system_tmtc_top is
     o_spi_mosi : out std_logic;
     -- Shared SPI clock
     o_spi_sclk : out std_logic;
-    -- SPI chip select (bit0: RAS, bit1: DEMUX)
-    o_spi_cs_n : out std_logic_vector(1 downto 0);
+    -- SPI chip select (bit0: RAS, bit1: DEMUX0, bit2: DEMUX1)
+    o_spi_cs_n : out std_logic_vector(2 downto 0);
 
     ---------------------------------------------------------------------
     -- ICU: Selection
@@ -220,8 +220,12 @@ architecture RTL of system_tmtc_top is
 
   -- extracted bits
   ---------------------------------------------------------------------
-  -- spi_select bit
-  signal spi_select : std_logic;
+  -- spi_select
+  --   00 --> RAS module
+  --   01 --> DMX0 module
+  --   10 --> DMX1 module
+  --   11 --> no device selected
+  signal spi_select : std_logic_vector(1 downto 0);
   -- icu_select bit
   signal icu_select : std_logic;
 

@@ -62,7 +62,11 @@ entity tc_hk_spi_device_select is
     ---------------------------------------------------------------------
     -- input
     -- select the SPI chip
-    i_spi_select : in std_logic;
+    --   00 --> RAS module
+    --   01 --> DMX0 module
+    --   10 --> DMX1 module
+    --   11 --> no device selected
+    i_spi_select : in std_logic_vector(1 downto 0);
     -- tc write data enable
     i_tc_valid   : in std_logic;
     -- tc write data
@@ -98,7 +102,7 @@ entity tc_hk_spi_device_select is
     -- Shared SPI clock line
     o_spi_sclk : out std_logic;
     -- SPI chip select
-    o_spi_cs_n : out std_logic_vector(1 downto 0)
+    o_spi_cs_n : out std_logic_vector(2 downto 0)
 
     );
 end entity tc_hk_spi_device_select;
@@ -192,9 +196,9 @@ architecture RTL of tc_hk_spi_device_select is
   signal rd_r1   : std_logic;
 
   -- select the SPI chip select
-  signal spi_ras_select_next : std_logic;
+  signal spi_select_next : std_logic_vector(1 downto 0);
   -- select the SPI chip select (registered)
-  signal spi_ras_select_r1   : std_logic;
+  signal spi_select_r1   : std_logic_vector(1 downto 0);
 
   -- hk read_valid
   signal rd_hk_valid_next : std_logic;
@@ -321,11 +325,11 @@ begin
 ---------------------------------------------------------------------
   p_decode_state : process (empty1, i_spi_select, rd_hk_r1, ready_r1,
                             sm_state_r1, spi_finish,
-                            spi_ras_select_r1, spi_rd_data, spi_rd_data_valid,
+                            spi_select_r1, spi_rd_data, spi_rd_data_valid,
                             spi_ready, cnt_tempo_r1) is
   begin
     rd_next             <= '0';
-    spi_ras_select_next <= spi_ras_select_r1;
+    spi_select_next     <= spi_select_r1;
     rd_hk_valid_next    <= '0';
     rd_hk_next          <= rd_hk_r1;
     ready_next          <= ready_r1;
@@ -337,7 +341,7 @@ begin
         sm_state_next <= E_WAIT_CMD;
 
       when E_WAIT_CMD =>
-        spi_ras_select_next <= i_spi_select;
+        spi_select_next <= i_spi_select;
         cnt_tempo_next      <= (others => '0');
 
         if empty1 = '0' and spi_ready = '1' then
@@ -393,7 +397,7 @@ begin
       -- to input fifo
       rd_r1             <= rd_next;
       -- others
-      spi_ras_select_r1 <= spi_ras_select_next;
+      spi_select_r1     <= spi_select_next;
       -- to regdecode
       rd_hk_valid_r1    <= rd_hk_valid_next;
       rd_hk_r1          <= rd_hk_next;
@@ -483,13 +487,25 @@ begin
       spi_mosi_r1 <= spi_mosi;
 
       -- select the SPI device
-      if spi_ras_select_r1 = '1' then
+      if spi_select_r1 = '00' then
+        -- select the DEMUX 0 device
+        spi_cs_n_r1(2) <= '1';
+        spi_cs_n_r1(1) <= spi_cs_n;
+        spi_cs_n_r1(0) <= '1';
+      elsif spi_select_r1 = '01' then
         -- select the RAS device
+        spi_cs_n_r1(2) <= '1';
         spi_cs_n_r1(1) <= '1';
         spi_cs_n_r1(0) <= spi_cs_n;
-      else
-        -- select the DEMUX device
-        spi_cs_n_r1(1) <= spi_cs_n;
+      elsif spi_select_r1 = '10'
+        -- select the DEMUX 1 device
+        spi_cs_n_r1(2) <= spi_cs_n;
+        spi_cs_n_r1(1) <= '1';
+        spi_cs_n_r1(0) <= '1';
+      else -- spi_select_r1 = '11'
+        -- no device selected
+        spi_cs_n_r1(2) <= '1';
+        spi_cs_n_r1(1) <= '1';
         spi_cs_n_r1(0) <= '1';
       end if;
     end if;
@@ -554,7 +570,7 @@ begin
         probe0(3) => spi_ready,
         probe0(2) => data_valid_tmp1,
         probe0(1) => rd_hk_valid_r1,
-        probe0(0) => spi_ras_select_r1,
+        probe0(0) => spi_select_r1,
 
         -- probe1
         probe1(4)          => i_spi_miso,
