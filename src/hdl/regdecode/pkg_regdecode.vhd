@@ -91,8 +91,10 @@ package pkg_regdecode is
 
   -- tc_hk_conf register
   ---------------------------------------------------------------------
-  -- user-defined: spi_ras_select (bit index)
-  constant pkg_TC_HK_CONF_SPI_RAS_SEL_IDX_H : integer := 0;
+  -- user-defined: spi_ras_select (bit index high)
+  constant pkg_TC_HK_CONF_SPI_SEL_IDX_H : integer := 1;
+  -- user-defined: spi_ras_select (bit index low)
+  constant pkg_TC_HK_CONF_SPI_SEL_IDX_L : integer := 0;
 
   -- error_sel register
   ---------------------------------------------------------------------

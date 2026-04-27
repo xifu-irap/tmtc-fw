@@ -55,10 +55,10 @@ entity tc_hk_top is
 
     -- command
     -- select the SPI chip
-    --   00 --> RAS module
-    --   01 --> DMX0 module
-    --   10 --> DMX1 module
-    --   11 --> no device selected
+    --   00 --> no device selected
+    --   01 --> RAS module selected
+    --   10 --> DMX0 module selected
+    --   11 --> DMX1 module selected
     i_spi_select : in std_logic_vector(1 downto 0);
     -- tc_rx write enable
     i_tc_valid   : in std_logic;

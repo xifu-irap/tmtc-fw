@@ -488,9 +488,9 @@ begin
 
       -- select the SPI device
       if spi_select_r1 = '00' then
-        -- select the DEMUX 0 device
+        -- no device selected
         spi_cs_n_r1(2) <= '1';
-        spi_cs_n_r1(1) <= spi_cs_n;
+        spi_cs_n_r1(1) <= '1';
         spi_cs_n_r1(0) <= '1';
       elsif spi_select_r1 = '01' then
         -- select the RAS device
@@ -498,13 +498,13 @@ begin
         spi_cs_n_r1(1) <= '1';
         spi_cs_n_r1(0) <= spi_cs_n;
       elsif spi_select_r1 = '10'
-        -- select the DEMUX 1 device
-        spi_cs_n_r1(2) <= spi_cs_n;
-        spi_cs_n_r1(1) <= '1';
+        -- select the DEMUX 0 device
+        spi_cs_n_r1(2) <= '1';
+        spi_cs_n_r1(1) <= spi_cs_n;
         spi_cs_n_r1(0) <= '1';
       else -- spi_select_r1 = '11'
-        -- no device selected
-        spi_cs_n_r1(2) <= '1';
+        -- select the DEMUX 1 device
+        spi_cs_n_r1(2) <= spi_cs_n;
         spi_cs_n_r1(1) <= '1';
         spi_cs_n_r1(0) <= '1';
       end if;

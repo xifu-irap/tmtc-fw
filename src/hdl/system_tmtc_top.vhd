@@ -221,10 +221,10 @@ architecture RTL of system_tmtc_top is
   -- extracted bits
   ---------------------------------------------------------------------
   -- spi_select
-  --   00 --> RAS module
-  --   01 --> DMX0 module
-  --   10 --> DMX1 module
-  --   11 --> no device selected
+  --   00 --> no device selected
+  --   01 --> RAS module selected
+  --   10 --> DMX0 module selected
+  --   11 --> DMX1 module selected
   signal spi_select : std_logic_vector(1 downto 0);
   -- icu_select bit
   signal icu_select : std_logic;
@@ -398,7 +398,7 @@ begin
 
 -- extract bits from register
   -- tc_hk_conf register
-  spi_select                  <= reg_tc_hk_conf(pkg_TC_HK_CONF_SPI_RAS_SEL_IDX_H);
+  spi_select                  <= reg_tc_hk_conf(pkg_TC_HK_CONF_SPI_SEL_IDX_H downto pkg_TC_HK_CONF_SPI_SEL_IDX_L);
   -- icu_conf register
   icu_select                  <= reg_icu_conf(pkg_ICU_CONF_SEL_IDX_H);
   -- debug_ctrl register
