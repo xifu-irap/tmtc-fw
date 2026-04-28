@@ -487,22 +487,22 @@ begin
       spi_mosi_r1 <= spi_mosi;
 
       -- select the SPI device
-      if spi_select_r1 = '00' then
+      if spi_select_r1 = "00" then
         -- no device selected
         spi_cs_n_r1(2) <= '1';
         spi_cs_n_r1(1) <= '1';
         spi_cs_n_r1(0) <= '1';
-      elsif spi_select_r1 = '01' then
+      elsif spi_select_r1 = "01" then
         -- select the RAS device
         spi_cs_n_r1(2) <= '1';
         spi_cs_n_r1(1) <= '1';
         spi_cs_n_r1(0) <= spi_cs_n;
-      elsif spi_select_r1 = '10'
+      elsif spi_select_r1 = "10" then
         -- select the DEMUX 0 device
         spi_cs_n_r1(2) <= '1';
         spi_cs_n_r1(1) <= spi_cs_n;
         spi_cs_n_r1(0) <= '1';
-      else -- spi_select_r1 = '11'
+      else -- spi_select_r1 = "11"
         -- select the DEMUX 1 device
         spi_cs_n_r1(2) <= spi_cs_n;
         spi_cs_n_r1(1) <= '1';
@@ -570,7 +570,7 @@ begin
         probe0(3) => spi_ready,
         probe0(2) => data_valid_tmp1,
         probe0(1) => rd_hk_valid_r1,
-        probe0(0) => spi_select_r1,
+        probe0(0) => spi_select_r1(0),
 
         -- probe1
         probe1(4)          => i_spi_miso,
