@@ -58,14 +58,14 @@ entity io_science is
     -- from DEMUX: science interface @i_science_clk
     ---------------------------------------------------------------------
     -- differential_p science clock @62.5M
-    i_science_clk_p : in std_logic;
+    i_science_clk_p : in std_logic_vector(1 downto 0);
     -- differential_n science clock @62.5M
-    i_science_clk_n : in std_logic;
+    i_science_clk_n : in std_logic_vector(1 downto 0);
 
     -- Differential_p ctrl signal
-    i_science_ctrl_p : in std_logic;
+    i_science_ctrl_p : in std_logic_vector(1 downto 0);
     -- Differential_n ctrl signal
-    i_science_ctrl_n : in std_logic;
+    i_science_ctrl_n : in std_logic_vector(1 downto 0);
 
     -- Differential_p data
     i_science_data_p : in std_logic_vector(pkg_SC_LIGN_NUMBER_BY_COL - 1 downto 0);
@@ -93,9 +93,9 @@ architecture RTL of io_science is
   --  Xilinx IO
   ---------------------------------------------------------------------
   -- science ctrl signal
-  signal science_ctrl : std_logic;
+  signal science_ctrl : std_logic_vector(1 downto 0);
   -- science clock signal
-  signal science_clk  : std_logic;
+  signal science_clk  : std_logic_vector(1 downto 0);
   -- science data signal
   signal science_data : std_logic_vector(i_science_data_p'range);
 
@@ -165,31 +165,35 @@ begin
 -- Xilinx IO
 ---------------------------------------------------------------------
 
-  inst_IBUFDS_science_clk : IBUFDS
-    generic map (
-      DIFF_TERM    => true,             -- Differential Termination
-      IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
-      IOSTANDARD   => "DEFAULT")
-    port map (
-      O  => science_clk,                -- Buffer output
-      I  => i_science_clk_p,  -- Diff_p buffer input (connect directly to top-level port)
-      IB => i_science_clk_n  -- Diff_n buffer input (connect directly to top-level port)
-      );
+  GEN_IBUFDS_science_clk : for i in 0 to 1 generate
+    inst_IBUFDS_science_clk : IBUFDS
+      generic map (
+        DIFF_TERM    => true,             -- Differential Termination
+        IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
+        IOSTANDARD   => "DEFAULT")
+      port map (
+        O  => science_clk(i),                -- Buffer output
+        I  => i_science_clk_p(i),  -- Diff_p buffer input (connect directly to top-level port)
+        IB => i_science_clk_n(i)  -- Diff_n buffer input (connect directly to top-level port)
+        );
+  end generate GEN_IBUFDS_science_clk;
 
-  inst_IBUFDS_science_ctrl : IBUFDS
-    generic map (
-      DIFF_TERM    => true,             -- Differential Termination
-      IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
-      IOSTANDARD   => "DEFAULT")
-    port map (
-      O  => science_ctrl,               -- Buffer output
-      I  => i_science_ctrl_p,  -- Diff_p buffer input (connect directly to top-level port)
-      IB => i_science_ctrl_n  -- Diff_n buffer input (connect directly to top-level port)
-      );
+  GEN_IBUFDS_science_ctrl : for i in 0 to 1 generate
+    inst_IBUFDS_science_ctrl : IBUFDS
+      generic map (
+        DIFF_TERM    => true,             -- Differential Termination
+        IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
+        IOSTANDARD   => "DEFAULT")
+      port map (
+        O  => science_ctrl(i),               -- Buffer output
+        I  => i_science_ctrl_p(i),  -- Diff_p buffer input (connect directly to top-level port)
+        IB => i_science_ctrl_n(i)  -- Diff_n buffer input (connect directly to top-level port)
+        );
+  end generate GEN_IBUFDS_science_ctrl;
 
 
   GEN_IBUFDS_science_data : for i in 0 to i_science_data_p'length - 1 generate
-    inst_IBUFDS_clk_science : IBUFDS
+    inst_IBUFDS_science_data : IBUFDS
       generic map (
         DIFF_TERM    => true,           -- Differential Termination
         IBUF_LOW_PWR => true,  -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
@@ -211,7 +215,7 @@ begin
     signal science_ctrl_tmp1 : std_logic_vector(0 downto 0);
   begin
 
-    science_ctrl_tmp0(0) <= science_ctrl;
+    science_ctrl_tmp0(0) <= science_ctrl(0);  -- we don't use ctrl(1)
 
     inst_pipeliner_with_init_science_ctrl : entity work.pipeliner_with_init
       generic map(
@@ -220,7 +224,7 @@ begin
         g_DATA_WIDTH => science_ctrl_tmp0'length
         )
       port map(
-        i_clk  => science_clk,
+        i_clk  => science_clk(O),  -- we don't use clk(1)
         i_data => science_ctrl_tmp0,
         o_data => science_ctrl_tmp1
         );
@@ -233,7 +237,7 @@ begin
         g_DATA_WIDTH => science_data'length
         )
       port map(
-        i_clk  => science_clk,
+        i_clk  => science_clk(O),  -- we don't use clk(1)
         i_data => science_data,
         o_data => science_data_rx
         );
@@ -265,7 +269,7 @@ begin
       ---------------------------------------------------------------------
       -- write side
       ---------------------------------------------------------------------
-      i_wr_clk        => science_clk,
+      i_wr_clk        => science_clk(O),  -- we don't use clk(1)
       i_wr_rst        => wr_rst_tmp0,
       i_wr_en         => wr_tmp0,
       i_wr_din        => data_tmp0,

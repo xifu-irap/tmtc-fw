@@ -64,10 +64,10 @@ entity tmtc_top is
     -- HK: SPI
     ---------------------------------------------------------------------
     -- spi_select
-    --   00 --> no device selected
+    --   00 --> DMX0 module selected
     --   01 --> RAS module selected
-    --   10 --> DMX0 module selected
-    --   11 --> DMX1 module selected
+    --   10 --> DMX1 module selected
+    --   11 --> no device selected
     i_spi_select : in std_logic_vector(1 downto 0);
     -- write enable tc command
     i_tc_valid   : in std_logic;

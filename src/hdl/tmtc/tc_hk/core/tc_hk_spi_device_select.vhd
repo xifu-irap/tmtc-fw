@@ -62,10 +62,6 @@ entity tc_hk_spi_device_select is
     ---------------------------------------------------------------------
     -- input
     -- select the SPI chip
-    --   00 --> RAS module
-    --   01 --> DMX0 module
-    --   10 --> DMX1 module
-    --   11 --> no device selected
     i_spi_select : in std_logic_vector(1 downto 0);
     -- tc write data enable
     i_tc_valid   : in std_logic;
@@ -488,9 +484,9 @@ begin
 
       -- select the SPI device
       if spi_select_r1 = "00" then
-        -- no device selected
+        -- select the DEMUX 0 device
         spi_cs_n_r1(2) <= '1';
-        spi_cs_n_r1(1) <= '1';
+        spi_cs_n_r1(1) <= spi_cs_n;
         spi_cs_n_r1(0) <= '1';
       elsif spi_select_r1 = "01" then
         -- select the RAS device
@@ -498,13 +494,13 @@ begin
         spi_cs_n_r1(1) <= '1';
         spi_cs_n_r1(0) <= spi_cs_n;
       elsif spi_select_r1 = "10" then
-        -- select the DEMUX 0 device
-        spi_cs_n_r1(2) <= '1';
-        spi_cs_n_r1(1) <= spi_cs_n;
-        spi_cs_n_r1(0) <= '1';
-      else -- spi_select_r1 = "11"
         -- select the DEMUX 1 device
         spi_cs_n_r1(2) <= spi_cs_n;
+        spi_cs_n_r1(1) <= '1';
+        spi_cs_n_r1(0) <= '1';
+      else -- spi_select_r1 = "11"
+        -- no device selected
+        spi_cs_n_r1(2) <= '1';
         spi_cs_n_r1(1) <= '1';
         spi_cs_n_r1(0) <= '1';
       end if;

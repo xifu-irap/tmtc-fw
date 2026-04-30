@@ -674,10 +674,10 @@ begin
       ---------------------------------------------------------------------
       -- from DEMUX: science interface @i_science_clk
       ---------------------------------------------------------------------
-      i_science_clk_p      => i_science_clk_p(0),
-      i_science_clk_n      => i_science_clk_n(0),
-      i_science_ctrl_p     => i_science_ctrl_p(0),
-      i_science_ctrl_n     => i_science_ctrl_n(0),
+      i_science_clk_p      => i_science_clk_p,
+      i_science_clk_n      => i_science_clk_n,
+      i_science_ctrl_p     => i_science_ctrl_p,
+      i_science_ctrl_n     => i_science_ctrl_n,
       i_science_data_p     => i_science_data_p,
       i_science_data_n     => i_science_data_n,
       ---------------------------------------------------------------------

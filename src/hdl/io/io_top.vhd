@@ -43,14 +43,14 @@ entity io_top is
     -- from DEMUX: science interface @i_science_clk
     ---------------------------------------------------------------------
     -- differential_p science clock
-    i_science_clk_p : in std_logic;
+    i_science_clk_p : in std_logic_vector(1 downto 0);
     -- differential_n science clock
-    i_science_clk_n : in std_logic;
+    i_science_clk_n : in std_logic_vector(1 downto 0);
 
     -- Differential_p science ctrl
-    i_science_ctrl_p : in std_logic;
+    i_science_ctrl_p : in std_logic_vector(1 downto 0);
     -- Differential_n science ctrl
-    i_science_ctrl_n : in std_logic;
+    i_science_ctrl_n : std_logic_vector(1 downto 0);
 
     -- Differential_p science data
     i_science_data_p : in std_logic_vector(pkg_SC_LIGN_NUMBER_BY_COL - 1 downto 0);

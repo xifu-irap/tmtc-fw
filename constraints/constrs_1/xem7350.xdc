@@ -462,8 +462,8 @@ set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[7]}];# SCIENCE_DATA
 set_property PACKAGE_PIN E10 [get_ports {i_science_data_p[4]}];# SCIENCE_DATA0_COL2_P
 set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[4]}];# SCIENCE_DATA0_COL2_P
 # FMC-D21
-set_property PACKAGE_PIN D10 [get_ports {i_science_data_p[4]}];# SCIENCE_DATA0_COL2_N
-set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_p[4]}];# SCIENCE_DATA0_COL2_N
+set_property PACKAGE_PIN D10 [get_ports {i_science_data_n[4]}];# SCIENCE_DATA0_COL2_N
+set_property IOSTANDARD LVDS_25 [get_ports {i_science_data_n[4]}];# SCIENCE_DATA0_COL2_N
 # FMC-D22
 # set_property PACKAGE_PIN  [get_ports {}]
 # set_property IOSTANDARD  [get_ports {}]
