@@ -98,9 +98,11 @@ architecture RTL of io_science is
   signal science_clk  : std_logic_vector(1 downto 0);
 
   -- To avoid the synthesys to remove the buffer of the unused signals
+  signal science_ctrl_dummy : std_logic;
+  signal science_clk_dummy : std_logic;
   attribute DONT_TOUCH : string;
-  attribute DONT_TOUCH of science_ctrl : signal is "TRUE";
-  attribute DONT_TOUCH of science_clk : signal is "TRUE";
+  attribute DONT_TOUCH of science_ctrl_dummy : signal is "TRUE";
+  attribute DONT_TOUCH of science_clk_dummy : signal is "TRUE";
 
   -- science data signal
   signal science_data : std_logic_vector(i_science_data_p'range);
@@ -221,8 +223,10 @@ begin
     signal science_ctrl_tmp1 : std_logic_vector(0 downto 0);
   begin
 
-    science_ctrl_tmp0(0) <= science_ctrl(0);  -- we don't use ctrl(1)
-
+    science_ctrl_tmp0(0) <= science_ctrl(0);
+    science_ctrl_dummy <= science_ctrl(1);  -- we don't use ctrl(1)
+    science_clk_dummy <= science_clk(1);  -- we don't use clk(1)
+    
     inst_pipeliner_with_init_science_ctrl : entity work.pipeliner_with_init
       generic map(
         g_INIT       => '0',
@@ -230,7 +234,7 @@ begin
         g_DATA_WIDTH => science_ctrl_tmp0'length
         )
       port map(
-        i_clk  => science_clk(O),  -- we don't use clk(1)
+        i_clk  => science_clk(0),  -- we don't use clk(1)
         i_data => science_ctrl_tmp0,
         o_data => science_ctrl_tmp1
         );
@@ -243,7 +247,7 @@ begin
         g_DATA_WIDTH => science_data'length
         )
       port map(
-        i_clk  => science_clk(O),  -- we don't use clk(1)
+        i_clk  => science_clk(0),  -- we don't use clk(1)
         i_data => science_data,
         o_data => science_data_rx
         );
@@ -275,7 +279,7 @@ begin
       ---------------------------------------------------------------------
       -- write side
       ---------------------------------------------------------------------
-      i_wr_clk        => science_clk(O),  -- we don't use clk(1)
+      i_wr_clk        => science_clk(0),  -- we don't use clk(1)
       i_wr_rst        => wr_rst_tmp0,
       i_wr_en         => wr_tmp0,
       i_wr_din        => data_tmp0,
