@@ -96,6 +96,12 @@ architecture RTL of io_science is
   signal science_ctrl : std_logic_vector(1 downto 0);
   -- science clock signal
   signal science_clk  : std_logic_vector(1 downto 0);
+
+  -- To avoid the synthesys to remove the buffer of the unused signals
+  attribute DONT_TOUCH : string;
+  attribute DONT_TOUCH of science_ctrl : signal is "TRUE";
+  attribute DONT_TOUCH of science_clk : signal is "TRUE";
+
   -- science data signal
   signal science_data : std_logic_vector(i_science_data_p'range);
 
